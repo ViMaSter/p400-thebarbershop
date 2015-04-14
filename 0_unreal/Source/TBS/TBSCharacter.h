@@ -21,6 +21,26 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level")		int32 XPtoLvl;
 };
 
+USTRUCT(BlueprintType)
+struct FBeardComparisonData : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+
+	FBeardComparisonData()
+		: Shaved(0)
+		, Trimmed(0)
+		, Normal(0)
+		, Total(0)
+	{}
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Beard")	int32 Shaved;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Beard")	int32 Trimmed;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Beard")	int32 Normal;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Beard")	int32 Total;
+};
+
 
 UCLASS(Blueprintable)
 class ATBSCharacter : public APawn
@@ -67,6 +87,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus") float TimeLimit;
 	
 	// Customer
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CSV Data") UDataTable* BeardData;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus") ATBSCustomer* CurrentCustomer;
 
 	void FinishCurrentCustomer();
@@ -78,6 +99,8 @@ public:
 
 	virtual void BeginPlay() override;
 	void LoadNewCustomer();
+
+	float CalculateResult();
 };
 
 

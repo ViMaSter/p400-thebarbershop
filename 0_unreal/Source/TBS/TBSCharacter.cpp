@@ -76,33 +76,9 @@ void ATBSCharacter::BeginPlay(){
 }
 
 void ATBSCharacter::FinishCurrentCustomer(){
-	float Result = 0.f;
-	// NOT FINAL!! NEED HARD REWORK
-	if (CurrentCustomer && CurrentCustomer->Beard){
-		TArray<UActorComponent*> Components;
-		int32 NumberShaved = 0;
-		int32 NumberTrimmed = 0;
-		int32 NumberNormal = 0;
-		Components = CurrentCustomer->Beard->GetComponentsByClass(UStaticMeshComponent::StaticClass());
-		for (int32 i = 0; i < Components.Num(); i++){
-			UStaticMeshComponent* Mesh = (UStaticMeshComponent*) Components[i];
-			if (!Mesh->IsVisible()){
-				NumberShaved++;
-			}
-			else if (Mesh->GetCollisionResponseToChannel(ECC_Vehicle) == ECR_Ignore){
-				NumberTrimmed++;
-			}
-			else{
-				NumberNormal++;
-			}
-		}
-		Result = ((float)NumberShaved / Components.Num()) * 100;
-		
-	}
-	
-	GetWorldTimerManager().ClearTimer(TimerHandle);
+	CalculateResult();
 	IncreaseEXP(50);
-	UE_LOG(LogClass, Log, TEXT("*** Customer Finished with %.1f %% accuracy ***"), Result);
+	GetWorldTimerManager().ClearTimer(TimerHandle);
 	LoadNewCustomer();
 }
 
@@ -143,7 +119,6 @@ void ATBSCharacter::IncreaseEXP(int32 Value){
 			}
 		}
 	}
-	
 }
 
 void ATBSCharacter::SwitchTool(bool IsNextTool){
@@ -162,5 +137,52 @@ void ATBSCharacter::SwitchTool(bool IsNextTool){
 		else tmp = ((uint8)Tool->ToolType - 1U) % 4;
 		Tool->SwitchRazorTypeTo((TEnumAsByte<ETBSRazor::Type>)tmp);
 	}
+}
+
+float ATBSCharacter::CalculateResult(){
+	const FBeardComparisonData *CurrentData;
+	const FString String;
+	if (BeardData){
+		FName BeardName = "Beard_1";
+		CurrentData = BeardData->FindRow<FBeardComparisonData>(BeardName, String);
+		if (!CurrentData){
+			UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard Comparison Data! ***"));
+			return -99;
+		}
+		else{
+			float ResultShaved = 0.f;
+			float ResultTrimmed = 0.f;
+			float ResultNormal = 0.f;
+
+			if (CurrentCustomer && CurrentCustomer->Beard){
+				TArray<UActorComponent*> Components;
+				int32 NumberShaved = 0;
+				int32 NumberTrimmed = 0;
+				int32 NumberNormal = 0;
+				Components = CurrentCustomer->Beard->GetComponentsByClass(UStaticMeshComponent::StaticClass());
+				for (int32 i = 0; i < Components.Num(); i++){
+					UStaticMeshComponent* Mesh = (UStaticMeshComponent*)Components[i];
+					if (!Mesh->IsVisible()){
+						NumberShaved++;
+					}
+					else if (Mesh->GetCollisionResponseToChannel(ECC_Vehicle) == ECR_Ignore){
+						NumberTrimmed++;
+					}
+					else{
+						NumberNormal++;
+					}
+				}
+				float Result = 0.f;
+				if (CurrentData->Normal >0)	Result += ResultNormal = ((float)NumberNormal / CurrentData->Normal);
+				if (CurrentData->Trimmed >0) Result += ResultTrimmed = ((float)NumberTrimmed / CurrentData->Trimmed);
+				if (CurrentData->Shaved >0) Result += ResultShaved = ((float)NumberShaved / CurrentData->Shaved);
+				Result *= 100;
+				UE_LOG(LogClass, Log, TEXT("*** Customer Finished with %.1f %% accuracy ***"), Result);
+				return Result;
+			}
+		}
+
+	}
+	return -99;
 }
 
