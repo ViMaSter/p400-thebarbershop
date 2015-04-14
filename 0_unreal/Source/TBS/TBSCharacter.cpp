@@ -21,8 +21,11 @@ ATBSCharacter::ATBSCharacter(const FObjectInitializer& ObjectInitializer)
 	CameraComponent->AttachTo(CameraBoom, USpringArmComponent::SocketName);
 	CameraComponent->bUsePawnControlRotation = false;
 
-	static ConstructorHelpers::FClassFinder<ATBSRazor> RazorBP(TEXT("/Game/TheBarberShop/Assets/Tool_BP"));
-	RazorClass = RazorBP.Class;
+	static ConstructorHelpers::FClassFinder<ATBSRazor> ToolBP(TEXT("/Game/TheBarberShop/Assets/Tool_BP"));
+	ToolClass = ToolBP.Class;
+
+	static ConstructorHelpers::FClassFinder<ATBSCustomer> CustomerBP(TEXT("/Game/TheBarberShop/Assets/Customer_BP"));
+	CustomerClass = CustomerBP.Class;
 
 	HorizontalCameraRotationBorder = 75;
 	VerticalUpperCameraRotationBorder = -35;
@@ -39,13 +42,12 @@ ATBSCharacter::ATBSCharacter(const FObjectInitializer& ObjectInitializer)
 void ATBSCharacter::BeginPlay(){
 	Super::BeginPlay();
 	UWorld *World = GetWorld();
-
-	// Set Customer  FINAL BUILD VIA REF BP WITHOUT SCENE SCANNING
-	for (TActorIterator<ATBSCustomer> ActorItr(GetWorld()); ActorItr; ++ActorItr){
-		CurrentCustomer = *ActorItr;
+	if (World && CurrentCustomer == NULL){
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Instigator = Instigator;
+		SpawnParams.Owner = this;
+		CurrentCustomer = World->SpawnActor<ATBSCustomer>(CustomerClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
 	}
-
-	if (CurrentCustomer) LoadNewCustomer();
 
 	// Spawn Tool
 	if (World){
@@ -56,7 +58,7 @@ void ATBSCharacter::BeginPlay(){
 
 		FVector SpawnLocation = { 0, 0, 0 };
 		FRotator SpawnRotation = { 180, 0, 0 };
-		Tool = World->SpawnActor<ATBSRazor>(RazorClass, SpawnLocation, SpawnRotation, SpawnParams);
+		Tool = World->SpawnActor<ATBSRazor>(ToolClass, SpawnLocation, SpawnRotation, SpawnParams);
 	}
 
 	// Load Level Up Data
@@ -70,6 +72,7 @@ void ATBSCharacter::BeginPlay(){
 		}
 	}
 
+	if (CurrentCustomer) LoadNewCustomer();
 }
 
 void ATBSCharacter::FinishCurrentCustomer(){

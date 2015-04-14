@@ -11,19 +11,30 @@ ATBSCustomer::ATBSCustomer(const FObjectInitializer& ObjectInitializer)
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	//static ConstructorHelpers::FClassFinder<AActor> BearedBP(TEXT("/Game/TheBarberShop/Assets/Beard_02_BP"));
-	//BearedClass = BearedBP.Class;
+	static ConstructorHelpers::FClassFinder<AActor> BeardBP(TEXT("/Game/TheBarberShop/Assets/Characters/Style_02/Beard_02_BP"));
+	BeardClass = BeardBP.Class;
 	
 }
 // Called when the game starts or when spawned
 void ATBSCustomer::BeginPlay(){
 	Super::BeginPlay();
+
 	CreateNewCustomer();
 }
 
 void ATBSCustomer::CreateNewCustomer(){
-	CreatedCustomer();
+	if (Beard) Beard->Destroy();
 
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Instigator = Instigator;
+	SpawnParams.Owner = this;
+	Beard = GetWorld()->SpawnActor<AActor>(BeardClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+
+	UStaticMeshComponent* Mesh = (UStaticMeshComponent*)GetComponentByClass(UStaticMeshComponent::StaticClass());
+	FTransform Transf = Mesh->GetComponentTransform();
+
+	Beard->SetActorTransform(Transf);
+	CreatedCustomer();
 	UE_LOG(LogClass, Log, TEXT("*** Customer Customer created ***"))
 }
 

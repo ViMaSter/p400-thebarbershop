@@ -14,8 +14,8 @@ public:
 	// Sets default values for this actor's properties
 	ATBSCustomer(const FObjectInitializer& ObjectInitializer);
 
-	UPROPERTY(EditAnywhere, noclear, BlueprintReadWrite, Category = "Beard", meta = (DisplayName = "Beared Class"))
-		TSubclassOf<class AActor> BearedClass;
+	UPROPERTY(EditAnywhere, noclear, BlueprintReadWrite, Category = "Beard", meta = (DisplayName = "Beard Class"))
+		TSubclassOf<class AActor> BeardClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Beard") AActor* Beard;
 	

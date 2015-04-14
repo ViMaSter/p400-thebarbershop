@@ -40,8 +40,11 @@ public:
 
 	ATBSCharacter(const FObjectInitializer& ObjectInitializer);
 
-	UPROPERTY(EditAnywhere, noclear, BlueprintReadWrite, Category = "Razor Class", meta = (DisplayName = "Razor Class"))
-		TSubclassOf<class ATBSRazor> RazorClass;
+	UPROPERTY(EditAnywhere, noclear, BlueprintReadWrite, Category = "Razor Class", meta = (DisplayName = "Tool Class"))
+		TSubclassOf<class ATBSRazor> ToolClass;
+
+	UPROPERTY(EditAnywhere, noclear, BlueprintReadWrite, Category = "Razor Class", meta = (DisplayName = "Tool Class"))
+		TSubclassOf<class ATBSCustomer> CustomerClass;
 
 	ATBSRazor* Tool;
 
