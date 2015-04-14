@@ -27,7 +27,7 @@ void ATBSPlayerController::SetupInputComponent()
 	InputComponent->BindAxis("RotateTop", this, &ATBSPlayerController::RotateTop);
 	InputComponent->BindAxis("RotateRight", this, &ATBSPlayerController::RotateRight);
 	InputComponent->BindAxis("RotateRazorTop", this, &ATBSPlayerController::RotateRazorTop);
-	InputComponent->BindAxis("RotateRazorRight", this, &ATBSPlayerController::RotateRazorRight);
+	//InputComponent->BindAxis("RotateRazorRight", this, &ATBSPlayerController::RotateRazorRight);
 
 	InputComponent->BindAction("SwitchToNextTool", IE_Pressed, this, &ATBSPlayerController::SwitchToNextTool);
 	InputComponent->BindAction("SwitchToPrevTool", IE_Pressed, this, &ATBSPlayerController::SwitchToPrevTool);
@@ -85,9 +85,6 @@ void ATBSPlayerController::RotateRazorTop(float Value){
 		PlayerCharacter->Razor->AddActorLocalRotation(FRotator(0, 0, Value));
 
 		ToolRotation.Roll = PlayerCharacter->Razor->GetActorRotation().Roll;
-		
-		//ToolRotation.Pitch = 0;
-
 		PlayerCharacter->Razor->SetActorRotation(ToolRotation);
 	}
 }
@@ -99,11 +96,8 @@ void ATBSPlayerController::RotateRazorRight(float Value){
 		Value *= 10;
 		ToolRotation = PlayerCharacter->Razor->GetActorRotation();
 		PlayerCharacter->Razor->AddActorLocalRotation(FRotator(0, Value, 0));
-
-		//ToolRotation.Pitch = 0;
-
+		
 		ToolRotation.Yaw = PlayerCharacter->Razor->GetActorRotation().Yaw;
-
 		PlayerCharacter->Razor->SetActorRotation(ToolRotation);
 	}
 }
@@ -139,6 +133,7 @@ void ATBSPlayerController::UpdateRazorPosition(){
 			}
 			ToolRotation = PlayerCharacter->Razor->GetActorRotation();		
 			ToolRotation.Pitch = Hitresult.ImpactNormal.Rotation().Pitch;
+			ToolRotation.Yaw = Hitresult.ImpactNormal.Rotation().Yaw-180;
 
 			PlayerCharacter->Razor->SetActorRotation(ToolRotation);
 		}
@@ -156,7 +151,7 @@ void ATBSPlayerController::OnSetShavedReleased(){
 }
 
 void ATBSPlayerController::OnSetRotationPressed(){
-	//RotationActive = true;
+	RotationActive = true;
 	GetMousePosition(StoredMousePosition.X, StoredMousePosition.Y);
 }
 

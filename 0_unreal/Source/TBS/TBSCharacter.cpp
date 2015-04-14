@@ -2,6 +2,7 @@
 
 #include "TBS.h"
 #include "TBSCharacter.h"
+#include "EngineUtils.h"
 
 ATBSCharacter::ATBSCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -39,6 +40,13 @@ void ATBSCharacter::BeginPlay(){
 	Super::BeginPlay();
 	UWorld *World = GetWorld();
 
+	// Set Customer  FINAL BUILD VIA REF BP WITHOUT SCENE SCANNING
+	for (TActorIterator<ATBSCustomer> ActorItr(GetWorld()); ActorItr; ++ActorItr){
+		CurrentCustomer =  *ActorItr;
+	}
+
+	if (CurrentCustomer) LoadNewCustomer();
+
 	// Spawn Tool
 	if (World){
 		FActorSpawnParameters SpawnParams;
@@ -62,8 +70,6 @@ void ATBSCharacter::BeginPlay(){
 		}
 	}
 
-	// Set Timer
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &ATBSCharacter::FinishCurrentCustomer, TimeLimit, false, -1.f);
 }
 
 void ATBSCharacter::FinishCurrentCustomer(){
@@ -80,7 +86,7 @@ void ATBSCharacter::LoadNewCustomer(){
 
 	// Create New Customer
 	if (CurrentCustomer){
-		CurrentCustomer->CreateNewCustomer();
+		((ATBSCustomer*)CurrentCustomer)->CreateNewCustomer();
 	}
 	else UE_LOG(LogClass, Warning, TEXT("*** No Customer_BP set in Character ***"));
 }
