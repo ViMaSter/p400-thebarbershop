@@ -32,7 +32,7 @@ ATBSCharacter::ATBSCharacter(const FObjectInitializer& ObjectInitializer)
 	CurrentExperience = 0;
 	CurrentExperienceToLvl = 0;
 
-	TimeLimit = 5.f;
+	TimeLimit = 15.f;
 }
 
 
@@ -42,7 +42,7 @@ void ATBSCharacter::BeginPlay(){
 
 	// Set Customer  FINAL BUILD VIA REF BP WITHOUT SCENE SCANNING
 	for (TActorIterator<ATBSCustomer> ActorItr(GetWorld()); ActorItr; ++ActorItr){
-		CurrentCustomer =  *ActorItr;
+		CurrentCustomer = *ActorItr;
 	}
 
 	if (CurrentCustomer) LoadNewCustomer();
@@ -56,7 +56,7 @@ void ATBSCharacter::BeginPlay(){
 
 		FVector SpawnLocation = { 0, 0, 0 };
 		FRotator SpawnRotation = { 180, 0, 0 };
-		Razor = World->SpawnActor<ATBSRazor>(RazorClass, SpawnLocation, SpawnRotation, SpawnParams);
+		Tool = World->SpawnActor<ATBSRazor>(RazorClass, SpawnLocation, SpawnRotation, SpawnParams);
 	}
 
 	// Load Level Up Data
@@ -73,9 +73,33 @@ void ATBSCharacter::BeginPlay(){
 }
 
 void ATBSCharacter::FinishCurrentCustomer(){
+	float Result = 0.f;
+	// NOT FINAL!! NEED HARD REWORK
+	if (CurrentCustomer && CurrentCustomer->Beard){
+		TArray<UActorComponent*> Components;
+		int32 NumberShaved = 0;
+		int32 NumberTrimmed = 0;
+		int32 NumberNormal = 0;
+		Components = CurrentCustomer->Beard->GetComponentsByClass(UStaticMeshComponent::StaticClass());
+		for (int32 i = 0; i < Components.Num(); i++){
+			UStaticMeshComponent* Mesh = (UStaticMeshComponent*) Components[i];
+			if (!Mesh->IsVisible()){
+				NumberShaved++;
+			}
+			else if (Mesh->GetCollisionResponseToChannel(ECC_Vehicle) == ECR_Ignore){
+				NumberTrimmed++;
+			}
+			else{
+				NumberNormal++;
+			}
+		}
+		Result = ((float)NumberShaved / Components.Num()) * 100;
+		
+	}
+	
 	GetWorldTimerManager().ClearTimer(TimerHandle);
 	IncreaseEXP(50);
-	UE_LOG(LogClass, Log, TEXT("*** Customer Finished ***"));
+	UE_LOG(LogClass, Log, TEXT("*** Customer Finished with %.1f %% accuracy ***"), Result);
 	LoadNewCustomer();
 }
 
@@ -120,11 +144,20 @@ void ATBSCharacter::IncreaseEXP(int32 Value){
 }
 
 void ATBSCharacter::SwitchTool(bool IsNextTool){
-	if (Razor){
+	if (CurrentCustomer && CurrentCustomer->Beard){
+		TArray<UActorComponent*> Components;
+		Components = CurrentCustomer->Beard->GetComponentsByClass(UStaticMeshComponent::StaticClass());
+		for (int32 i = 0; i < Components.Num(); i++){
+			UStaticMeshComponent* Mesh = (UStaticMeshComponent*)Components[i];
+			Mesh->AddRelativeLocation(FVector(1, 1, 1));
+		}
+
+	}
+	if (Tool){
 		uint8 tmp;
-		if (IsNextTool)	tmp = ((uint8)Razor->RazorType + 1U) % 4;
-		else tmp = ((uint8)Razor->RazorType - 1U) % 4;
-		Razor->SwitchRazorTypeTo((TEnumAsByte<ETBSRazor::Type>)tmp);
+		if (IsNextTool)	tmp = ((uint8)Tool->ToolType + 1U) % 4;
+		else tmp = ((uint8)Tool->ToolType - 1U) % 4;
+		Tool->SwitchRazorTypeTo((TEnumAsByte<ETBSRazor::Type>)tmp);
 	}
 }
 

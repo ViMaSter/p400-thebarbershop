@@ -1,6 +1,7 @@
 // Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
 #pragma once
 #include "GameFramework/PlayerController.h"
+#include "TBSCustomer.h"
 #include "TBSPlayerController.generated.h"
 
 UCLASS()
@@ -23,8 +24,8 @@ protected:
 
 	void RotateTop(float Value);
 	void RotateRight(float Value);
-	void RotateRazorTop(float Value);
-	void RotateRazorRight(float Value);
+	void RotateToolTop(float Value);
+	void RotateToolRight(float Value);
 	void SwitchToNextTool();
 	void SwitchToPrevTool();
 	void UpdateRazorPosition();

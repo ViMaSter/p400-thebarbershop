@@ -8,9 +8,9 @@ ATBSRazor::ATBSRazor()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	RazorHightInactive = 10;
+	ToolInactiveHight = 10;
 	IsActive = false;
-	RazorType = ETBSRazor::TBSRazorBig;
+	ToolType = ETBSRazor::TBSRazorBig;
 }
 
 void ATBSRazor::Tick( float DeltaTime )
@@ -19,26 +19,26 @@ void ATBSRazor::Tick( float DeltaTime )
 }
 
 void ATBSRazor::SwitchRazorTypeTo(TEnumAsByte<ETBSRazor::Type> Type){
-	if (Type == RazorType)	return;
+	if (Type == ToolType)	return;
 	switch (Type)
 	{
 	case ETBSRazor::TBSHand:
-		RazorType = ETBSRazor::TBSHand;
+		ToolType = ETBSRazor::TBSHand;
 		SwitchedToHand();
 		UE_LOG(LogClass, Log, TEXT("*** Switched to HandTool ***"));
 		break;
 	case ETBSRazor::TBSClipper:
-		RazorType = ETBSRazor::TBSClipper;
+		ToolType = ETBSRazor::TBSClipper;
 		SwitchedToClipper();
 		UE_LOG(LogClass, Log, TEXT("*** Switched to ClipperTool ***"));
 		break;
 	case ETBSRazor::TBSRazorSmall:
-		RazorType = ETBSRazor::TBSRazorSmall;
+		ToolType = ETBSRazor::TBSRazorSmall;
 		SwitchedToRazorSmall();
 		UE_LOG(LogClass, Log, TEXT("*** Switched to SmallRazorTool ***"));
 		break;
 	case ETBSRazor::TBSRazorBig:
-		RazorType = ETBSRazor::TBSRazorBig;
+		ToolType = ETBSRazor::TBSRazorBig;
 		SwitchedToRazorBig();
 		UE_LOG(LogClass, Log, TEXT("*** Switched to BigRazorTool ***"));
 		break;

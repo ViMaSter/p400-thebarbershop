@@ -43,7 +43,7 @@ public:
 	UPROPERTY(EditAnywhere, noclear, BlueprintReadWrite, Category = "Razor Class", meta = (DisplayName = "Razor Class"))
 		TSubclassOf<class ATBSRazor> RazorClass;
 
-	ATBSRazor* Razor;
+	ATBSRazor* Tool;
 
 	// Camera Control
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera") int32 HorizontalCameraRotationBorder;

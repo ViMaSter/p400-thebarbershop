@@ -26,8 +26,7 @@ void ATBSPlayerController::SetupInputComponent()
 	
 	InputComponent->BindAxis("RotateTop", this, &ATBSPlayerController::RotateTop);
 	InputComponent->BindAxis("RotateRight", this, &ATBSPlayerController::RotateRight);
-	InputComponent->BindAxis("RotateRazorTop", this, &ATBSPlayerController::RotateRazorTop);
-	//InputComponent->BindAxis("RotateRazorRight", this, &ATBSPlayerController::RotateRazorRight);
+	InputComponent->BindAxis("RotateRazorTop", this, &ATBSPlayerController::RotateToolTop);
 
 	InputComponent->BindAction("SwitchToNextTool", IE_Pressed, this, &ATBSPlayerController::SwitchToNextTool);
 	InputComponent->BindAction("SwitchToPrevTool", IE_Pressed, this, &ATBSPlayerController::SwitchToPrevTool);
@@ -36,6 +35,8 @@ void ATBSPlayerController::SetupInputComponent()
 	InputComponent->BindAction("Rotate", IE_Pressed, this, &ATBSPlayerController::OnSetRotationPressed);
 	InputComponent->BindAction("Rotate", IE_Released, this, &ATBSPlayerController::OnSetRotationReleased);
 }
+
+#pragma region Camera Control
 
 void ATBSPlayerController::RotateTop(float Value){
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
@@ -51,7 +52,7 @@ void ATBSPlayerController::RotateTop(float Value){
 		PlayerCharacter->GetCameraBoom()->AddRelativeRotation(FRotator(Value, 0, 0));
 		CameraRotation.Roll = 0;
 		CameraRotation.Pitch = PlayerCharacter->GetCameraBoom()->RelativeRotation.Pitch;
-	
+
 		PlayerCharacter->GetCameraBoom()->RelativeRotation = CameraRotation;
 		PlayerCharacter->GetCameraBoom()->AddRelativeRotation(FRotator(0, 0, 0));
 	}
@@ -63,7 +64,7 @@ void ATBSPlayerController::RotateRight(float Value){
 	if (PlayerCharacter && Value != 0.f){
 		Value *= -1;
 		CameraRotation = PlayerCharacter->GetCameraBoom()->RelativeRotation;
-		if ((int32)CameraRotation.Yaw == -1*PlayerCharacter->HorizontalCameraRotationBorder && Value > 0 ||
+		if ((int32)CameraRotation.Yaw == -1 * PlayerCharacter->HorizontalCameraRotationBorder && Value > 0 ||
 			(int32)CameraRotation.Yaw == PlayerCharacter->HorizontalCameraRotationBorder && Value < 0){
 			return;
 		}
@@ -76,29 +77,33 @@ void ATBSPlayerController::RotateRight(float Value){
 	}
 }
 
-void ATBSPlayerController::RotateRazorTop(float Value){
+#pragma endregion
+
+#pragma region Tool Control
+
+void ATBSPlayerController::RotateToolTop(float Value){
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
 	FRotator ToolRotation;
 	if (PlayerCharacter && RotationActive && Value != 0.f){
 		Value *= -10;
-		ToolRotation = PlayerCharacter->Razor->GetActorRotation();
-		PlayerCharacter->Razor->AddActorLocalRotation(FRotator(0, 0, Value));
+		ToolRotation = PlayerCharacter->Tool->GetActorRotation();
+		PlayerCharacter->Tool->AddActorLocalRotation(FRotator(0, 0, Value));
 
-		ToolRotation.Roll = PlayerCharacter->Razor->GetActorRotation().Roll;
-		PlayerCharacter->Razor->SetActorRotation(ToolRotation);
+		ToolRotation.Roll = PlayerCharacter->Tool->GetActorRotation().Roll;
+		PlayerCharacter->Tool->SetActorRotation(ToolRotation);
 	}
 }
 
-void ATBSPlayerController::RotateRazorRight(float Value){
+void ATBSPlayerController::RotateToolRight(float Value){
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
 	FRotator ToolRotation;
 	if (PlayerCharacter && RotationActive && Value != 0.f){
 		Value *= 10;
-		ToolRotation = PlayerCharacter->Razor->GetActorRotation();
-		PlayerCharacter->Razor->AddActorLocalRotation(FRotator(0, Value, 0));
-		
-		ToolRotation.Yaw = PlayerCharacter->Razor->GetActorRotation().Yaw;
-		PlayerCharacter->Razor->SetActorRotation(ToolRotation);
+		ToolRotation = PlayerCharacter->Tool->GetActorRotation();
+		PlayerCharacter->Tool->AddActorLocalRotation(FRotator(0, Value, 0));
+
+		ToolRotation.Yaw = PlayerCharacter->Tool->GetActorRotation().Yaw;
+		PlayerCharacter->Tool->SetActorRotation(ToolRotation);
 	}
 }
 
@@ -121,24 +126,26 @@ void ATBSPlayerController::UpdateRazorPosition(){
 	if (PlayerCharacter && !RotationActive){
 		FHitResult Hitresult;
 		GetHitResultUnderCursor(ECC_WorldDynamic, true, Hitresult);
-		FRotator ToolRotation;
-		if (Hitresult.GetActor()){
+		if (Hitresult.GetActor() && Hitresult.GetActor()->GetClass()->IsChildOf(ATBSCustomer::StaticClass())){
 			if (ShaveActive){
-				PlayerCharacter->Razor->SetActorLocation(Hitresult.ImpactPoint);
-				PlayerCharacter->Razor->IsActive = true;
+				PlayerCharacter->Tool->SetActorLocation(Hitresult.ImpactPoint);
+				PlayerCharacter->Tool->IsActive = true;
 			}
 			else{
-				PlayerCharacter->Razor->SetActorLocation(Hitresult.ImpactPoint + Hitresult.ImpactNormal*PlayerCharacter->Razor->RazorHightInactive);
-				PlayerCharacter->Razor->IsActive = false;
+				PlayerCharacter->Tool->SetActorLocation(Hitresult.ImpactPoint + Hitresult.ImpactNormal*PlayerCharacter->Tool->ToolInactiveHight);
+				PlayerCharacter->Tool->IsActive = false;
 			}
-			ToolRotation = PlayerCharacter->Razor->GetActorRotation();		
+			FRotator ToolRotation;
+			ToolRotation = PlayerCharacter->Tool->GetActorRotation();
 			ToolRotation.Pitch = Hitresult.ImpactNormal.Rotation().Pitch;
-			ToolRotation.Yaw = Hitresult.ImpactNormal.Rotation().Yaw-180;
+			ToolRotation.Yaw = Hitresult.ImpactNormal.Rotation().Yaw - 180;
 
-			PlayerCharacter->Razor->SetActorRotation(ToolRotation);
+			PlayerCharacter->Tool->SetActorRotation(ToolRotation);
 		}
 	}
 }
+
+
 
 void ATBSPlayerController::OnSetShavedPressed(){
 	ShaveActive = true;
@@ -157,8 +164,10 @@ void ATBSPlayerController::OnSetRotationPressed(){
 
 void ATBSPlayerController::OnSetRotationReleased(){
 	RotationActive = false;
-	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn(); 
+	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
 	ULocalPlayer* LocalPlayer = CastChecked<ULocalPlayer>(Player);
 	FViewport* ViewPort = LocalPlayer->ViewportClient->Viewport;
 	ViewPort->SetMouse(StoredMousePosition.X, StoredMousePosition.Y);
 }
+
+#pragma endregion

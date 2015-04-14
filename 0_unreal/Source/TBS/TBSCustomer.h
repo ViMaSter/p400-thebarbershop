@@ -12,12 +12,14 @@ class TBS_API ATBSCustomer : public AActor
 	
 public:	
 	// Sets default values for this actor's properties
-	ATBSCustomer();
+	ATBSCustomer(const FObjectInitializer& ObjectInitializer);
 
-	UPROPERTY(EditAnywhere, noclear, BlueprintReadWrite, Category = "Beared", meta = (DisplayName = "Beared Class"))
+	UPROPERTY(EditAnywhere, noclear, BlueprintReadWrite, Category = "Beard", meta = (DisplayName = "Beared Class"))
 		TSubclassOf<class AActor> BearedClass;
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Beared")	void CreatedCustomer();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Beard") AActor* Beard;
+	
+	UFUNCTION(BlueprintImplementableEvent, Category = "Beard")	void CreatedCustomer();
 
 	void CreateNewCustomer();
 

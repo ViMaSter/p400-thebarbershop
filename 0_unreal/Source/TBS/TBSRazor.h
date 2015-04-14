@@ -26,9 +26,9 @@ class TBS_API ATBSRazor : public AActor
 public:	
 	ATBSRazor();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RazorStatus") TEnumAsByte<ETBSRazor::Type> RazorType;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RazorStatus") TEnumAsByte<ETBSRazor::Type> ToolType;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RazorStatus") int32 RazorHightInactive;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RazorStatus") int32 ToolInactiveHight;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "RazorStatus") bool IsActive;
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Razor")	void SwitchedToHand();
