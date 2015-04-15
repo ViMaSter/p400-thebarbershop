@@ -22,7 +22,6 @@ UCLASS()
 class TBS_API ATBSRazor : public AActor
 {
 	GENERATED_BODY()
-	
 public:	
 	ATBSRazor();
 

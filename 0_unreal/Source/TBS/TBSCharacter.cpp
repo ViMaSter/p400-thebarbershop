@@ -76,34 +76,9 @@ void ATBSCharacter::BeginPlay(){
 }
 
 void ATBSCharacter::FinishCurrentCustomer(){
-	float Result = 0.f;
-	// NOT FINAL!! NEED HARD REWORK
-	if (CurrentCustomer && CurrentCustomer->Beard){
-		TArray<UActorComponent*> Components;
-		int32 NumberShaved = 0;
-		int32 NumberTrimmed = 0;
-		int32 NumberNormal = 0;
-		Components = CurrentCustomer->Beard->GetComponentsByClass(UStaticMeshComponent::StaticClass());
-		for (int32 i = 0; i < Components.Num(); i++){
-			UStaticMeshComponent* Mesh = (UStaticMeshComponent*) Components[i];
-			if (!Mesh->IsVisible()){
-				NumberShaved++;
-			}
-			else if (Mesh->GetCollisionResponseToChannel(ECC_Vehicle) == ECR_Ignore){
-				NumberTrimmed++;
-			}
-			else{
-				NumberNormal++;
-			}
-		}
-		Result = ((float)NumberShaved / Components.Num()) * 100;
-		
-	}
-	
-	GetWorldTimerManager().ClearTimer(TimerHandle);
+	CalculateResult();
 	IncreaseEXP(50);
-	UE_LOG(LogClass, Log, TEXT("*** Customer Finished with %.1f %% accuracy ***"), Result);
-	LoadNewCustomer();
+	GetWorldTimerManager().ClearTimer(TimerHandle);
 }
 
 void ATBSCharacter::LoadNewCustomer(){
@@ -115,9 +90,11 @@ void ATBSCharacter::LoadNewCustomer(){
 	if (CurrentCustomer){
 		((ATBSCustomer*)CurrentCustomer)->CreateNewCustomer();
 	}
-	else UE_LOG(LogClass, Warning, TEXT("*** No Customer_BP set in Character ***"));
+	else UE_LOG(LogClass, Warning, TEXT("*** No Customer Reference! ***"));
 }
 
+// Returns the remaining time of the current customer
+// Returns -1.f if timer is inactive
 float ATBSCharacter::GetTimeLeft(){
 	if (GetWorldTimerManager().IsTimerActive(TimerHandle)){
 		float TimeLeft;
@@ -143,24 +120,67 @@ void ATBSCharacter::IncreaseEXP(int32 Value){
 			}
 		}
 	}
-	
 }
 
 void ATBSCharacter::SwitchTool(bool IsNextTool){
-	if (CurrentCustomer && CurrentCustomer->Beard){
-		TArray<UActorComponent*> Components;
-		Components = CurrentCustomer->Beard->GetComponentsByClass(UStaticMeshComponent::StaticClass());
-		for (int32 i = 0; i < Components.Num(); i++){
-			UStaticMeshComponent* Mesh = (UStaticMeshComponent*)Components[i];
-			Mesh->AddRelativeLocation(FVector(1, 1, 1));
-		}
-
-	}
 	if (Tool){
 		uint8 tmp;
 		if (IsNextTool)	tmp = ((uint8)Tool->ToolType + 1U) % 4;
 		else tmp = ((uint8)Tool->ToolType - 1U) % 4;
 		Tool->SwitchRazorTypeTo((TEnumAsByte<ETBSRazor::Type>)tmp);
 	}
+}
+
+// Returns the comparison Result from the shaved beard of the customer and the CSV data
+// Returns -99 as a errorcode in case of file loading issues
+float ATBSCharacter::CalculateResult(){
+	const FBeardComparisonData *CurrentData;
+	const FString String;
+	if (BeardData){
+		FName BeardName = "Beard_1";
+		CurrentData = BeardData->FindRow<FBeardComparisonData>(BeardName, String);
+		if (!CurrentData){
+			UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard Comparison Data! ***"));
+			return -99;
+		}
+		else{
+			float ResultShaved = 0.f;
+			float ResultTrimmed = 0.f;
+			float ResultNormal = 0.f;
+
+			if (CurrentCustomer && CurrentCustomer->Beard){
+				TArray<UActorComponent*> Components;
+				int32 NumberShaved = 0;
+				int32 NumberTrimmed = 0;
+				int32 NumberNormal = 0;
+				Components = CurrentCustomer->Beard->GetComponentsByClass(UStaticMeshComponent::StaticClass());
+				for (int32 i = 0; i < Components.Num(); i++){
+					UStaticMeshComponent* Mesh = (UStaticMeshComponent*)Components[i];
+					if (!Mesh->IsVisible()){
+						NumberShaved++;
+					}
+					else if (Mesh->GetCollisionResponseToChannel(ECC_Vehicle) == ECR_Ignore){
+						NumberTrimmed++;
+					}
+					else{
+						NumberNormal++;
+					}
+				}
+				if (CurrentData->Total != NumberNormal + NumberTrimmed + NumberShaved){
+					UE_LOG(LogClass, Warning, TEXT("*** Total Beard Actors does not match with CSV Total! Possible inaccurate Result! ***"));
+				}
+
+				float Result = 0.f;
+				if (CurrentData->Normal >0)	Result += ResultNormal = ((float)NumberNormal / CurrentData->Normal);
+				if (CurrentData->Trimmed >0) Result += ResultTrimmed = ((float)NumberTrimmed / CurrentData->Trimmed);
+				if (CurrentData->Shaved >0) Result += ResultShaved = ((float)NumberShaved / CurrentData->Shaved);
+				Result *= 100;
+				UE_LOG(LogClass, Log, TEXT("*** Customer Finished with %.1f %% accuracy ***"), Result);
+				return Result;
+			}
+		}
+
+	}
+	return -99;
 }
 
