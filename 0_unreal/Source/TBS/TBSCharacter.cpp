@@ -79,7 +79,6 @@ void ATBSCharacter::FinishCurrentCustomer(){
 	CalculateResult();
 	IncreaseEXP(50);
 	GetWorldTimerManager().ClearTimer(TimerHandle);
-	LoadNewCustomer();
 }
 
 void ATBSCharacter::LoadNewCustomer(){
@@ -91,9 +90,11 @@ void ATBSCharacter::LoadNewCustomer(){
 	if (CurrentCustomer){
 		((ATBSCustomer*)CurrentCustomer)->CreateNewCustomer();
 	}
-	else UE_LOG(LogClass, Warning, TEXT("*** No Customer_BP set in Character ***"));
+	else UE_LOG(LogClass, Warning, TEXT("*** No Customer Reference! ***"));
 }
 
+// Returns the remaining time of the current customer
+// Returns -1.f if timer is inactive
 float ATBSCharacter::GetTimeLeft(){
 	if (GetWorldTimerManager().IsTimerActive(TimerHandle)){
 		float TimeLeft;
@@ -139,6 +140,8 @@ void ATBSCharacter::SwitchTool(bool IsNextTool){
 	}
 }
 
+// Returns the comparison Result from the shaved beard of the customer and the CSV data
+// Returns -99 as a errorcode in case of file loading issues
 float ATBSCharacter::CalculateResult(){
 	const FBeardComparisonData *CurrentData;
 	const FString String;
@@ -172,6 +175,10 @@ float ATBSCharacter::CalculateResult(){
 						NumberNormal++;
 					}
 				}
+				if (CurrentData->Total != NumberNormal + NumberTrimmed + NumberShaved){
+					UE_LOG(LogClass, Warning, TEXT("*** Total Beard Actors does not match with CSV Total! Possible inaccurate Result! ***"));
+				}
+
 				float Result = 0.f;
 				if (CurrentData->Normal >0)	Result += ResultNormal = ((float)NumberNormal / CurrentData->Normal);
 				if (CurrentData->Trimmed >0) Result += ResultTrimmed = ((float)NumberTrimmed / CurrentData->Trimmed);
