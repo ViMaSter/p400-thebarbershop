@@ -92,6 +92,7 @@ public:
 
 	void FinishCurrentCustomer();
 
+	UFUNCTION(BlueprintCallable, Category="Gameplay|Timer")
 	float GetTimeLeft();
 
 	void SwitchTool(bool IsNextTool);
