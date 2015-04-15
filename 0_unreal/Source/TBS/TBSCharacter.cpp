@@ -123,15 +123,6 @@ void ATBSCharacter::IncreaseEXP(int32 Value){
 }
 
 void ATBSCharacter::SwitchTool(bool IsNextTool){
-	if (CurrentCustomer && CurrentCustomer->Beard){
-		TArray<UActorComponent*> Components;
-		Components = CurrentCustomer->Beard->GetComponentsByClass(UStaticMeshComponent::StaticClass());
-		for (int32 i = 0; i < Components.Num(); i++){
-			UStaticMeshComponent* Mesh = (UStaticMeshComponent*)Components[i];
-			Mesh->AddRelativeLocation(FVector(1, 1, 1));
-		}
-
-	}
 	if (Tool){
 		uint8 tmp;
 		if (IsNextTool)	tmp = ((uint8)Tool->ToolType + 1U) % 4;

@@ -207,33 +207,6 @@ void ATBSPlayerController::ClearBeardID(FName BeardName){
 	else UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard CSV Data! ***"))
 }
 
-// Deprecated
-void ATBSPlayerController::AddBeardID(FName BeardName){
-	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
-	FBeardComparisonData* CurrentData;
-	if (PlayerCharacter && PlayerCharacter->BeardData){
-		const FString Context;
-		UScriptStruct* LoadUsingStruct = FBeardComparisonData::StaticStruct();
-		uint8* RowData = (uint8*)FMemory::Malloc(LoadUsingStruct->PropertiesSize);
-		PlayerCharacter->BeardData->RowMap.Add(BeardName, RowData);
-		CurrentData = PlayerCharacter->BeardData->FindRow<FBeardComparisonData>(BeardName, Context);
-		SetCurrentBeardDataToCSV(CurrentData);
-	}
-	else UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard CSV Data! ***"))
-}
-
-// Deprecated
-void ATBSPlayerController::ReplaceBeardID(FName BeardName){
-	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
-	FBeardComparisonData* CurrentData;
-	if (PlayerCharacter && PlayerCharacter->BeardData){
-		const FString Context;
-		CurrentData = PlayerCharacter->BeardData->FindRow<FBeardComparisonData>(BeardName, Context);
-		SetCurrentBeardDataToCSV(CurrentData);
-	}
-	else UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard CSV Data! ***"))
-}
-
 // Wrapper for ReplaceBeardId and AddBeardID
 void ATBSPlayerController::SaveBeardID(FName BeardName){
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
@@ -252,6 +225,9 @@ void ATBSPlayerController::SaveBeardID(FName BeardName){
 			}
 			CurrentData = PlayerCharacter->BeardData->FindRow<FBeardComparisonData>(BeardName, Context);
 			SetCurrentBeardDataToCSV(CurrentData);
+			FString Path = FPaths::GameContentDir();
+			Path.Append(TEXT("/TheBarberShop/Data/BeardComparisonData.uasset"));
+			PlayerCharacter->BeardData->SaveConfig(16384Ui64,*Path);
 		}
 	}
 	else UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard CSV Data! ***"))
@@ -289,6 +265,34 @@ void ATBSPlayerController::SetCurrentBeardDataToCSV(FBeardComparisonData* Curren
 		}
 	}
 	else UE_LOG(LogClass, Warning, TEXT("*** Could not Set Beard in CSV Data! Row in Beard CSV Data not found! ***"))
+}
+
+
+// Deprecated
+void ATBSPlayerController::AddBeardID(FName BeardName){
+	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
+	FBeardComparisonData* CurrentData;
+	if (PlayerCharacter && PlayerCharacter->BeardData){
+		const FString Context;
+		UScriptStruct* LoadUsingStruct = FBeardComparisonData::StaticStruct();
+		uint8* RowData = (uint8*)FMemory::Malloc(LoadUsingStruct->PropertiesSize);
+		PlayerCharacter->BeardData->RowMap.Add(BeardName, RowData);
+		CurrentData = PlayerCharacter->BeardData->FindRow<FBeardComparisonData>(BeardName, Context);
+		SetCurrentBeardDataToCSV(CurrentData);
+	}
+	else UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard CSV Data! ***"))
+}
+
+// Deprecated
+void ATBSPlayerController::ReplaceBeardID(FName BeardName){
+	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
+	FBeardComparisonData* CurrentData;
+	if (PlayerCharacter && PlayerCharacter->BeardData){
+		const FString Context;
+		CurrentData = PlayerCharacter->BeardData->FindRow<FBeardComparisonData>(BeardName, Context);
+		SetCurrentBeardDataToCSV(CurrentData);
+	}
+	else UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard CSV Data! ***"))
 }
 
 #pragma endregion
