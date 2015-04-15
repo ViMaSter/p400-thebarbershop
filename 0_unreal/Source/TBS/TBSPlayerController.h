@@ -2,6 +2,8 @@
 #pragma once
 #include "GameFramework/PlayerController.h"
 #include "TBSCustomer.h"
+#include "TBSCharacter.h"
+#include "Engine/LocalPlayer.h"
 #include "TBSPlayerController.generated.h"
 
 UCLASS()
@@ -34,6 +36,16 @@ protected:
 	void OnSetRotationPressed();
 	void OnSetRotationReleased();
 
+	// Pitch Hack
+	void SpawnNextCustomer();
+
+	// Beared Data Control
+	UFUNCTION(exec)	void ClearAllBeardData();
+	UFUNCTION(exec)	void ClearBeardID(FName BeardName);
+	UFUNCTION(exec) void SaveBeardID(FName BeardName);
+	UFUNCTION(exec) void AddBeardID(FName BeardName);
+	UFUNCTION(exec) void ReplaceBeardID(FName BeardName);
+	void SetCurrentBeardDataToCSV(FBeardComparisonData* CurrentData);
 };
 
 
