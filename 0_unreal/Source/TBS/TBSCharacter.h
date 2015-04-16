@@ -59,7 +59,8 @@ public:
 	UPROPERTY(EditAnywhere, noclear, BlueprintReadWrite, Category = "Razor Class", meta = (DisplayName = "Tool Class"))
 		TSubclassOf<class ATBSCustomer> CustomerClass;
 
-	ATBSRazor* Tool;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tool")
+		ATBSRazor* Tool;
 
 	// Camera Control
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera") int32 HorizontalCameraRotationBorder;
@@ -85,6 +86,7 @@ public:
 
 	void FinishCurrentCustomer();
 
+	UFUNCTION(BlueprintCallable, Category="Gameplay|Timer")
 	float GetTimeLeft();
 
 	void SwitchTool(bool IsNextTool);
