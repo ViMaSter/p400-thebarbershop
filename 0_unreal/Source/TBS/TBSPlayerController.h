@@ -14,6 +14,10 @@ class ATBSPlayerController : public APlayerController
 public:
 	ATBSPlayerController(const FObjectInitializer& ObjectInitializer);
 
+	// Vincent: Needed move this from protected to public, since this methods will be called from the HUD
+	UFUNCTION(BlueprintCallable, exec, Category = "Beard Control") void ClearBeardID(FString BeardName);
+	UFUNCTION(BlueprintCallable, exec, Category = "Beard Control") void SaveBeardID(FString BeardName);
+	UFUNCTION(BlueprintCallable, exec, Category = "Beard Control") void LoadBeardID(FString BeardName);
 
 protected:
 
@@ -38,9 +42,6 @@ protected:
 
 	// Beared Control
 	UFUNCTION(BlueprintCallable, exec, Category = "Beard Control") void SpawnNextCustomer();
-	UFUNCTION(BlueprintCallable, exec, Category = "Beard Control") void ClearBeardID(FString BeardName);
-	UFUNCTION(BlueprintCallable, exec, Category = "Beard Control") void SaveBeardID(FString BeardName);
-	UFUNCTION(BlueprintCallable, exec, Category = "Beard Control") void LoadBeardID(FString BeardName);
 	void LoadBeardDataToCurrentCustomer(UDataTable* Datatable);
 	void SetCurrentBeardDataToCSV(UDataTable* DataTable);
 
