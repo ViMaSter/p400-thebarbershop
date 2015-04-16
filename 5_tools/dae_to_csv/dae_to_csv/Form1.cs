@@ -65,7 +65,10 @@ namespace dae_to_csv
                 {
                     // Match value-regex
                     Match m = Regex.Match(match.Groups[0].Value, ValueRegex);
-                    CSVRows.Add(new CSVColumns(m.Groups[1].Value, m.Groups[2].Value, m.Groups[3].Value, m.Groups[4].Value, m.Groups[5].Value, m.Groups[6].Value, m.Groups[7].Value));
+                    if (m.Groups.Count >= 8)
+                    {
+                        CSVRows.Add(new CSVColumns(m.Groups[1].Value, m.Groups[2].Value, m.Groups[3].Value, m.Groups[4].Value, m.Groups[5].Value, m.Groups[6].Value, m.Groups[7].Value));
+                    }
                 }
             }
 
