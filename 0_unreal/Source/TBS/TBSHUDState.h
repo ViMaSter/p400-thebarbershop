@@ -11,7 +11,8 @@ enum class ETBSHUDState : uint8
 	Options = 4 UMETA(DisplayName = "Options"),
 	Options_Audio = 8 UMETA(DisplayName = "Options Audio"),
 	Options_Video = 16 UMETA(DisplayName = "Options Video"),
-	Ingame = 32 UMETA(DisplayName = "Ingame")
+	Ingame = 32 UMETA(DisplayName = "Ingame"),
+	Editor = 64 UMETA(DisplayName = "Editor")
 };
 
 
