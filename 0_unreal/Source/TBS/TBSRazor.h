@@ -28,12 +28,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RazorStatus") TEnumAsByte<ETBSRazor::Type> ToolType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RazorStatus") int32 ToolInactiveHight;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RazorStatus") float TrimmAmount;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "RazorStatus") bool IsActive;
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Razor")	void SwitchedToHand();
 	UFUNCTION(BlueprintImplementableEvent, Category = "Razor")	void SwitchedToClipper();
 	UFUNCTION(BlueprintImplementableEvent, Category = "Razor")	void SwitchedToRazorSmall();
 	UFUNCTION(BlueprintImplementableEvent, Category = "Razor")	void SwitchedToRazorBig();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Beard")	void Trimmed(float TrimmValue, UActorComponent* Mesh);
 
 	void SwitchRazorTypeTo(TEnumAsByte<ETBSRazor::Type> Type);
 

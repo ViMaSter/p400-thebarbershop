@@ -36,16 +36,14 @@ protected:
 	void OnSetRotationPressed();
 	void OnSetRotationReleased();
 
-	// Pitch Hack
-	void SpawnNextCustomer();
+	// Beared Control
+	UFUNCTION(BlueprintCallable, exec, Category = "Beard Control") void SpawnNextCustomer();
+	UFUNCTION(BlueprintCallable, exec, Category = "Beard Control") void ClearBeardID(FString BeardName);
+	UFUNCTION(BlueprintCallable, exec, Category = "Beard Control") void SaveBeardID(FString BeardName);
+	UFUNCTION(BlueprintCallable, exec, Category = "Beard Control") void LoadBeardID(FString BeardName);
+	void LoadBeardDataToCurrentCustomer(UDataTable* Datatable);
+	void SetCurrentBeardDataToCSV(UDataTable* DataTable);
 
-	// Beared Data Control
-	UFUNCTION(exec)	void ClearAllBeardData();
-	UFUNCTION(exec)	void ClearBeardID(FName BeardName);
-	UFUNCTION(exec) void SaveBeardID(FName BeardName);
-	UFUNCTION(exec) void AddBeardID(FName BeardName);
-	UFUNCTION(exec) void ReplaceBeardID(FName BeardName);
-	void SetCurrentBeardDataToCSV(FBeardComparisonData* CurrentData);
 };
 
 

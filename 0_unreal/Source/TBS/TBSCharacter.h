@@ -29,18 +29,11 @@ struct FBeardComparisonData : public FTableRowBase
 public:
 
 	FBeardComparisonData()
-		: Shaved(0)
-		, Trimmed(0)
-		, Normal(0)
-		, Total(0)
+		:HairState(0)
 	{}
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Beard")	int32 Shaved;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Beard")	int32 Trimmed;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Beard")	int32 Normal;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Beard")	int32 Total;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HairInfo")	int32 HairState;
 };
-
 
 UCLASS(Blueprintable)
 class ATBSCharacter : public APawn
@@ -87,7 +80,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus") float TimeLimit;
 	
 	// Customer
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CSV Data") UDataTable* BeardData;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CSV Data") TArray<UDataTable*> BeardData;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus") ATBSCustomer* CurrentCustomer;
 
 	void FinishCurrentCustomer();
