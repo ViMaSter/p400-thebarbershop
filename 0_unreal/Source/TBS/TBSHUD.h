@@ -18,6 +18,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State") TEnumAsByte<ETBSHUDState> CurrentHUDState;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State") TEnumAsByte<ETBSHUDState> PreviousHUDState;
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "State")
+		void HUDStateChange(ETBSHUDState NewState);
+
 	UFUNCTION(BlueprintCallable, Category = "State")
 		void SetHUDState(ETBSHUDState NewState);
 

@@ -21,6 +21,9 @@ public:
 
 protected:
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input|Ignore")
+	bool InputIgnore;
+
 	bool ShaveActive;
 	bool RotationActive;
 	FVector2D StoredMousePosition;

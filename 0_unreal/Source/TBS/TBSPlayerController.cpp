@@ -14,6 +14,13 @@ ATBSPlayerController::ATBSPlayerController(const FObjectInitializer& ObjectIniti
 void ATBSPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
+
+	// TODO: Dirty Pitch-hack - REMOVE THIS FOR GOD SAKES
+	if (InputIgnore)
+	{
+		return;
+	}
+
 	UpdateRazorPosition();
 }
 
@@ -40,10 +47,17 @@ void ATBSPlayerController::SetupInputComponent()
 
 #pragma region Camera Control
 
-void ATBSPlayerController::RotateTop(float Value){
+void ATBSPlayerController::RotateTop(float Value)
+{
+	// TODO: Dirty Pitch-hack - REMOVE THIS FOR GOD SAKES
+	if (InputIgnore)
+	{
+		return;
+	}
+
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
 	FRotator CameraRotation;
-	if (PlayerCharacter && Value != 0.f){
+	if (PlayerCharacter && Value != 0.f) {
 		Value *= -1;
 
 		CameraRotation = PlayerCharacter->GetCameraBoom()->RelativeRotation;
@@ -60,7 +74,14 @@ void ATBSPlayerController::RotateTop(float Value){
 	}
 }
 
-void ATBSPlayerController::RotateRight(float Value){
+void ATBSPlayerController::RotateRight(float Value)
+{
+	// TODO: Dirty Pitch-hack - REMOVE THIS FOR GOD SAKES
+	if (InputIgnore)
+	{
+		return;
+	}
+
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
 	FRotator CameraRotation;
 	if (PlayerCharacter && Value != 0.f){
@@ -110,21 +131,42 @@ void ATBSPlayerController::RotateToolRight(float Value){
 	}
 }
 
-void ATBSPlayerController::SwitchToNextTool(){
+void ATBSPlayerController::SwitchToNextTool()
+{
+	// TODO: Dirty Pitch-hack - REMOVE THIS FOR GOD SAKES
+	if (InputIgnore)
+	{
+		return;
+	}
+
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
 	if (PlayerCharacter){
 		PlayerCharacter->SwitchTool(true);
 	}
 }
 
-void ATBSPlayerController::SwitchToPrevTool(){
+void ATBSPlayerController::SwitchToPrevTool()
+{
+	// TODO: Dirty Pitch-hack - REMOVE THIS FOR GOD SAKES
+	if (InputIgnore)
+	{
+		return;
+	}
+
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
 	if (PlayerCharacter){
 		PlayerCharacter->SwitchTool(false);
 	}
 }
 
-void ATBSPlayerController::UpdateRazorPosition(){
+void ATBSPlayerController::UpdateRazorPosition()
+{
+	// TODO: Dirty Pitch-hack - REMOVE THIS FOR GOD SAKES
+	if (InputIgnore)
+	{
+		return;
+	}
+
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
 	if (PlayerCharacter && !RotationActive){
 		FHitResult Hitresult;
