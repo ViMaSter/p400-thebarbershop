@@ -90,7 +90,8 @@ public:
 	float GetTimeLeft();
 
 	void SwitchTool(bool IsNextTool);
-	void IncreaseEXP(int32 Value);
+	UFUNCTION(BlueprintCallable, Category = "EXP")
+		void IncreaseEXP(int32 Value);
 
 	virtual void BeginPlay() override;
 	void LoadNewCustomer();
