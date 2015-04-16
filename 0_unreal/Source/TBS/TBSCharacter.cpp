@@ -134,52 +134,39 @@ void ATBSCharacter::SwitchTool(bool IsNextTool){
 // Returns the comparison Result from the shaved beard of the customer and the CSV data
 // Returns -99 as a errorcode in case of file loading issues
 float ATBSCharacter::CalculateResult(){
-	const FBeardComparisonData *CurrentData;
-	const FString String;
-	if (BeardData){
-		FName BeardName = "Beard_1";
-		CurrentData = BeardData->FindRow<FBeardComparisonData>(BeardName, String);
-		if (!CurrentData){
-			UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard Comparison Data! ***"));
-			return -99;
-		}
-		else{
-			float ResultShaved = 0.f;
-			float ResultTrimmed = 0.f;
-			float ResultNormal = 0.f;
-
-			if (CurrentCustomer && CurrentCustomer->Beard){
-				TArray<UActorComponent*> Components;
-				int32 NumberShaved = 0;
-				int32 NumberTrimmed = 0;
-				int32 NumberNormal = 0;
-				Components = CurrentCustomer->Beard->GetComponentsByClass(UStaticMeshComponent::StaticClass());
-				for (int32 i = 0; i < Components.Num(); i++){
-					UStaticMeshComponent* Mesh = (UStaticMeshComponent*)Components[i];
-					if (!Mesh->IsVisible()){
-						NumberShaved++;
-					}
-					else if (Mesh->GetCollisionResponseToChannel(ECC_Vehicle) == ECR_Ignore){
-						NumberTrimmed++;
-					}
-					else{
-						NumberNormal++;
-					}
+	FBeardComparisonData* CurrentData;
+	const FString Context;
+	if (BeardData[0]){
+		if (CurrentCustomer && CurrentCustomer->Beard){
+			TArray<UActorComponent*> Components;
+			int32 Total = 0;
+			int32 Correct = 0;
+			Components = CurrentCustomer->Beard->GetComponentsByClass(UStaticMeshComponent::StaticClass());
+			for (int32 i = 0; i < Components.Num(); i++){
+				int32 ComponentStatus;
+				UStaticMeshComponent* Mesh = (UStaticMeshComponent*)Components[i];
+				if (!Mesh->IsVisible()){
+					ComponentStatus = 0;
 				}
-				if (CurrentData->Total != NumberNormal + NumberTrimmed + NumberShaved){
-					UE_LOG(LogClass, Warning, TEXT("*** Total Beard Actors does not match with CSV Total! Possible inaccurate Result! ***"));
+				else if (Mesh->GetCollisionResponseToChannel(ECC_Vehicle) == ECR_Ignore){
+					ComponentStatus = 1;
 				}
+				else{
+					ComponentStatus = 2;
+				}
+				FString String = FString::FromInt(i);
+				FName Row = FName(*String);
+				CurrentData = BeardData[0]->FindRow<FBeardComparisonData>(Row, Context, false);
 
-				float Result = 0.f;
-				if (CurrentData->Normal >0)	Result += ResultNormal = ((float)NumberNormal / CurrentData->Normal);
-				if (CurrentData->Trimmed >0) Result += ResultTrimmed = ((float)NumberTrimmed / CurrentData->Trimmed);
-				if (CurrentData->Shaved >0) Result += ResultShaved = ((float)NumberShaved / CurrentData->Shaved);
-				Result *= 100;
-				UE_LOG(LogClass, Log, TEXT("*** Customer Finished with %.1f %% accuracy ***"), Result);
-				return Result;
+				if (CurrentData && CurrentData->HairState == ComponentStatus) Correct++;
+				Total++;
 			}
-		}
 
+			float Result = ((float) Correct / (float) Total)*100;
+			UE_LOG(LogClass, Log, TEXT("*** Customer Finished with %.1f %% accuracy ***"), Result);
+			return Result;
+		}
+		else UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard Comparison Data! ***"));
 	}
 	return -99;
 }

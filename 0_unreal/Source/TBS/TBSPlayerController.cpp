@@ -185,17 +185,23 @@ void ATBSPlayerController::SpawnNextCustomer(){
 
 #pragma  endregion
 
-#pragma region Beared Data Control
 
-void ATBSPlayerController::ClearAllBeardData(){
+
+#pragma region Beared Data Management
+
+void ATBSPlayerController::ClearBeardID(FString BeardName){
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
-	FBeardComparisonData CurrentData;
-	if (PlayerCharacter && PlayerCharacter->BeardData){
-		PlayerCharacter->BeardData->EmptyTable();
+	if (PlayerCharacter){
+		for (int32 i = 0; i < PlayerCharacter->BeardData.Num(); i++){
+			if (PlayerCharacter->BeardData[i]->GetName() == BeardName){
+				PlayerCharacter->BeardData[i]->EmptyTable();
+				break;
+			}
+		}
 	}
 	else UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard CSV Data! ***"))
 }
-
+/*
 void ATBSPlayerController::ClearBeardID(FName BeardName){
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
 	FBeardComparisonData* CurrentData;
@@ -206,93 +212,119 @@ void ATBSPlayerController::ClearBeardID(FName BeardName){
 	}
 	else UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard CSV Data! ***"))
 }
+*/
 
-// Wrapper for ReplaceBeardId and AddBeardID
-void ATBSPlayerController::SaveBeardID(FName BeardName){
+void ATBSPlayerController::SaveBeardID(FString BeardName){
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
+	if (PlayerCharacter){
+		for (int32 i = 0; i < PlayerCharacter->BeardData.Num(); i++){
+			if (PlayerCharacter->BeardData[i]->GetName() == BeardName){
+				SetCurrentBeardDataToCSV(PlayerCharacter->BeardData[i]);
+				break;
+			}
+		}
+
+		// Saving still under development
+		/*FString Path = FPaths::GameContentDir();
+		Path.Append(TEXT("TheBarberShop/Data/"));
+		Path.Append(BeardName);
+		Path.Append(TEXT(".json"));
+		*/
+		//PlayerCharacter->BeardData->SaveConfig(16384Ui64, *Path);
+		//UE_LOG(LogClass, Warning, TEXT("*** Saved Data to %s! ***"), *Path);
+	}
+	else UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard CSV Data! ***"))
+}
+
+void ATBSPlayerController::LoadBeardID(FString BeardName){
+	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
+	if (PlayerCharacter){
+		for (int32 i= 0; i < PlayerCharacter->BeardData.Num();i++){
+			if (PlayerCharacter->BeardData[i]->GetName() == BeardName){
+				LoadBeardDataToCurrentCustomer(PlayerCharacter->BeardData[i]);
+				break;
+			}
+		}
+	}
+	else UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard CSV Data! ***"))
+}
+
+void ATBSPlayerController::SetCurrentBeardDataToCSV(UDataTable* DataTable){
+	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
+	if (PlayerCharacter == NULL) return;
+	TArray<UActorComponent*> Components;
+	Components = PlayerCharacter->CurrentCustomer->Beard->GetComponentsByClass(UStaticMeshComponent::StaticClass());
 	FBeardComparisonData* CurrentData;
-	if (PlayerCharacter && PlayerCharacter->BeardData){
+	for (int32 i = 0; i < Components.Num(); i++){
+		int32 ComponentStatus;
 		const FString Context;
-		CurrentData = PlayerCharacter->BeardData->FindRow<FBeardComparisonData>(BeardName, Context);
+		UStaticMeshComponent* Mesh = (UStaticMeshComponent*)Components[i];
+		if (!Mesh->IsVisible()){
+			ComponentStatus = 0;
+		}
+		else if (Mesh->GetCollisionResponseToChannel(ECC_Vehicle) == ECR_Ignore){
+			ComponentStatus = 1;
+		}
+		else{
+			ComponentStatus = 2;
+		}
+		FString String = FString::FromInt(i);
+		FName Row = FName(*String);
+		CurrentData = DataTable->FindRow<FBeardComparisonData>(Row, Context, false);
+
 		if (CurrentData){
-			SetCurrentBeardDataToCSV(CurrentData);
+			CurrentData->HairState = ComponentStatus;
 		}
 		else{
 			UScriptStruct* LoadUsingStruct = FBeardComparisonData::StaticStruct();
 			uint8* RowData = (uint8*)FMemory::Malloc(LoadUsingStruct->PropertiesSize);
-			PlayerCharacter->BeardData->RowMap.Add(BeardName, RowData);
+			DataTable->RowMap.Add(Row, RowData);
+			CurrentData = DataTable->FindRow<FBeardComparisonData>(Row, Context, false);
 			if (CurrentData){
+				CurrentData->HairState = ComponentStatus;
 			}
-			CurrentData = PlayerCharacter->BeardData->FindRow<FBeardComparisonData>(BeardName, Context);
-			SetCurrentBeardDataToCSV(CurrentData);
-			FString Path = FPaths::GameContentDir();
-			Path.Append(TEXT("/TheBarberShop/Data/BeardComparisonData.uasset"));
-			PlayerCharacter->BeardData->SaveConfig(16384Ui64,*Path);
 		}
 	}
-	else UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard CSV Data! ***"))
 }
 
-void ATBSPlayerController::SetCurrentBeardDataToCSV(FBeardComparisonData* CurrentData){
+void ATBSPlayerController::LoadBeardDataToCurrentCustomer(UDataTable* DataTable){
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
 	if (PlayerCharacter == NULL) return;
-	if (CurrentData){
-		FName BeardName = "Beard_1";
-		const FString Context;		
-		if (PlayerCharacter->CurrentCustomer && PlayerCharacter->CurrentCustomer->Beard){
-			TArray<UActorComponent*> Components;
-			int32 NumberShaved = 0;
-			int32 NumberTrimmed = 0;
-			int32 NumberNormal = 0;
-			Components = PlayerCharacter->CurrentCustomer->Beard->GetComponentsByClass(UStaticMeshComponent::StaticClass());
-			for (int32 i = 0; i < Components.Num(); i++){
-				UStaticMeshComponent* Mesh = (UStaticMeshComponent*)Components[i];
-				if (!Mesh->IsVisible()){
-					NumberShaved++;
-				}
-				else if (Mesh->GetCollisionResponseToChannel(ECC_Vehicle) == ECR_Ignore){
-					NumberTrimmed++;
-				}
-				else{
-					NumberNormal++;
-				}
+	TArray<UActorComponent*> Components;
+	Components = PlayerCharacter->CurrentCustomer->Beard->GetComponentsByClass(UStaticMeshComponent::StaticClass());
+	FBeardComparisonData* CurrentData;
+	const FString Context;
+	for (int32 i = 0; i < Components.Num(); i++){
+		FString String = FString::FromInt(i);
+		FName Row = FName(*String);
+		CurrentData = DataTable->FindRow<FBeardComparisonData>(Row, Context, false);
+		if (CurrentData){
+			UStaticMeshComponent* Mesh = (UStaticMeshComponent*)Components[i];
+			switch (CurrentData->HairState)
+			{
+			case(0) :
+				Mesh->SetVisibility(false);
+				Mesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+				PlayerCharacter->Tool->Trimmed(1, Components[i]);
+				break;
+			case(1):
+				Mesh->SetVisibility(true);
+				Mesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+				PlayerCharacter->Tool->Trimmed(0.8, Components[i]);
+
+				break;
+			case(2):
+				Mesh->SetVisibility(true);
+				Mesh->SetCollisionResponseToAllChannels(ECR_Overlap);
+				PlayerCharacter->Tool->Trimmed(0, Components[i]);
+				break;
 			}
-			CurrentData->Normal = NumberNormal;
-			CurrentData->Trimmed = NumberTrimmed;
-			CurrentData->Shaved = NumberShaved;
-			CurrentData->Total = NumberShaved + NumberTrimmed + NumberNormal;
-			UE_LOG(LogClass, Log, TEXT("*** Set the current Beard in CSV Beard Data ***"));
+		}
+		else{
+			UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard Data Row! Possible missmatch of Meshcount ***"));
+			break;
 		}
 	}
-	else UE_LOG(LogClass, Warning, TEXT("*** Could not Set Beard in CSV Data! Row in Beard CSV Data not found! ***"))
-}
-
-
-// Deprecated
-void ATBSPlayerController::AddBeardID(FName BeardName){
-	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
-	FBeardComparisonData* CurrentData;
-	if (PlayerCharacter && PlayerCharacter->BeardData){
-		const FString Context;
-		UScriptStruct* LoadUsingStruct = FBeardComparisonData::StaticStruct();
-		uint8* RowData = (uint8*)FMemory::Malloc(LoadUsingStruct->PropertiesSize);
-		PlayerCharacter->BeardData->RowMap.Add(BeardName, RowData);
-		CurrentData = PlayerCharacter->BeardData->FindRow<FBeardComparisonData>(BeardName, Context);
-		SetCurrentBeardDataToCSV(CurrentData);
-	}
-	else UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard CSV Data! ***"))
-}
-
-// Deprecated
-void ATBSPlayerController::ReplaceBeardID(FName BeardName){
-	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
-	FBeardComparisonData* CurrentData;
-	if (PlayerCharacter && PlayerCharacter->BeardData){
-		const FString Context;
-		CurrentData = PlayerCharacter->BeardData->FindRow<FBeardComparisonData>(BeardName, Context);
-		SetCurrentBeardDataToCSV(CurrentData);
-	}
-	else UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard CSV Data! ***"))
 }
 
 #pragma endregion

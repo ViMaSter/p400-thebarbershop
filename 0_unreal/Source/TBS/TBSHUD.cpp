@@ -5,10 +5,10 @@
 
 ATBSHUD::ATBSHUD(const class FObjectInitializer& PCIP)
 : Super(PCIP)
-//, CurrentHUDState(EHUDState::None)
-//, PreviousHUDState(EHUDState::None)
+, CurrentHUDState(ETBSHUDState::None)
+, PreviousHUDState(ETBSHUDState::None)
 {
-	//SetHUDState(EHUDState::Intro);
+	SetHUDState(ETBSHUDState::Intro);
 }
 
 void ATBSHUD::SetHUDState(ETBSHUDState NewState)
