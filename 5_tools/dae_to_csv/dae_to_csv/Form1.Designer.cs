@@ -34,11 +34,14 @@
             this.label_found_instances = new System.Windows.Forms.Label();
             this.textbox_seperator = new System.Windows.Forms.TextBox();
             this.label_seperator = new System.Windows.Forms.Label();
+            this.checkBox_handednessFix = new System.Windows.Forms.CheckBox();
+            this.backgroundWorker_regex = new System.ComponentModel.BackgroundWorker();
+            this.progressBar_regex = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
             // 
             // btn_load
             // 
-            this.btn_load.Location = new System.Drawing.Point(12, 12);
+            this.btn_load.Location = new System.Drawing.Point(12, 42);
             this.btn_load.Name = "btn_load";
             this.btn_load.Size = new System.Drawing.Size(249, 23);
             this.btn_load.TabIndex = 0;
@@ -63,7 +66,7 @@
             // label_found_instances
             // 
             this.label_found_instances.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label_found_instances.Location = new System.Drawing.Point(12, 76);
+            this.label_found_instances.Location = new System.Drawing.Point(12, 270);
             this.label_found_instances.Name = "label_found_instances";
             this.label_found_instances.Size = new System.Drawing.Size(249, 23);
             this.label_found_instances.TabIndex = 2;
@@ -71,7 +74,7 @@
             // 
             // textbox_seperator
             // 
-            this.textbox_seperator.Location = new System.Drawing.Point(197, 41);
+            this.textbox_seperator.Location = new System.Drawing.Point(197, 71);
             this.textbox_seperator.Name = "textbox_seperator";
             this.textbox_seperator.Size = new System.Drawing.Size(64, 20);
             this.textbox_seperator.TabIndex = 3;
@@ -79,24 +82,49 @@
             // 
             // label_seperator
             // 
-            this.label_seperator.Location = new System.Drawing.Point(12, 44);
+            this.label_seperator.Location = new System.Drawing.Point(12, 74);
             this.label_seperator.Name = "label_seperator";
             this.label_seperator.Size = new System.Drawing.Size(82, 20);
             this.label_seperator.TabIndex = 4;
             this.label_seperator.Text = "Seperator:";
+            // 
+            // checkBox_handednessFix
+            // 
+            this.checkBox_handednessFix.Location = new System.Drawing.Point(15, 12);
+            this.checkBox_handednessFix.Name = "checkBox_handednessFix";
+            this.checkBox_handednessFix.Size = new System.Drawing.Size(246, 24);
+            this.checkBox_handednessFix.TabIndex = 5;
+            this.checkBox_handednessFix.Text = "Unreal handedness fix";
+            this.checkBox_handednessFix.UseVisualStyleBackColor = true;
+            // 
+            // backgroundWorker_regex
+            // 
+            this.backgroundWorker_regex.WorkerReportsProgress = true;
+            this.backgroundWorker_regex.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_regex_DoWork);
+            this.backgroundWorker_regex.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker_regex_ProgressChanged);
+            this.backgroundWorker_regex.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker_regex_RunWorkerCompleted);
+            // 
+            // progressBar_regex
+            // 
+            this.progressBar_regex.Location = new System.Drawing.Point(12, 97);
+            this.progressBar_regex.Name = "progressBar_regex";
+            this.progressBar_regex.Size = new System.Drawing.Size(249, 23);
+            this.progressBar_regex.TabIndex = 6;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(273, 331);
+            this.Controls.Add(this.progressBar_regex);
+            this.Controls.Add(this.checkBox_handednessFix);
             this.Controls.Add(this.label_seperator);
             this.Controls.Add(this.textbox_seperator);
             this.Controls.Add(this.label_found_instances);
             this.Controls.Add(this.btn_save);
             this.Controls.Add(this.btn_load);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "UE4 .DAE to .CSV converter";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -110,6 +138,9 @@
         private System.Windows.Forms.Label label_found_instances;
         private System.Windows.Forms.TextBox textbox_seperator;
         private System.Windows.Forms.Label label_seperator;
+        private System.Windows.Forms.CheckBox checkBox_handednessFix;
+        private System.ComponentModel.BackgroundWorker backgroundWorker_regex;
+        private System.Windows.Forms.ProgressBar progressBar_regex;
 
     }
 }
