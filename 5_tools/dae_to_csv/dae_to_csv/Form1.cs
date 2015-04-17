@@ -202,6 +202,8 @@ namespace dae_to_csv
         }
 
         public void HandednessFix() {
+            TranslateY = -TranslateY;
+
             Roll = Roll;
             Pitch = -Pitch;
             Yaw = -Yaw;
