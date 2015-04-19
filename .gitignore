@@ -299,4 +299,5 @@ FakesAssemblies/
 ### GENERAL ###
 ###############
 credentials.dat
+ArtContent/
 backup_log.txt
