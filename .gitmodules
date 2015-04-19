@@ -1,0 +1,3 @@
+[submodule "3_githooks/automated-build-uploader"]
+	path = 3_githooks/automated-build-uploader
+	url = https://github.com/ViMaSter/automated-build-uploader.git
