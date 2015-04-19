@@ -20,8 +20,10 @@ namespace dae_to_csv
         // Regex strings
         // Used to seperate nodes
         string NodeRegex = @"<node.*?</node";
-        // Used to grab the values from a node
-        string ValueRegex = @"name=\""(.*?)\"".*?translate\"">(.+?) (.+?) (.+?)<\/translate.*?rotateZ\"">\d \d \d (.*?)<\/rotate.*?rotateY\"">\d \d \d (.*?)<\/rotate.*?rotateX\"">\d \d \d (.*?)<\/rotate";
+        // Used to fetch a rotation-value (string.format with capitalized axis-name [x, y, z, etc.])
+        string NameRegex = @"name=""(.*?)""";
+        string RotateRegex = @"rotate{0}"">\d \d \d (.*?)<\/rotate";
+        string TranslateRegex = @"translate"">(.*?) (.*?) (.*?)<\/translate";
 
         public Form1()
         {
@@ -90,7 +92,6 @@ namespace dae_to_csv
         }
 
         int progress = 0;
-
         private void backgroundWorker_regex_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             System.IO.Stream readStream = ofd.OpenFile();
@@ -103,20 +104,34 @@ namespace dae_to_csv
 
             // Match nodes
             MatchCollection collection = Regex.Matches(contentAsString, NodeRegex, RegexOptions.Singleline);
+
             int i = 0;
             foreach (Match match in collection)
             {
-                // Match value-regex
-                Match m = Regex.Match(match.Groups[0].Value, ValueRegex);
-                if (m.Groups.Count >= 8)
+                CSVColumns column = new CSVColumns();
+                Match name = Regex.Match(match.Groups[0].Value, NameRegex, RegexOptions.Singleline);
+                Match translation = Regex.Match(match.Groups[0].Value, TranslateRegex, RegexOptions.Singleline);
+
+                Match rotationX = Regex.Match(match.Groups[0].Value, string.Format(RotateRegex, "X"), RegexOptions.Singleline);
+                Match rotationY = Regex.Match(match.Groups[0].Value, string.Format(RotateRegex, "Y"), RegexOptions.Singleline);
+                Match rotationZ = Regex.Match(match.Groups[0].Value, string.Format(RotateRegex, "Z"), RegexOptions.Singleline);
+
+                column.ID = name.Groups[1].Value;
+
+                float.TryParse(translation.Groups[1].Value, out column.TranslateX);
+                float.TryParse(translation.Groups[2].Value, out column.TranslateY);
+                float.TryParse(translation.Groups[3].Value, out column.TranslateZ);
+
+                float.TryParse(rotationX.Groups[1].Value, out column.Pitch);
+                float.TryParse(rotationY.Groups[1].Value, out column.Roll);
+                float.TryParse(rotationZ.Groups[1].Value, out column.Yaw);
+
+                if (checkBox_handednessFix.Checked)
                 {
-                    CSVColumns column = new CSVColumns(m.Groups[1].Value, m.Groups[2].Value, m.Groups[3].Value, m.Groups[4].Value, m.Groups[7].Value, m.Groups[6].Value, m.Groups[5].Value);
-                    if (checkBox_handednessFix.Checked)
-                    {
-                        column.HandednessFix();
-                    }
-                    CSVRows.Add(column);
+                    column.HandednessFix();
                 }
+                CSVRows.Add(column);
+
                 i++;
                 progress = (int)((float)(collection.Count - (collection.Count - i)) / (float)collection.Count * 100);
                 backgroundWorker_regex.ReportProgress(progress);
@@ -178,17 +193,30 @@ namespace dae_to_csv
     public class UE4CSVColumns
     {
         public string ID;
-        public float TranslateX;
-        public float TranslateY;
-        public float TranslateZ;
+        public float TranslateX = 0.0f;
+        public float TranslateY = 0.0f;
+        public float TranslateZ = 0.0f;
 
-        public float Roll;
-        public float Pitch;
-        public float Yaw;
+        public float Roll = 0.0f;
+        public float Pitch = 0.0f;
+        public float Yaw = 0.0f;
     }
 
     public class CSVColumns : UE4CSVColumns
     {
+        public CSVColumns()
+        {
+            ID = "";
+
+            TranslateX = 0.0f;
+            TranslateY = 0.0f;
+            TranslateZ = 0.0f;
+
+            Roll = 0.0f;
+            Pitch = 0.0f;
+            Yaw = 0.0f;
+        }
+
         public CSVColumns(string id, string translateX, string translateY, string translateZ, string roll, string pitch, string yaw)
         {
             ID = id;
