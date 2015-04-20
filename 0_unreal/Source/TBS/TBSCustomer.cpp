@@ -11,7 +11,7 @@ ATBSCustomer::ATBSCustomer(const FObjectInitializer& ObjectInitializer)
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	static ConstructorHelpers::FClassFinder<AActor> BeardBP(TEXT("/Game/TheBarberShop/Assets/Characters/Style_02/Beard_02_BP"));
+	static ConstructorHelpers::FClassFinder<AActor> BeardBP(TEXT("/Game/TheBarberShop/Assets/Characters/BeardStyles/BeardStyle_00_BP"));
 	BeardClass = BeardBP.Class;
 	
 }
