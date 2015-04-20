@@ -43,7 +43,7 @@ protected:
 	void OnSetRotationPressed();
 	void OnSetRotationReleased();
 
-	// Beared Control
+	// Beard Control
 	UFUNCTION(BlueprintCallable, exec, Category = "Beard Control") void SpawnNextCustomer();
 	void LoadBeardDataToCurrentCustomer(UDataTable* Datatable);
 	void SetCurrentBeardDataToCSV(UDataTable* DataTable);
