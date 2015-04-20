@@ -46,7 +46,6 @@ void ATBSPlayerController::SetupInputComponent()
 }
 
 #pragma region Camera Control
-
 void ATBSPlayerController::RotateTop(float Value)
 {
 	// TODO: Dirty Pitch-hack - REMOVE THIS FOR GOD SAKES
@@ -57,7 +56,8 @@ void ATBSPlayerController::RotateTop(float Value)
 
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
 	FRotator CameraRotation;
-	if (PlayerCharacter && Value != 0.f) {
+	if (PlayerCharacter && Value != 0.f)
+	{
 		Value *= -1;
 
 		CameraRotation = PlayerCharacter->GetCameraBoom()->RelativeRotation;
@@ -84,11 +84,13 @@ void ATBSPlayerController::RotateRight(float Value)
 
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
 	FRotator CameraRotation;
-	if (PlayerCharacter && Value != 0.f){
+	if (PlayerCharacter && Value != 0.f)
+	{
 		Value *= -1;
 		CameraRotation = PlayerCharacter->GetCameraBoom()->RelativeRotation;
 		if ((int32)CameraRotation.Yaw == -1 * PlayerCharacter->HorizontalCameraRotationBorder && Value > 0 ||
-			(int32)CameraRotation.Yaw == PlayerCharacter->HorizontalCameraRotationBorder && Value < 0){
+			(int32)CameraRotation.Yaw == PlayerCharacter->HorizontalCameraRotationBorder && Value < 0)
+		{
 			return;
 		}
 		PlayerCharacter->GetCameraBoom()->AddRelativeRotation(FRotator(0, Value, 0));
@@ -99,15 +101,15 @@ void ATBSPlayerController::RotateRight(float Value)
 		PlayerCharacter->GetCameraBoom()->AddRelativeRotation(FRotator(0, 0, 0));
 	}
 }
-
 #pragma endregion
 
 #pragma region Tool Control
-
-void ATBSPlayerController::RotateToolTop(float Value){
+void ATBSPlayerController::RotateToolTop(float Value)
+{
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
 	FRotator ToolRotation;
-	if (PlayerCharacter && RotationActive && Value != 0.f){
+	if (PlayerCharacter && RotationActive && Value != 0.f)
+	{
 		Value *= -10;
 		ToolRotation = PlayerCharacter->Tool->GetActorRotation();
 		PlayerCharacter->Tool->AddActorLocalRotation(FRotator(0, 0, Value));
@@ -118,10 +120,12 @@ void ATBSPlayerController::RotateToolTop(float Value){
 }
 
 // Deprecated
-void ATBSPlayerController::RotateToolRight(float Value){
+void ATBSPlayerController::RotateToolRight(float Value)
+{
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
 	FRotator ToolRotation;
-	if (PlayerCharacter && RotationActive && Value != 0.f){
+	if (PlayerCharacter && RotationActive && Value != 0.f)
+	{
 		Value *= 10;
 		ToolRotation = PlayerCharacter->Tool->GetActorRotation();
 		PlayerCharacter->Tool->AddActorLocalRotation(FRotator(0, Value, 0));
@@ -140,7 +144,8 @@ void ATBSPlayerController::SwitchToNextTool()
 	}
 
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
-	if (PlayerCharacter){
+	if (PlayerCharacter)
+	{
 		PlayerCharacter->SwitchTool(true);
 	}
 }
@@ -154,7 +159,8 @@ void ATBSPlayerController::SwitchToPrevTool()
 	}
 
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
-	if (PlayerCharacter){
+	if (PlayerCharacter)
+	{
 		PlayerCharacter->SwitchTool(false);
 	}
 }
@@ -168,15 +174,19 @@ void ATBSPlayerController::UpdateRazorPosition()
 	}
 
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
-	if (PlayerCharacter && !RotationActive){
+	if (PlayerCharacter && !RotationActive)
+	{
 		FHitResult Hitresult;
 		GetHitResultUnderCursor(ECC_WorldDynamic, true, Hitresult);
-		if (Hitresult.GetActor() && Hitresult.GetActor()->GetClass()->IsChildOf(ATBSCustomer::StaticClass())){
-			if (ShaveActive){
+		if (Hitresult.GetActor() && Hitresult.GetActor()->GetClass()->IsChildOf(ATBSCustomer::StaticClass()))
+		{
+			if (ShaveActive)
+			{
 				PlayerCharacter->Tool->SetActorLocation(Hitresult.ImpactPoint);
 				PlayerCharacter->Tool->IsActive = true;
 			}
-			else{
+			else
+			{
 				PlayerCharacter->Tool->SetActorLocation(Hitresult.ImpactPoint + Hitresult.ImpactNormal*PlayerCharacter->Tool->ToolInactiveHight);
 				PlayerCharacter->Tool->IsActive = false;
 			}
@@ -192,29 +202,32 @@ void ATBSPlayerController::UpdateRazorPosition()
 
 
 
-void ATBSPlayerController::OnSetShavedPressed(){
+void ATBSPlayerController::OnSetShavedPressed()
+{
 	ShaveActive = true;
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
 	PlayerCharacter->GetTimeLeft();
 }
 
-void ATBSPlayerController::OnSetShavedReleased(){
+void ATBSPlayerController::OnSetShavedReleased()
+{
 	ShaveActive = false;
 }
 
-void ATBSPlayerController::OnSetRotationPressed(){
+void ATBSPlayerController::OnSetRotationPressed()
+{
 	RotationActive = true;
 	GetMousePosition(StoredMousePosition.X, StoredMousePosition.Y);
 }
 
-void ATBSPlayerController::OnSetRotationReleased(){
+void ATBSPlayerController::OnSetRotationReleased()
+{
 	RotationActive = false;
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
 	ULocalPlayer* LocalPlayer = CastChecked<ULocalPlayer>(Player);
 	FViewport* ViewPort = LocalPlayer->ViewportClient->Viewport;
 	ViewPort->SetMouse(StoredMousePosition.X, StoredMousePosition.Y);
 }
-
 #pragma endregion
 
 #pragma region Pitch Hacks
@@ -224,14 +237,13 @@ void ATBSPlayerController::SpawnNextCustomer(){
 		PlayerCharacter->LoadNewCustomer();
 	}
 }
-
-#pragma  endregion
+#pragma endregion
 
 
 
 #pragma region Beard Data Management
-
-void ATBSPlayerController::ClearBeardID(FString BeardName){
+void ATBSPlayerController::ClearBeardID(FString BeardName)
+{
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
 	if (PlayerCharacter){
 		for (int32 i = 0; i < PlayerCharacter->BeardData.Num(); i++){
@@ -256,7 +268,8 @@ void ATBSPlayerController::ClearBeardID(FName BeardName){
 }
 */
 
-void ATBSPlayerController::SaveBeardID(FString BeardName){
+void ATBSPlayerController::SaveBeardID(FString BeardName)
+{
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
 	if (PlayerCharacter){
 		for (int32 i = 0; i < PlayerCharacter->BeardData.Num(); i++){
@@ -278,7 +291,8 @@ void ATBSPlayerController::SaveBeardID(FString BeardName){
 	else UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard CSV Data! ***"))
 }
 
-void ATBSPlayerController::LoadBeardID(FString BeardName){
+void ATBSPlayerController::LoadBeardID(FString BeardName)
+{
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
 	if (PlayerCharacter){
 		for (int32 i= 0; i < PlayerCharacter->BeardData.Num();i++){
@@ -291,7 +305,8 @@ void ATBSPlayerController::LoadBeardID(FString BeardName){
 	else UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard CSV Data! ***"))
 }
 
-void ATBSPlayerController::SetCurrentBeardDataToCSV(UDataTable* DataTable){
+void ATBSPlayerController::SetCurrentBeardDataToCSV(UDataTable* DataTable)
+{
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
 	if (PlayerCharacter == NULL) return;
 	TArray<UActorComponent*> Components;
@@ -329,7 +344,8 @@ void ATBSPlayerController::SetCurrentBeardDataToCSV(UDataTable* DataTable){
 	}
 }
 
-void ATBSPlayerController::LoadBeardDataToCurrentCustomer(UDataTable* DataTable){
+void ATBSPlayerController::LoadBeardDataToCurrentCustomer(UDataTable* DataTable)
+{
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
 	if (PlayerCharacter == NULL) return;
 	TArray<UActorComponent*> Components;
@@ -368,5 +384,4 @@ void ATBSPlayerController::LoadBeardDataToCurrentCustomer(UDataTable* DataTable)
 		}
 	}
 }
-
 #pragma endregion

@@ -39,10 +39,12 @@ ATBSCharacter::ATBSCharacter(const FObjectInitializer& ObjectInitializer)
 }
 
 
-void ATBSCharacter::BeginPlay(){
+void ATBSCharacter::BeginPlay()
+{
 	Super::BeginPlay();
 	UWorld *World = GetWorld();
-	if (World && CurrentCustomer == NULL){
+	if (World && CurrentCustomer == NULL)
+	{
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Instigator = Instigator;
 		SpawnParams.Owner = this;
@@ -50,7 +52,8 @@ void ATBSCharacter::BeginPlay(){
 	}
 
 	// Spawn Tool
-	if (World){
+	if (World)
+	{
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = GetOwner();
 		SpawnParams.Instigator = GetInstigator();
@@ -64,7 +67,8 @@ void ATBSCharacter::BeginPlay(){
 	// Load Level Up Data
 	const FLevelUpData *CurrentData;
 	const FString String;
-	if (LevelData){
+	if (LevelData)
+	{
 		FName NameCurrentLevel = FName(*(FString::FromInt(CurrentLevel)));
 		CurrentData = LevelData->FindRow<FLevelUpData>(NameCurrentLevel, String);
 		if (CurrentData){
@@ -75,19 +79,22 @@ void ATBSCharacter::BeginPlay(){
 	if (CurrentCustomer) LoadNewCustomer();
 }
 
-void ATBSCharacter::FinishCurrentCustomer(){
+void ATBSCharacter::FinishCurrentCustomer()
+{
 	CalculateResult();
 	IncreaseEXP(50);
 	GetWorldTimerManager().ClearTimer(TimerHandle);
 }
 
-void ATBSCharacter::LoadNewCustomer(){
+void ATBSCharacter::LoadNewCustomer()
+{
 	// Set Timer
 	GetWorldTimerManager().ClearTimer(TimerHandle);
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &ATBSCharacter::FinishCurrentCustomer, TimeLimit, false, -1.f);
 
 	// Create New Customer
-	if (CurrentCustomer){
+	if (CurrentCustomer)
+	{
 		((ATBSCustomer*)CurrentCustomer)->CreateNewCustomer();
 	}
 	else UE_LOG(LogClass, Warning, TEXT("*** No Customer Reference! ***"));
@@ -95,8 +102,10 @@ void ATBSCharacter::LoadNewCustomer(){
 
 // Returns the remaining time of the current customer
 // Returns -1.f if timer is inactive
-float ATBSCharacter::GetTimeLeft(){
-	if (GetWorldTimerManager().IsTimerActive(TimerHandle)){
+float ATBSCharacter::GetTimeLeft()
+{
+	if (GetWorldTimerManager().IsTimerActive(TimerHandle))
+	{
 		float TimeLeft;
 		TimeLeft = GetWorldTimerManager().GetTimerRemaining(TimerHandle);
 		UE_LOG(LogClass, Log, TEXT("*** Time Left: %.2f from %.2f ***"), TimeLeft, TimeLimit);
@@ -106,15 +115,19 @@ float ATBSCharacter::GetTimeLeft(){
 }
 
 
-void ATBSCharacter::IncreaseEXP(int32 Value){
+void ATBSCharacter::IncreaseEXP(int32 Value)
+{
 	const FLevelUpData *CurrentData;
 	const FString String;
-	if (LevelData){
+	if (LevelData)
+	{
 		FName NameCurrentLevel = FName(*(FString::FromInt(CurrentLevel)));
 		CurrentData = LevelData->FindRow<FLevelUpData>(NameCurrentLevel, String);
-		if (CurrentData){
+		if (CurrentData)
+		{
 			CurrentExperience += Value;
-			if (CurrentExperience >= CurrentData->XPtoLvl){
+			if (CurrentExperience >= CurrentData->XPtoLvl)
+			{
 				CurrentLevel++;
 				CurrentExperience -= CurrentData->XPtoLvl;
 			}
@@ -122,8 +135,10 @@ void ATBSCharacter::IncreaseEXP(int32 Value){
 	}
 }
 
-void ATBSCharacter::SwitchTool(bool IsNextTool){
-	if (Tool){
+void ATBSCharacter::SwitchTool(bool IsNextTool)
+{
+	if (Tool)
+	{
 		uint8 tmp;
 		if (IsNextTool)	tmp = ((uint8)Tool->ToolType + 1U) % 4;
 		else tmp = ((uint8)Tool->ToolType - 1U) % 4;
@@ -136,8 +151,10 @@ void ATBSCharacter::SwitchTool(bool IsNextTool){
 float ATBSCharacter::CalculateResult(){
 	FBeardComparisonData* CurrentData;
 	const FString Context;
-	if (BeardData[0]){
-		if (CurrentCustomer && CurrentCustomer->Beard){
+	if (BeardData[0])
+	{
+		if (CurrentCustomer && CurrentCustomer->Beard)
+		{
 			TArray<UActorComponent*> Components;
 			int32 Total = 0;
 			int32 Correct = 0;
@@ -145,13 +162,16 @@ float ATBSCharacter::CalculateResult(){
 			for (int32 i = 0; i < Components.Num(); i++){
 				int32 ComponentStatus;
 				UStaticMeshComponent* Mesh = (UStaticMeshComponent*)Components[i];
-				if (!Mesh->IsVisible()){
+				if (!Mesh->IsVisible())
+				{
 					ComponentStatus = 0;
 				}
-				else if (Mesh->GetCollisionResponseToChannel(ECC_Vehicle) == ECR_Ignore){
+				else if (Mesh->GetCollisionResponseToChannel(ECC_Vehicle) == ECR_Ignore)
+				{
 					ComponentStatus = 1;
 				}
-				else{
+				else
+				{
 					ComponentStatus = 2;
 				}
 				FString String = FString::FromInt(i);
