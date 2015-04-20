@@ -229,7 +229,7 @@ void ATBSPlayerController::SpawnNextCustomer(){
 
 
 
-#pragma region Beared Data Management
+#pragma region Beard Data Management
 
 void ATBSPlayerController::ClearBeardID(FString BeardName){
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
