@@ -9,6 +9,13 @@ ATBSPlayerController::ATBSPlayerController(const FObjectInitializer& ObjectIniti
 	bShowMouseCursor = false;
 	ShaveActive = false;
 	RotationActive = false;
+
+	ToolRotation = FRotator(0, 0, 180);
+
+	RazorRotationLerpIntensity = 1.0f;
+	RazorPositionLerpIntensity = 1.0f;
+	RazorLoweringLerpIntensity = 1.0f;
+	ShavingThreshold = 0.1f;
 }
 
 void ATBSPlayerController::PlayerTick(float DeltaTime)
@@ -21,7 +28,7 @@ void ATBSPlayerController::PlayerTick(float DeltaTime)
 		return;
 	}
 
-	UpdateRazorPosition();
+	UpdateRazorPosition(DeltaTime);
 }
 
 void ATBSPlayerController::SetupInputComponent()
@@ -107,15 +114,10 @@ void ATBSPlayerController::RotateRight(float Value)
 void ATBSPlayerController::RotateToolTop(float Value)
 {
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
-	FRotator ToolRotation;
 	if (PlayerCharacter && RotationActive && Value != 0.f)
 	{
 		Value *= -10;
-		ToolRotation = PlayerCharacter->Tool->GetActorRotation();
 		PlayerCharacter->Tool->AddActorLocalRotation(FRotator(0, 0, Value));
-
-		ToolRotation.Roll = PlayerCharacter->Tool->GetActorRotation().Roll;
-		PlayerCharacter->Tool->SetActorRotation(ToolRotation);
 	}
 }
 
@@ -123,15 +125,10 @@ void ATBSPlayerController::RotateToolTop(float Value)
 void ATBSPlayerController::RotateToolRight(float Value)
 {
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
-	FRotator ToolRotation;
 	if (PlayerCharacter && RotationActive && Value != 0.f)
 	{
 		Value *= 10;
-		ToolRotation = PlayerCharacter->Tool->GetActorRotation();
 		PlayerCharacter->Tool->AddActorLocalRotation(FRotator(0, Value, 0));
-
-		ToolRotation.Yaw = PlayerCharacter->Tool->GetActorRotation().Yaw;
-		PlayerCharacter->Tool->SetActorRotation(ToolRotation);
 	}
 }
 
@@ -165,7 +162,7 @@ void ATBSPlayerController::SwitchToPrevTool()
 	}
 }
 
-void ATBSPlayerController::UpdateRazorPosition()
+void ATBSPlayerController::UpdateRazorPosition(float DeltaTime)
 {
 	// TODO: Dirty Pitch-hack - REMOVE THIS FOR GOD SAKES
 	if (InputIgnore)
@@ -176,26 +173,52 @@ void ATBSPlayerController::UpdateRazorPosition()
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
 	if (PlayerCharacter && !RotationActive)
 	{
+		CurrentToolRotation = PlayerCharacter->Tool->GetActorRotation();
+		CurrentToolLocation = PlayerCharacter->Tool->GetActorLocation();
+
 		FHitResult Hitresult;
 		GetHitResultUnderCursor(ECC_WorldDynamic, true, Hitresult);
 		if (Hitresult.GetActor() && Hitresult.GetActor()->GetClass()->IsChildOf(ATBSCustomer::StaticClass()))
 		{
-			if (ShaveActive)
-			{
-				PlayerCharacter->Tool->SetActorLocation(Hitresult.ImpactPoint);
-				PlayerCharacter->Tool->IsActive = true;
-			}
-			else
-			{
-				PlayerCharacter->Tool->SetActorLocation(Hitresult.ImpactPoint + Hitresult.ImpactNormal*PlayerCharacter->Tool->ToolInactiveHight);
-				PlayerCharacter->Tool->IsActive = false;
-			}
-			FRotator ToolRotation;
-			ToolRotation = PlayerCharacter->Tool->GetActorRotation();
+			MouseCursorImpactPoint = Hitresult.ImpactPoint;
+			MouseCursorImpactNormal = Hitresult.ImpactNormal;
+
+			// SKIN OFFSET
+			// Lower/raise the tool based on ::ShaveActive
+			CurrentToolHeightOffset = FMath::Lerp(
+				CurrentToolHeightOffset,
+				ShaveActive ?
+				FVector::ZeroVector :
+				Hitresult.ImpactNormal*PlayerCharacter->Tool->ToolInactiveHight,
+				(1.0f / DeltaTime / 60.0f) * RazorLoweringLerpIntensity
+				);
+
+			// Whether or not the tool is active, is now dependent on the razors distance from the skin
+			PlayerCharacter->Tool->IsActive = CurrentToolHeightOffset.Size() < ShavingThreshold;
+
+			// POSITION
+			PlayerCharacter->Tool->SetActorLocation(
+				FMath::Lerp(PlayerCharacter->Tool->GetActorLocation(), Hitresult.ImpactPoint + CurrentToolHeightOffset, (1.0f / DeltaTime / 60.0f) * RazorPositionLerpIntensity)
+			);
+
+			// ROTATION
+			ToolRotation = ToolRotation;
 			ToolRotation.Pitch = Hitresult.ImpactNormal.Rotation().Pitch;
 			ToolRotation.Yaw = Hitresult.ImpactNormal.Rotation().Yaw - 180;
 
-			PlayerCharacter->Tool->SetActorRotation(ToolRotation);
+			PlayerCharacter->Tool->SetActorRotation(
+				FMath::Lerp(CurrentToolRotation, ToolRotation, (1.0f / DeltaTime / 60.0f) * RazorRotationLerpIntensity)
+			);
+		}
+		else
+		{
+			// Reset tool to a certain position when the mouse cursor is not hitting the mesh
+			PlayerCharacter->Tool->SetActorLocation(
+				FMath::Lerp(PlayerCharacter->Tool->GetActorLocation(), ((ATBSCharacter*)GetPawn())->ToolResetPosition->GetComponentLocation(), (1.0f / DeltaTime / 60.0f) * RazorPositionLerpIntensity)
+			);
+			PlayerCharacter->Tool->SetActorRotation(
+				FMath::Lerp(CurrentToolRotation, ((ATBSCharacter*)GetPawn())->ToolResetPosition->GetComponentRotation(), (1.0f / DeltaTime / 60.0f) * RazorRotationLerpIntensity)
+			);
 		}
 	}
 }
@@ -222,6 +245,8 @@ void ATBSPlayerController::OnSetRotationPressed()
 
 void ATBSPlayerController::OnSetRotationReleased()
 {
+	ToolRotation = ((ATBSCharacter*)GetPawn())->Tool->GetActorRotation();
+
 	RotationActive = false;
 	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
 	ULocalPlayer* LocalPlayer = CastChecked<ULocalPlayer>(Player);

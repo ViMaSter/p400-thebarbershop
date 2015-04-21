@@ -40,6 +40,8 @@ class ATBSCharacter : public APawn
 {
 	GENERATED_BODY()
 
+public:
+	// Made these public so they can be accessed more easily
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* CameraComponent;
 
@@ -49,7 +51,8 @@ class ATBSCharacter : public APawn
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCharacterMovementComponent* CharacterMovement;
 
-public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Tool, meta = (AllowPrivateAccess = "true"))
+	class USceneComponent* ToolResetPosition;
 
 	ATBSCharacter(const FObjectInitializer& ObjectInitializer);
 

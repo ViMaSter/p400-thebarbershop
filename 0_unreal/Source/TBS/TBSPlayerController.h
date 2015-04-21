@@ -14,15 +14,26 @@ class ATBSPlayerController : public APlayerController
 public:
 	ATBSPlayerController(const FObjectInitializer& ObjectInitializer);
 
-	// Vincent: Needed move this from protected to public, since this methods will be called from the HUD
+	/// Vincent: Needed to move this from protected to public, since this methods will be called from the HUD
 	UFUNCTION(BlueprintCallable, exec, Category = "Beard Control") void ClearBeardID(FString BeardName);
 	UFUNCTION(BlueprintCallable, exec, Category = "Beard Control") void SaveBeardID(FString BeardName);
 	UFUNCTION(BlueprintCallable, exec, Category = "Beard Control") void LoadBeardID(FString BeardName);
 
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input") bool InputIgnore;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input|Ignore")
-	bool InputIgnore;
+	// Smoothing of the razor when moving accross the face - higher value, more "snappyness"
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Juiciness", meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0")) float RazorRotationLerpIntensity;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Juiciness", meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0")) float RazorPositionLerpIntensity;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Juiciness", meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0")) float RazorLoweringLerpIntensity;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Juiciness", meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0")) float ShavingThreshold;
+
+	FRotator CurrentToolRotation;
+	FVector CurrentToolLocation;
+	FVector CurrentToolHeightOffset;
+	FRotator ToolRotation;
+	FVector MouseCursorImpactNormal;
+	FVector MouseCursorImpactPoint;
 
 	bool ShaveActive;
 	bool RotationActive;
@@ -37,7 +48,7 @@ protected:
 	void RotateToolRight(float Value);
 	void SwitchToNextTool();
 	void SwitchToPrevTool();
-	void UpdateRazorPosition();
+	void UpdateRazorPosition(float DeltaTime);
 	void OnSetShavedPressed();
 	void OnSetShavedReleased();
 	void OnSetRotationPressed();

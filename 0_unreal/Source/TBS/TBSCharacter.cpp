@@ -21,6 +21,11 @@ ATBSCharacter::ATBSCharacter(const FObjectInitializer& ObjectInitializer)
 	CameraComponent->AttachTo(CameraBoom, USpringArmComponent::SocketName);
 	CameraComponent->bUsePawnControlRotation = false;
 
+	ToolResetPosition = CreateDefaultSubobject<USceneComponent>(TEXT("ToolResetPosition"));
+	ToolResetPosition->AttachTo(CameraComponent);
+	ToolResetPosition->RelativeRotation = FRotator(-59.6, 156.8, -168.0);
+	ToolResetPosition->RelativeLocation = FVector(33.1f, 16.6f, 12.0f);
+
 	static ConstructorHelpers::FClassFinder<ATBSRazor> ToolBP(TEXT("/Game/TheBarberShop/Assets/Tool_BP"));
 	ToolClass = ToolBP.Class;
 
