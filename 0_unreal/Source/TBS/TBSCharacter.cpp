@@ -32,6 +32,7 @@ ATBSCharacter::ATBSCharacter(const FObjectInitializer& ObjectInitializer)
 	static ConstructorHelpers::FClassFinder<ATBSCustomer> CustomerBP(TEXT("/Game/TheBarberShop/Assets/Customer_BP"));
 	CustomerClass = CustomerBP.Class;
 
+	CameraRotationLerpIntensity = 1.0f;
 	HorizontalCameraRotationBorder = 75;
 	VerticalUpperCameraRotationBorder = -35;
 	VerticalLowerCameraRotationBorder = 10;

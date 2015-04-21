@@ -66,6 +66,7 @@ public:
 		ATBSRazor* Tool;
 
 	// Camera Control
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Juiciness", meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0")) float CameraRotationLerpIntensity;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera") int32 HorizontalCameraRotationBorder;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera") int32 VerticalUpperCameraRotationBorder;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera") int32 VerticalLowerCameraRotationBorder;
