@@ -19,6 +19,10 @@ public:
 	UFUNCTION(BlueprintCallable, exec, Category = "Beard Control") void SaveBeardID(FString BeardName);
 	UFUNCTION(BlueprintCallable, exec, Category = "Beard Control") void LoadBeardID(FString BeardName);
 
+	//BeginPlay
+	virtual void BeginPlay() override;
+
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input") bool InputIgnore;
 
@@ -28,31 +32,60 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Juiciness", meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0")) float RazorLoweringLerpIntensity;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Juiciness", meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0")) float ShavingThreshold;
 
-	FRotator CurrentToolRotation;
-	FVector CurrentToolLocation;
-	FVector CurrentToolHeightOffset;
-	FRotator ToolRotation;
-	FVector MouseCursorImpactNormal;
-	FVector MouseCursorImpactPoint;
+#pragma region References
+	ATBSCharacter* PlayerCharacter;
+#pragma endregion
 
-	bool ShaveActive;
-	bool RotationActive;
+#pragma region Camera
+	FRotator CameraRotationTarget;
+#pragma endregion
+
+#pragma region Tool
+	FVector ToolLocationCurrent;
+	FVector ToolLocationTarget;
+
+	FRotator ToolRotationCurrent;
+	FRotator ToolRotationTarget;
+
+	FVector ToolHeightOffsetCurrent;
+	FVector ToolHeightOffsetTarget;
+#pragma endregion
+
+#pragma region MouseInfo
+	// Currently not used for anything but could provide usefull
+	FVector LastValidMouseCursorImpactNormal;
+	FVector LastValidMouseCursorImpactPoint;
 	FVector2D StoredMousePosition;
+
+	bool PointingAtCustomer;
+
+	bool ShaveActive;		// LMB
+	bool RotationActive;	// RMB
+#pragma endregion
 
 	virtual void PlayerTick(float DeltaTime) override;
 	virtual void SetupInputComponent() override;
 
+	// Methods used for input
 	void RotateTop(float Value);
 	void RotateRight(float Value);
 	void RotateToolTop(float Value);
 	void RotateToolRight(float Value);
 	void SwitchToNextTool();
 	void SwitchToPrevTool();
-	void UpdateRazorPosition(float DeltaTime);
 	void OnSetShavedPressed();
 	void OnSetShavedReleased();
 	void OnSetRotationPressed();
 	void OnSetRotationReleased();
+
+	void RotateCamera(float Pitch, float Yaw);
+
+	// Methods used in tick
+	void UpdateRazor(float DeltaTime);
+	void ApplyRazor(float DeltaTime);
+
+	void UpdateCamera(float DeltaTime);
+	void ApplyCamera(float DeltaTime);
 
 	// Beard Control
 	UFUNCTION(BlueprintCallable, exec, Category = "Beard Control") void SpawnNextCustomer();
