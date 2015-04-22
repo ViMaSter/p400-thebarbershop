@@ -81,6 +81,8 @@ protected:
 	void RotateCamera(float Pitch, float Yaw);
 
 	// Methods used in tick
+		// Update: Prepares the target values
+		// Apply: Checks wether or not these values should be used and applies them
 	void UpdateRazor(float DeltaTime);
 	void ApplyRazor(float DeltaTime);
 
