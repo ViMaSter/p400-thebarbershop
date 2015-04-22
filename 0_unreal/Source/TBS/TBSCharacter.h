@@ -11,7 +11,6 @@ struct FLevelUpData : public FTableRowBase{
 	GENERATED_USTRUCT_BODY()
 
 public:
-
 	FLevelUpData()
 		: Level(0)
 		, XPtoLvl(0)
@@ -41,38 +40,26 @@ class ATBSCharacter : public APawn
 	GENERATED_BODY()
 
 public:
-	// Made these public so they can be accessed more easily
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* CameraComponent;
+	// Components
+	// Camera
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true")) class UCameraComponent* CameraComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true")) class USpringArmComponent* CameraBoom;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* CameraBoom;
+	// Movement
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true")) class UCharacterMovementComponent* CharacterMovement;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCharacterMovementComponent* CharacterMovement;
+	// Tool
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Tool, meta = (AllowPrivateAccess = "true")) class USceneComponent* ToolResetPosition;
+	UPROPERTY(EditAnywhere, noclear, BlueprintReadWrite, Category = "Razor Class", meta = (DisplayName = "Tool Class")) TSubclassOf<class ATBSRazor> ToolClass;
+	UPROPERTY(EditAnywhere, noclear, BlueprintReadWrite, Category = "Razor Class", meta = (DisplayName = "Tool Class")) TSubclassOf<class ATBSCustomer> CustomerClass;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tool") ATBSRazor* Tool;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Tool, meta = (AllowPrivateAccess = "true"))
-	class USceneComponent* ToolResetPosition;
-
-	ATBSCharacter(const FObjectInitializer& ObjectInitializer);
-
-	UPROPERTY(EditAnywhere, noclear, BlueprintReadWrite, Category = "Razor Class", meta = (DisplayName = "Tool Class"))
-		TSubclassOf<class ATBSRazor> ToolClass;
-
-	UPROPERTY(EditAnywhere, noclear, BlueprintReadWrite, Category = "Razor Class", meta = (DisplayName = "Tool Class"))
-		TSubclassOf<class ATBSCustomer> CustomerClass;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tool")
-		ATBSRazor* Tool;
-
+	// Members
 	// Camera Control
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Juiciness", meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0")) float CameraRotationLerpIntensity;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera") int32 HorizontalCameraRotationBorder;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera") int32 VerticalUpperCameraRotationBorder;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera") int32 VerticalLowerCameraRotationBorder;
-	
-	FORCEINLINE class UCameraComponent* GetTopDownCameraComponent() const { return CameraComponent; }
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
 	// Player Status	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CSV Data") UDataTable* LevelData;
@@ -88,16 +75,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CSV Data") TArray<UDataTable*> BeardData;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus") ATBSCustomer* CurrentCustomer;
 
-	void FinishCurrentCustomer();
+	// Constructor
+	ATBSCharacter(const FObjectInitializer& ObjectInitializer);
 
-	UFUNCTION(BlueprintCallable, Category="Gameplay|Timer")
-	float GetTimeLeft();
-
-	void SwitchTool(bool IsNextTool);
-	UFUNCTION(BlueprintCallable, Category = "EXP")
-		void IncreaseEXP(int32 Value);
-
+	// UE4-Execution Events
 	virtual void BeginPlay() override;
+
+	// (BP-)Helper functions
+	UFUNCTION(BlueprintCallable, Category = "Timer") float GetTimeLeft();
+	UFUNCTION(BlueprintCallable, Category = "EXP") void IncreaseEXP(int32 Value);
+
+	void FinishCurrentCustomer();
+	void SwitchTool(bool IsNextTool);
+
 	void LoadNewCustomer();
 
 	float CalculateResult();

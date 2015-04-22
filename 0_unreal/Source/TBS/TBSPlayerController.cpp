@@ -248,8 +248,8 @@ void ATBSPlayerController::UpdateCamera(float DeltaTime)
 }
 void ATBSPlayerController::ApplyCamera(float DeltaTime)
 {
-	PlayerCharacter->GetCameraBoom()->SetRelativeRotation(FMath::Lerp(PlayerCharacter->GetCameraBoom()->RelativeRotation - FRotator(0, 180, 0), CameraRotationTarget, PlayerCharacter->CameraRotationLerpIntensity));
-	PlayerCharacter->GetCameraBoom()->AddRelativeRotation(FRotator(0, 180, 0));
+	PlayerCharacter->CameraBoom->SetRelativeRotation(FMath::Lerp(PlayerCharacter->CameraBoom->RelativeRotation - FRotator(0, 180, 0), CameraRotationTarget, PlayerCharacter->CameraRotationLerpIntensity));
+	PlayerCharacter->CameraBoom->AddRelativeRotation(FRotator(0, 180, 0));
 }
 #pragma endregion
 
