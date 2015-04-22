@@ -104,7 +104,7 @@ void ATBSPlayerController::RotateToolTop(float Value)
 	if (RotationActive && Value != 0.f)
 	{
 		Value *= -10;
-		PlayerCharacter->Tool->AddActorLocalRotation(FRotator(0, 0, Value));
+		ToolRotationTarget += FRotator(0, 0, Value);
 	}
 }
 
@@ -115,7 +115,7 @@ void ATBSPlayerController::RotateToolRight(float Value)
 	if (RotationActive && Value != 0.f)
 	{
 		Value *= 10;
-		PlayerCharacter->Tool->AddActorLocalRotation(FRotator(0, Value, 0));
+		ToolRotationTarget += FRotator(0, Value, 0);
 	}
 }
 
@@ -179,59 +179,62 @@ void ATBSPlayerController::UpdateRazor(float DeltaTime)
 		return;
 	}
 
-	if (PlayerCharacter && !RotationActive)
+	if (PlayerCharacter)
 	{
-		// Fetch current values
-		ToolRotationCurrent = PlayerCharacter->Tool->GetActorRotation();
-		ToolLocationCurrent = PlayerCharacter->Tool->GetActorLocation();
-
-		// Get hit from mouse cursor ray
-		FHitResult Hitresult;
-		GetHitResultUnderCursor(ECC_WorldDynamic, true, Hitresult);
-
-		if (Hitresult.GetActor() && Hitresult.GetActor()->GetClass()->IsChildOf(ATBSCustomer::StaticClass()))
+		if (!RotationActive)
 		{
-			// Save hitresult info
-			LastValidMouseCursorImpactPoint = Hitresult.ImpactPoint;
-			LastValidMouseCursorImpactNormal = Hitresult.ImpactNormal;
+			// Get hit from mouse cursor ray
+			FHitResult Hitresult;
+			GetHitResultUnderCursor(ECC_WorldDynamic, true, Hitresult);
 
-			// SKIN OFFSET
-			// Lower/raise the tool based on ::ShaveActive
-			if (ShaveActive)
+			if (Hitresult.GetActor() && Hitresult.GetActor()->GetClass()->IsChildOf(ATBSCustomer::StaticClass()))
 			{
-				ToolHeightOffsetTarget = FVector::ZeroVector;
+				// Save hitresult info
+				LastValidMouseCursorImpactPoint = Hitresult.ImpactPoint;
+				LastValidMouseCursorImpactNormal = Hitresult.ImpactNormal;
+
+				// SKIN OFFSET
+				// Lower/raise the tool based on ::ShaveActive
+				if (ShaveActive)
+				{
+					ToolHeightOffsetTarget = FVector::ZeroVector;
+				}
+				else
+				{
+					ToolHeightOffsetTarget = Hitresult.ImpactNormal*PlayerCharacter->Tool->ToolInactiveHight;
+				}
+				ToolHeightOffsetCurrent = FMath::Lerp(ToolHeightOffsetCurrent, ToolHeightOffsetTarget, (1.0f / DeltaTime / 60.0f) * RazorLoweringLerpIntensity);
+
+				// Whether or not the tool is active, is now dependent on the razors distance from the skin
+				PlayerCharacter->Tool->IsActive = ToolHeightOffsetCurrent.Size() < ShavingThreshold;
+
+				// POSITION
+				ToolLocationTarget = Hitresult.ImpactPoint + ToolHeightOffsetCurrent;
+
+				// ROTATION
+				ToolRotationTarget.Pitch = Hitresult.ImpactNormal.Rotation().Pitch;
+				ToolRotationTarget.Yaw = Hitresult.ImpactNormal.Rotation().Yaw - 180;
+
+				PointingAtCustomer = true;
 			}
 			else
 			{
-				ToolHeightOffsetTarget = Hitresult.ImpactNormal*PlayerCharacter->Tool->ToolInactiveHight;
+				// Fall back to our default position
+				ToolLocationTarget = PlayerCharacter->ToolResetPosition->GetComponentLocation();
+				ToolRotationTarget = PlayerCharacter->ToolResetPosition->GetComponentRotation();
+
+				PointingAtCustomer = false;
 			}
-			ToolHeightOffsetCurrent = FMath::Lerp(ToolHeightOffsetCurrent, ToolHeightOffsetTarget, (1.0f / DeltaTime / 60.0f) * RazorLoweringLerpIntensity);
-
-			// Whether or not the tool is active, is now dependent on the razors distance from the skin
-			PlayerCharacter->Tool->IsActive = ToolHeightOffsetCurrent.Size() < ShavingThreshold;
-
-			// POSITION
-			ToolLocationTarget = Hitresult.ImpactPoint + ToolHeightOffsetCurrent;
-
-			// ROTATION
-			ToolRotationTarget.Pitch = Hitresult.ImpactNormal.Rotation().Pitch;
-			ToolRotationTarget.Yaw = Hitresult.ImpactNormal.Rotation().Yaw - 180;
-
-			PointingAtCustomer = true;
-		}
-		else
-		{
-			// Fall back to our 
-			ToolLocationTarget = PlayerCharacter->ToolResetPosition->GetComponentLocation();
-			ToolRotationTarget = PlayerCharacter->ToolResetPosition->GetComponentRotation();
-
-			PointingAtCustomer = false;
 		}
 	}
 }
 
 void ATBSPlayerController::ApplyRazor(float DeltaTime)
 {
+	// Fetch current values
+	ToolRotationCurrent = PlayerCharacter->Tool->GetActorRotation();
+	ToolLocationCurrent = PlayerCharacter->Tool->GetActorLocation();
+
 	// Could handle special PointingAtCustomer-case here
 	PlayerCharacter->Tool->SetActorLocation(
 		FMath::Lerp(ToolLocationCurrent, ToolLocationTarget, (1.0f / DeltaTime / 60.0f) * RazorPositionLerpIntensity)

@@ -145,10 +145,10 @@ void ATBSCharacter::SwitchTool(bool IsNextTool)
 {
 	if (Tool)
 	{
-		uint8 tmp;
-		if (IsNextTool)	tmp = ((uint8)Tool->ToolType + 1U) % 4;
-		else tmp = ((uint8)Tool->ToolType - 1U) % 4;
-		Tool->SwitchRazorTypeTo((TEnumAsByte<ETBSRazor::Type>)tmp);
+		uint8 CurrentTool = Tool->ToolType;
+		CurrentTool += IsNextTool ? 1 : -1;
+		CurrentTool = (4 + CurrentTool) % 4;
+		Tool->SwitchRazorTypeTo((ETBSRazor::Type)CurrentTool);
 	}
 }
 

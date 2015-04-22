@@ -5,7 +5,6 @@
 #include "GameFramework/Actor.h"
 #include "TBSRazor.generated.h"
 
-
 UENUM(BlueprintType)
 namespace ETBSRazor
 {
@@ -29,16 +28,13 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RazorStatus") int32 ToolInactiveHight;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RazorStatus") float TrimmAmount;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "RazorStatus") bool IsActive;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RazorStatus") bool IsActive;
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Razor")	void SwitchedToHand();
-	UFUNCTION(BlueprintImplementableEvent, Category = "Razor")	void SwitchedToClipper();
-	UFUNCTION(BlueprintImplementableEvent, Category = "Razor")	void SwitchedToRazorSmall();
-	UFUNCTION(BlueprintImplementableEvent, Category = "Razor")	void SwitchedToRazorBig();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Razor")	void SwitchedTool(ETBSRazor::Type NewToolType);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Beard")	void Trimmed(float TrimmValue, UActorComponent* Mesh);
 
-	void SwitchRazorTypeTo(TEnumAsByte<ETBSRazor::Type> Type);
+	void SwitchRazorTypeTo(TEnumAsByte<ETBSRazor::Type> NewType);
 
 	virtual void Tick( float DeltaSeconds ) override;
 		
