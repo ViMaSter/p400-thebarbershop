@@ -22,6 +22,7 @@ ATBSPlayerController::ATBSPlayerController(const FObjectInitializer& ObjectIniti
 
 void ATBSPlayerController::BeginPlay()
 {
+	Super::BeginPlay();
 	PlayerCharacter = (ATBSCharacter*)GetPawn();
 }
 
