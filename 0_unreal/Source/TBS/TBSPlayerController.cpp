@@ -35,11 +35,13 @@ void ATBSPlayerController::PlayerTick(float DeltaTime)
 		return;
 	}
 
-	UpdateRazor(DeltaTime);
-	UpdateCamera(DeltaTime);
+	if (PlayerCharacter) {
+		UpdateRazor(DeltaTime);
+		UpdateCamera(DeltaTime);
 
-	ApplyRazor(DeltaTime);
-	ApplyCamera(DeltaTime);
+		ApplyRazor(DeltaTime);
+		ApplyCamera(DeltaTime);
+	}
 }
 
 void ATBSPlayerController::SetupInputComponent()
