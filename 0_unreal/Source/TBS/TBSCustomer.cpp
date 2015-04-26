@@ -23,7 +23,9 @@ void ATBSCustomer::BeginPlay(){
 }
 
 void ATBSCustomer::CreateNewCustomer(){
-	if (Beard) Beard->Destroy();
+	if (Beard) {
+		Beard->Destroy();
+	}
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Instigator = Instigator;
@@ -33,7 +35,9 @@ void ATBSCustomer::CreateNewCustomer(){
 	UStaticMeshComponent* Mesh = (UStaticMeshComponent*)GetComponentByClass(UStaticMeshComponent::StaticClass());
 	FTransform Transf = Mesh->GetComponentTransform();
 
-	Beard->SetActorTransform(Transf);
+	if (Beard) {
+		Beard->SetActorTransform(Transf);
+	}
 	CreatedCustomer();
 	UE_LOG(LogClass, Log, TEXT("*** Customer Customer created ***"))
 }
