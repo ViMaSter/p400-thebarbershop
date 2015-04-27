@@ -89,6 +89,7 @@ public:
 	
 	// Customer
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CSV Data") TArray<UDataTable*> BeardData;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CSV Data") UDataTable* BeardCollection;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus") ATBSCustomer* CurrentCustomer;
 
 	// Constructor

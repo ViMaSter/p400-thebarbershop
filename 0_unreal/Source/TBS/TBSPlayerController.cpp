@@ -270,68 +270,39 @@ void ATBSPlayerController::SpawnNextCustomer(){
 
 
 #pragma region Beard Data Management
-void ATBSPlayerController::ClearBeardID(FString BeardName)
-{
-	if (PlayerCharacter){
-		for (int32 i = 0; i < PlayerCharacter->BeardData.Num(); i++){
-			if (PlayerCharacter->BeardData[i]->GetName() == BeardName){
-				PlayerCharacter->BeardData[i]->EmptyTable();
-				break;
-			}
-		}
-	}
-	else UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard CSV Data! ***"))
-}
-/*
 void ATBSPlayerController::ClearBeardID(FName BeardName){
-	ATBSCharacter* PlayerCharacter = (ATBSCharacter*)GetPawn();
-	FBeardComparisonData* CurrentData;
-	if (PlayerCharacter && PlayerCharacter->BeardData){
-		const FString Context;
-		CurrentData = PlayerCharacter->BeardData->FindRow<FBeardComparisonData>(BeardName, Context);
-		PlayerCharacter->BeardData->RowMap.Remove(BeardName);
-	}
-	else UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard CSV Data! ***"))
-}
-*/
-
-void ATBSPlayerController::SaveBeardID(FString BeardName)
-{
 	if (PlayerCharacter){
-		for (int32 i = 0; i < PlayerCharacter->BeardData.Num(); i++){
-			if (PlayerCharacter->BeardData[i]->GetName() == BeardName){
-				SetCurrentBeardDataToCSV(PlayerCharacter->BeardData[i]);
-				break;
-			}
+		UDataTable* DataTable;
+		DataTable = FindDataTableToName(BeardName);
+		if (DataTable){
+			DataTable->EmptyTable();
 		}
-
-		// Saving still under development
-		/*FString Path = FPaths::GameContentDir();
-		Path.Append(TEXT("TheBarberShop/Data/"));
-		Path.Append(BeardName);
-		Path.Append(TEXT(".json"));
-		*/
-		//PlayerCharacter->BeardData->SaveConfig(16384Ui64, *Path);
-		//UE_LOG(LogClass, Warning, TEXT("*** Saved Data to %s! ***"), *Path);
+		RemoveBeardFromCollection(BeardName);
 	}
-	else UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard CSV Data! ***"))
 }
 
-void ATBSPlayerController::LoadBeardID(FString BeardName)
-{
+void ATBSPlayerController::SaveBeardID(FName BeardName){
 	if (PlayerCharacter){
-		for (int32 i= 0; i < PlayerCharacter->BeardData.Num();i++){
-			if (PlayerCharacter->BeardData[i]->GetName() == BeardName){
-				LoadBeardDataToCurrentCustomer(PlayerCharacter->BeardData[i]);
-				break;
-			}
+		UDataTable* DataTable;
+		SetBeardToCollectionData(BeardName);
+		DataTable = FindDataTableToName(BeardName);
+		if (DataTable == NULL){
+			SetCurrentBeardDataToCSV(DataTable);
 		}
 	}
-	else UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard CSV Data! ***"))
 }
 
-void ATBSPlayerController::SetCurrentBeardDataToCSV(UDataTable* DataTable)
-{
+void ATBSPlayerController::LoadBeardID(FName BeardName){
+	if (PlayerCharacter){
+		UDataTable* DataTable;
+		DataTable = FindDataTableToName(BeardName);
+		if (DataTable){
+			LoadBeardDataToCurrentCustomer(DataTable);
+		}
+	}
+}
+
+void ATBSPlayerController::SetCurrentBeardDataToCSV(UDataTable* DataTable){
 	if (PlayerCharacter == NULL) return;
 	TArray<UActorComponent*> Components;
 	Components = PlayerCharacter->CurrentCustomer->Beard->GetComponentsByClass(UStaticMeshComponent::StaticClass());
@@ -368,8 +339,7 @@ void ATBSPlayerController::SetCurrentBeardDataToCSV(UDataTable* DataTable)
 	}
 }
 
-void ATBSPlayerController::LoadBeardDataToCurrentCustomer(UDataTable* DataTable)
-{
+void ATBSPlayerController::LoadBeardDataToCurrentCustomer(UDataTable* DataTable){
 	if (PlayerCharacter == NULL) return;
 	TArray<UActorComponent*> Components;
 	Components = PlayerCharacter->CurrentCustomer->Beard->GetComponentsByClass(UStaticMeshComponent::StaticClass());
@@ -407,4 +377,143 @@ void ATBSPlayerController::LoadBeardDataToCurrentCustomer(UDataTable* DataTable)
 		}
 	}
 }
+
+UDataTable* ATBSPlayerController::FindDataTableToName(FName BeardName){
+	if (PlayerCharacter){
+		FBeardCollectionData* CurrentData;
+		FName DataTableName;
+		if (PlayerCharacter->BeardCollection){
+			const FString Context;
+			for (int32 i = 0; i < PlayerCharacter->BeardCollection->GetRowNames().Num(); i++){
+				FName Row = PlayerCharacter->BeardCollection->GetRowNames()[i];
+				CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData>(Row, Context, false);
+				i++;
+				if (CurrentData){
+					if (CurrentData->BeardName == BeardName){
+						DataTableName = CurrentData->BeardSlotName;
+						for (int32 i = 0; i < PlayerCharacter->BeardData.Num(); i++){
+							if (PlayerCharacter->BeardData[i]->GetName() == DataTableName.ToString()){
+								return PlayerCharacter->BeardData[i];
+								break;
+							}
+						}
+						break;
+					}
+				}
+				else {
+					UE_LOG(LogClass, Warning, TEXT("*** Could not find Beard in CollectionData! ***"));
+					break;
+				}
+			}
+		}
+	}
+	return NULL;
+}
+
+// Call from the HUD to get an FName Array of the saved beards
+TArray<FName> ATBSPlayerController::GetBeardNames(){
+	TArray<FName> BeardNames;
+	if (PlayerCharacter == NULL) return BeardNames;
+	FBeardCollectionData* CurrentData;
+	if (PlayerCharacter->BeardCollection){
+		const FString Context;
+		for (int32 i = 0; i < PlayerCharacter->BeardCollection->GetRowNames().Num(); i++){
+			FName Row = PlayerCharacter->BeardCollection->GetRowNames()[i];
+			CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData>(Row, Context, false);
+			if (CurrentData){
+				BeardNames.Add(CurrentData->BeardName);
+			}
+		}
+	}
+	return BeardNames;
+}
+
+void ATBSPlayerController::RemoveBeardFromCollection(FName BeardName){
+	FBeardCollectionData* CurrentData;
+	bool Success = false;
+	if (PlayerCharacter->BeardCollection){
+		const FString Context;
+		for (int32 i = 0; i < PlayerCharacter->BeardCollection->GetRowNames().Num(); i++){
+			FName Row = PlayerCharacter->BeardCollection->GetRowNames()[i];
+			CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData>(Row, Context, false);
+			if (CurrentData && CurrentData->BeardName == BeardName){
+				PlayerCharacter->BeardCollection->RowMap.Remove(Row);
+				Success = true;
+				break;
+			}
+		}
+		if (!Success){
+			UE_LOG(LogClass, Warning, TEXT("*** Could not find Beard in CollectionData! ***"));
+		}
+	}
+}
+
+void ATBSPlayerController::SetBeardToCollectionData(FName BeardName){
+	FBeardCollectionData* CurrentData;
+	bool Success = false;
+	if (PlayerCharacter->BeardCollection){
+		const FString Context;
+		TArray<FName> RowNames = PlayerCharacter->BeardCollection->GetRowNames();
+		for (int32 i = 0; i < RowNames.Num(); i++){
+			FName Row = RowNames[i];
+			CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData>(Row, Context, false);
+			if (CurrentData && CurrentData->BeardName == BeardName){
+				Success = true;
+				break;
+			}
+		}
+		if (!Success){
+			// Find a free ID
+			FName NewRowName;
+			int32 RowID = 0;
+			while (true){
+				bool IsFreeID = true;
+				FString RowString = FString::FromInt(RowID);
+				NewRowName = FName(*RowString);
+				for (int32 i = 0; i < RowNames.Num(); i++){
+					if (RowNames[i] == NewRowName) IsFreeID = false;
+				}
+				if (IsFreeID) break;
+				RowID++;
+			}
+
+			// Find Free Slot
+			FName NewSlotName;
+			int32 SlotID = 0;
+			while (true){
+				bool IsFreeSlot = true;
+				FString SlotString = "Beard";
+				if (SlotID < 10){
+					SlotString.Append("0");
+				}
+				SlotString.Append(FString::FromInt(SlotID));
+				NewSlotName = FName(*SlotString);
+				for (int32 i = 0; i < RowNames.Num(); i++){
+					FName Row = RowNames[i];
+					CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData>(Row, Context, false);
+					if (CurrentData && CurrentData->BeardSlotName == NewSlotName) IsFreeSlot = false;
+				}
+				if (IsFreeSlot) break;
+				SlotID++;
+				// TEMPORARY HARD BREAK DUE TO LIMITED SLOTS
+				if (SlotID >= 10){
+						UE_LOG(LogClass, Warning, TEXT("*** Could not save the beard! ***"));
+						UE_LOG(LogClass, Warning, TEXT("*** All slots are full please delete old beards or add new Slots! ***"));
+					return;
+				}
+			}
+
+			// Allocate Memory
+			UScriptStruct* LoadUsingStruct = FBeardCollectionData::StaticStruct();
+			uint8* RowData = (uint8*)FMemory::Malloc(LoadUsingStruct->PropertiesSize);
+			PlayerCharacter->BeardCollection->RowMap.Add(NewRowName, RowData);
+			CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData>(NewRowName, Context, false);
+			if (CurrentData){
+				CurrentData->BeardName = BeardName;
+				CurrentData->BeardSlotName = NewSlotName;
+			}
+		}
+	}
+}
+
 #pragma endregion
