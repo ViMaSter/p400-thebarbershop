@@ -34,6 +34,22 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HairInfo")	int32 HairState;
 };
 
+USTRUCT(BlueprintType)
+struct FBeardCollectionData : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+
+	FBeardCollectionData()
+		:BeardName("")
+		,BeardSlotName("")
+	{}
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeardCollection") FName BeardName;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeardCollection") FName BeardSlotName;
+};
+
 UCLASS(Blueprintable)
 class ATBSCharacter : public APawn
 {
