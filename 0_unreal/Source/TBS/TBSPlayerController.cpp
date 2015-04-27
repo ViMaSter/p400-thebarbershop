@@ -86,7 +86,7 @@ void ATBSPlayerController::RotateTop(float Value)
 		return;
 	}
 
-	RotateCamera(Value, 0);
+	RotateCamera(-Value, 0);
 }
 
 void ATBSPlayerController::RotateRight(float Value)
