@@ -349,15 +349,15 @@ UDataTable* ATBSPlayerController::FindDataTableToName (FName BeardName) {
 		FName DataTableName;
 		if (PlayerCharacter->BeardCollection) {
 			const FString Context;
-			for (int32 i = 0; i < PlayerCharacter->BeardCollection->GetRowNames ().Num (); i++) {
-				FName Row = PlayerCharacter->BeardCollection->GetRowNames ()[i];
+			for (int32 i = 0; i < PlayerCharacter->BeardCollection->GetRowNames().Num(); i++) {
+				FName Row = PlayerCharacter->BeardCollection->GetRowNames()[i];
 				CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData> (Row, Context, false);
 				i++;
 				if (CurrentData) {
 					if (CurrentData->BeardName == BeardName) {
 						DataTableName = CurrentData->BeardSlotName;
 						for (int32 i = 0; i < PlayerCharacter->BeardData.Num (); i++) {
-							if (PlayerCharacter->BeardData[i]->GetName () == DataTableName.ToString ()) {
+							if (PlayerCharacter->BeardData[i]->GetName() == DataTableName.ToString()) {
 								return PlayerCharacter->BeardData[i];
 								break;
 							}
