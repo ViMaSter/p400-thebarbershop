@@ -7,35 +7,41 @@
 #include "TBSHUD.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
-class TBS_API ATBSHUD : public AHUD
-{
-	GENERATED_BODY()
-	
+class TBS_API ATBSHUD : public AHUD {
+	GENERATED_BODY ()
+
 public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State") TEnumAsByte<ETBSHUDState> CurrentHUDState;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State") TEnumAsByte<ETBSHUDState> PreviousHUDState;
+	UPROPERTY (VisibleAnywhere, BlueprintReadOnly, Category = "State")
+	TEnumAsByte<ETBSHUDState> CurrentHUDState;
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "State")
-		void HUDStateChange(ETBSHUDState NewState);
+	UPROPERTY (VisibleAnywhere, BlueprintReadOnly, Category = "State")
+	TEnumAsByte<ETBSHUDState> PreviousHUDState;
 
-	UFUNCTION(BlueprintCallable, Category = "State")
-		void SetHUDState(ETBSHUDState NewState);
 
-	UFUNCTION(BlueprintCallable, Category = "State")
-		void SetHUDStateUsingByte(TEnumAsByte<ETBSHUDState> NewState);
+	UFUNCTION (BlueprintImplementableEvent, Category = "State")
+	void HUDStateChange (ETBSHUDState NewState);
 
-	UFUNCTION(BlueprintCallable, Category = "State")
-		bool IsHUDState(TEnumAsByte<ETBSHUDState> NewState);
-	UFUNCTION(BlueprintCallable, Category = "State")
-		void AddHUDState(TEnumAsByte<ETBSHUDState> NewState);
-	UFUNCTION(BlueprintCallable, Category = "State")
-		void RemoveHUDState(TEnumAsByte<ETBSHUDState> NewState);
-	UFUNCTION(BlueprintCallable, Category = "State")
-		void ToggleHUDState(TEnumAsByte<ETBSHUDState> NewState);
+	UFUNCTION (BlueprintCallable, Category = "State")
+	void SetHUDState (ETBSHUDState NewState);
 
-	
-	ATBSHUD(const FObjectInitializer& ObjectInitializer);
+	UFUNCTION (BlueprintCallable, Category = "State")
+	void SetHUDStateUsingByte (TEnumAsByte<ETBSHUDState> NewState);
+
+	UFUNCTION (BlueprintCallable, Category = "State")
+	bool IsHUDState (TEnumAsByte<ETBSHUDState> NewState);
+
+	UFUNCTION (BlueprintCallable, Category = "State")
+	void AddHUDState (TEnumAsByte<ETBSHUDState> NewState);
+
+	UFUNCTION (BlueprintCallable, Category = "State")
+	void RemoveHUDState (TEnumAsByte<ETBSHUDState> NewState);
+
+	UFUNCTION (BlueprintCallable, Category = "State")
+	void ToggleHUDState (TEnumAsByte<ETBSHUDState> NewState);
+
+
+	ATBSHUD (const FObjectInitializer& ObjectInitializer);
 };

@@ -4,12 +4,11 @@
 #include "TBSGameMode.generated.h"
 
 UCLASS(minimalapi)
-class ATBSGameMode : public AGameMode
-{
-	GENERATED_BODY()
+class ATBSGameMode : public AGameMode {
+	GENERATED_BODY ()
 
 public:
-	ATBSGameMode(const FObjectInitializer& ObjectInitializer);
+	ATBSGameMode (const FObjectInitializer& ObjectInitializer);
 };
 
 

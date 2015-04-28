@@ -5,15 +5,13 @@
 #include "TBSPlayerController.h"
 #include "TBSCharacter.h"
 
-ATBSGameMode::ATBSGameMode(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
-{
+ATBSGameMode::ATBSGameMode (const FObjectInitializer& ObjectInitializer) : Super (ObjectInitializer) {
 	// use our custom PlayerController class
-	PlayerControllerClass = ATBSPlayerController::StaticClass();
+	PlayerControllerClass = ATBSPlayerController::StaticClass ();
 
 	// set default pawn class to our Blueprinted character
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/TheBarberShop/Assets/Character_BP"));
-	if (PlayerPawnBPClass.Class != NULL)
-	{
+	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass (TEXT ("/Game/TheBarberShop/Assets/Character_BP"));
+	if (PlayerPawnBPClass.Class != NULL) {
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
 }

@@ -5,19 +5,18 @@
 
 
 // Sets default values
-ATBSRadio::ATBSRadio()
-{
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+ATBSRadio::ATBSRadio () {
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 
 	// Create a camera boom...
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	Mesh->AttachTo(RootComponent);
+	Mesh->AttachTo (RootComponent);
 
 	Music0 = CreateDefaultSubobject<UAudioComponent>(TEXT("Music0"));
-	Music0->AttachTo(Mesh);
+	Music0->AttachTo (Mesh);
 	Music0->bOverrideAttenuation = true;
 	Music0->bAllowSpatialization = true;
 
@@ -30,17 +29,15 @@ ATBSRadio::ATBSRadio()
 }
 
 // Called when the game starts or when spawned
-void ATBSRadio::BeginPlay()
-{
-	Super::BeginPlay();
+void ATBSRadio::BeginPlay () {
+	Super::BeginPlay ();
 
-	Music0->Play();
+	Music0->Play ();
 }
 
 // Called every frame
-void ATBSRadio::Tick( float DeltaTime )
-{
-	Super::Tick( DeltaTime );
+void ATBSRadio::Tick (float DeltaTime) {
+	Super::Tick (DeltaTime);
 
 }
 

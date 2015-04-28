@@ -6,23 +6,26 @@
 #include "TBSRadio.generated.h"
 
 UCLASS()
-class TBS_API ATBSRadio : public AActor
-{
-	GENERATED_BODY()
-	
-public:	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Mesh, meta = (AllowPrivateAccess = "true")) class UStaticMeshComponent* Mesh;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Audio, meta = (AllowPrivateAccess = "true")) class UAudioComponent* Music0;
+class TBS_API ATBSRadio : public AActor {
+	GENERATED_BODY ()
+
+public:
+	UPROPERTY (VisibleAnywhere, BlueprintReadOnly, Category = Mesh, meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* Mesh;
+
+	UPROPERTY (VisibleAnywhere, BlueprintReadOnly, Category = Audio, meta = (AllowPrivateAccess = "true"))
+	UAudioComponent* Music0;
+
 
 	// Sets default values for this actor's properties
-	ATBSRadio();
+	ATBSRadio ();
 
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-	
-	// Called every frame
-	virtual void Tick( float DeltaSeconds ) override;
+	virtual void BeginPlay () override;
 
-	
-	
+	// Called every frame
+	virtual void Tick (float DeltaSeconds) override;
+
+
+
 };
