@@ -352,7 +352,6 @@ UDataTable* ATBSPlayerController::FindDataTableToName (FName BeardName) {
 			for (int32 i = 0; i < PlayerCharacter->BeardCollection->GetRowNames().Num(); i++) {
 				FName Row = PlayerCharacter->BeardCollection->GetRowNames()[i];
 				CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData> (Row, Context, false);
-				i++;
 				if (CurrentData) {
 					if (CurrentData->BeardName == BeardName) {
 						DataTableName = CurrentData->BeardSlotName;
