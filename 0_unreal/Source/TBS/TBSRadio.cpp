@@ -26,18 +26,22 @@ ATBSRadio::ATBSRadio () {
 	Music0->AttenuationOverrides.AttenuationShapeExtents.X = 510;
 	Music0->AttenuationOverrides.AttenuationShapeExtents.Y = 30;
 	Music0->AttenuationOverrides.FalloffDistance = 225;
+
+	PlayMusic = true;
 }
 
 // Called when the game starts or when spawned
 void ATBSRadio::BeginPlay () {
-	Super::BeginPlay ();
+	Super::BeginPlay();
 
-	Music0->Play ();
+	if (PlayMusic) {
+		Music0->Play();
+	}
 }
 
 // Called every frame
 void ATBSRadio::Tick (float DeltaTime) {
-	Super::Tick (DeltaTime);
+	Super::Tick(DeltaTime);
 
 }
 

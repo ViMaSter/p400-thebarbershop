@@ -16,6 +16,9 @@ public:
 	UPROPERTY (VisibleAnywhere, BlueprintReadOnly, Category = Audio, meta = (AllowPrivateAccess = "true"))
 	UAudioComponent* Music0;
 
+	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = Audio)
+	bool PlayMusic;
+
 
 	// Sets default values for this actor's properties
 	ATBSRadio ();
