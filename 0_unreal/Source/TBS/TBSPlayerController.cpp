@@ -314,7 +314,6 @@ bool ATBSPlayerController::SetCurrentBeardDataToCSV(UDataTable* DataTable) {
 
 		if (CurrentData) {
 			CurrentData->HairState = ComponentStatus;
-			return true;
 		}
 		else {
 			UScriptStruct* LoadUsingStruct = FBeardComparisonData::StaticStruct ();
@@ -323,11 +322,13 @@ bool ATBSPlayerController::SetCurrentBeardDataToCSV(UDataTable* DataTable) {
 			CurrentData = DataTable->FindRow<FBeardComparisonData> (Row, Context, false);
 			if (CurrentData) {
 				CurrentData->HairState = ComponentStatus;
-				return true;
+			}
+			else{
+				return false;
 			}
 		}
 	}
-	return false;
+	return true;
 }
 
 bool ATBSPlayerController::LoadBeardDataToCurrentCustomer (UDataTable* DataTable) {
