@@ -368,7 +368,6 @@ bool ATBSPlayerController::LoadBeardDataToCurrentCustomer (UDataTable* DataTable
 		else {
 			UE_LOG (LogClass, Warning, TEXT ("*** Could not load Beard Data Row! Possible missmatch of Meshcount ***"));
 			success = false;
-			SpawnNextCustomer();
 		}
 	}
 	return success;
