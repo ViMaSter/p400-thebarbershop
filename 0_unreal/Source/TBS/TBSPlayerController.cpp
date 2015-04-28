@@ -252,7 +252,7 @@ void ATBSPlayerController::SaveBeardID (FName BeardName) {
 		UDataTable* DataTable;
 		SetBeardToCollectionData (BeardName);
 		DataTable = FindDataTableToName (BeardName);
-		if (DataTable == NULL) {
+		if (DataTable) {
 			SetCurrentBeardDataToCSV (DataTable);
 		}
 	}
