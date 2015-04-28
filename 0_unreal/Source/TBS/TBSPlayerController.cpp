@@ -236,40 +236,62 @@ void ATBSPlayerController::SpawnNextCustomer () {
 
 
 #pragma region Beard Data Management
-void ATBSPlayerController::ClearBeardID (FName BeardName) {
+
+bool ATBSPlayerController::ClearBeardData() {
+	if (PlayerCharacter){
+		TArray<FName> Beards = GetBeardNames();
+		for (int32 i = 0; i < Beards.Num(); i++) {
+			ClearBeardID(Beards[i]);
+		}
+	}
+	if (GetBeardNames().Num() == 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool ATBSPlayerController::ClearBeardID (FName BeardName) {
 	if (PlayerCharacter) {
 		UDataTable* DataTable;
 		DataTable = FindDataTableToName (BeardName);
 		if (DataTable) {
 			DataTable->EmptyTable ();
 		}
-		RemoveBeardFromCollection (BeardName);
+		return RemoveBeardFromCollection (BeardName);
 	}
+	return false;
 }
 
-void ATBSPlayerController::SaveBeardID (FName BeardName) {
+bool ATBSPlayerController::SaveBeardID (FName BeardName) {
 	if (PlayerCharacter) {
+		bool succsess = true;
 		UDataTable* DataTable;
-		SetBeardToCollectionData (BeardName);
+		succsess = SetBeardToCollectionData(BeardName);
 		DataTable = FindDataTableToName (BeardName);
 		if (DataTable) {
-			SetCurrentBeardDataToCSV (DataTable);
+			return succsess && SetCurrentBeardDataToCSV(DataTable);
 		}
 	}
+	return false;
 }
 
-void ATBSPlayerController::LoadBeardID (FName BeardName) {
+bool ATBSPlayerController::LoadBeardID (FName BeardName) {
 	if (PlayerCharacter) {
 		UDataTable* DataTable;
 		DataTable = FindDataTableToName (BeardName);
 		if (DataTable) {
-			LoadBeardDataToCurrentCustomer (DataTable);
+			return LoadBeardDataToCurrentCustomer (DataTable);
 		}
 	}
+	return false;
 }
 
-void ATBSPlayerController::SetCurrentBeardDataToCSV (UDataTable* DataTable) {
-	if (PlayerCharacter == NULL) return;
+bool ATBSPlayerController::SetCurrentBeardDataToCSV(UDataTable* DataTable) {
+	if (PlayerCharacter == NULL) {
+		return false;
+	}
 	TArray<UActorComponent*> Components;
 	Components = PlayerCharacter->CurrentCustomer->Beard->GetComponentsByClass (UStaticMeshComponent::StaticClass ());
 	FBeardComparisonData* CurrentData;
@@ -292,6 +314,7 @@ void ATBSPlayerController::SetCurrentBeardDataToCSV (UDataTable* DataTable) {
 
 		if (CurrentData) {
 			CurrentData->HairState = ComponentStatus;
+			return true;
 		}
 		else {
 			UScriptStruct* LoadUsingStruct = FBeardComparisonData::StaticStruct ();
@@ -300,17 +323,22 @@ void ATBSPlayerController::SetCurrentBeardDataToCSV (UDataTable* DataTable) {
 			CurrentData = DataTable->FindRow<FBeardComparisonData> (Row, Context, false);
 			if (CurrentData) {
 				CurrentData->HairState = ComponentStatus;
+				return true;
 			}
 		}
 	}
+	return false;
 }
 
-void ATBSPlayerController::LoadBeardDataToCurrentCustomer (UDataTable* DataTable) {
-	if (PlayerCharacter == NULL) return;
+bool ATBSPlayerController::LoadBeardDataToCurrentCustomer (UDataTable* DataTable) {
+	if (PlayerCharacter == NULL) {
+		return false;
+	}
 	TArray<UActorComponent*> Components;
 	Components = PlayerCharacter->CurrentCustomer->Beard->GetComponentsByClass (UStaticMeshComponent::StaticClass ());
 	FBeardComparisonData* CurrentData;
 	const FString Context;
+	bool success = true;
 	for (int32 i = 0; i < Components.Num (); i++) {
 		FString String = FString::FromInt (i);
 		FName Row = FName (*String);
@@ -338,9 +366,11 @@ void ATBSPlayerController::LoadBeardDataToCurrentCustomer (UDataTable* DataTable
 		}
 		else {
 			UE_LOG (LogClass, Warning, TEXT ("*** Could not load Beard Data Row! Possible missmatch of Meshcount ***"));
-			break;
+			success = false;
+			SpawnNextCustomer();
 		}
 	}
+	return success;
 }
 
 UDataTable* ATBSPlayerController::FindDataTableToName (FName BeardName) {
@@ -392,7 +422,7 @@ TArray<FName> ATBSPlayerController::GetBeardNames () {
 	return BeardNames;
 }
 
-void ATBSPlayerController::RemoveBeardFromCollection (FName BeardName) {
+bool ATBSPlayerController::RemoveBeardFromCollection (FName BeardName) {
 	FBeardCollectionData* CurrentData;
 	bool Success = false;
 	if (PlayerCharacter->BeardCollection) {
@@ -410,9 +440,10 @@ void ATBSPlayerController::RemoveBeardFromCollection (FName BeardName) {
 			UE_LOG (LogClass, Warning, TEXT ("*** Could not find Beard in CollectionData! ***"));
 		}
 	}
+	return Success;
 }
 
-void ATBSPlayerController::SetBeardToCollectionData (FName BeardName) {
+bool ATBSPlayerController::SetBeardToCollectionData (FName BeardName) {
 	FBeardCollectionData* CurrentData;
 	bool Success = false;
 	if (PlayerCharacter->BeardCollection) {
@@ -463,7 +494,7 @@ void ATBSPlayerController::SetBeardToCollectionData (FName BeardName) {
 				if (SlotID >= 10) {
 					UE_LOG (LogClass, Warning, TEXT ("*** Could not save the beard! ***"));
 					UE_LOG (LogClass, Warning, TEXT ("*** All slots are full please delete old beards or add new Slots! ***"));
-					return;
+					return false;
 				}
 			}
 
@@ -475,9 +506,11 @@ void ATBSPlayerController::SetBeardToCollectionData (FName BeardName) {
 			if (CurrentData) {
 				CurrentData->BeardName = BeardName;
 				CurrentData->BeardSlotName = NewSlotName;
+				return true;
 			}
 		}
 	}
+	return false;
 }
 
 #pragma endregion

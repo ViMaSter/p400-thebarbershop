@@ -14,9 +14,10 @@ public:
 	ATBSPlayerController (const FObjectInitializer& ObjectInitializer);
 
 	/// Vincent: Needed to move this from protected to public, since this methods will be called from the HUD
-	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") void ClearBeardID (FName BeardName);
-	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") void SaveBeardID (FName BeardName);
-	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") void LoadBeardID (FName BeardName);
+	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool ClearBeardData ();
+	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool ClearBeardID (FName BeardName);
+	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool SaveBeardID (FName BeardName);
+	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool LoadBeardID (FName BeardName);
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") TArray<FName> GetBeardNames ();
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") void SpawnNextCustomer ();
 
@@ -100,10 +101,10 @@ protected:
 	void ApplyCamera (float DeltaTime);
 
 	UDataTable* FindDataTableToName (FName BeardName);
-	void RemoveBeardFromCollection (FName BeardName);
-	void LoadBeardDataToCurrentCustomer (UDataTable* Datatable);
-	void SetCurrentBeardDataToCSV (UDataTable* DataTable);
-	void SetBeardToCollectionData (FName BeardName);
+	bool RemoveBeardFromCollection (FName BeardName);
+	bool LoadBeardDataToCurrentCustomer(UDataTable* Datatable);
+	bool SetCurrentBeardDataToCSV (UDataTable* DataTable);
+	bool SetBeardToCollectionData (FName BeardName);
 };
 
 
