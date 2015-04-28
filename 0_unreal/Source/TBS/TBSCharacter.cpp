@@ -104,7 +104,7 @@ float ATBSCharacter::GetTimeLeft () {
 	if (GetWorldTimerManager ().IsTimerActive (TimerHandle)) {
 		float TimeLeft;
 		TimeLeft = GetWorldTimerManager ().GetTimerRemaining (TimerHandle);
-		UE_LOG (LogClass, Log, TEXT ("*** Time Left: %.2f from %.2f ***"), TimeLeft, TimeLimit);
+		//UE_LOG (LogClass, Log, TEXT ("*** Time Left: %.2f from %.2f ***"), TimeLeft, TimeLimit);
 		return TimeLeft;
 	}
 	return -1.f;
