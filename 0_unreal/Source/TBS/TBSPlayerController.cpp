@@ -510,7 +510,7 @@ bool ATBSPlayerController::SetBeardToCollectionData (FName BeardName) {
 			}
 		}
 	}
-	return false;
+	return Success;
 }
 
 #pragma endregion
