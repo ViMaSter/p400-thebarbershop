@@ -266,12 +266,12 @@ bool ATBSPlayerController::ClearBeardID (FName BeardName) {
 
 bool ATBSPlayerController::SaveBeardID (FName BeardName) {
 	if (PlayerCharacter) {
-		bool succsess = true;
+		bool success = true;
 		UDataTable* DataTable;
-		succsess = SetBeardToCollectionData(BeardName);
+		success = SetBeardToCollectionData(BeardName);
 		DataTable = FindDataTableToName (BeardName);
 		if (DataTable) {
-			return succsess && SetCurrentBeardDataToCSV(DataTable);
+			return success && SetCurrentBeardDataToCSV(DataTable);
 		}
 	}
 	return false;
