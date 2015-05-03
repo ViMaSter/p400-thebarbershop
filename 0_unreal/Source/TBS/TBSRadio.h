@@ -62,7 +62,7 @@ public:
 
 	// Called when the game starts or when spawned
 	UFUNCTION (BlueprintCallable, Category = Radio)
-	void SwitchStation (uint8 direction);
+	void SwitchStation (int32 direction);
 	void SwitchStationFadeIn ();
 
 	UFUNCTION (Category = Radio)
