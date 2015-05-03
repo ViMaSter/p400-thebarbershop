@@ -38,7 +38,7 @@ ATBSRadio::ATBSRadio () {
 	ChannelSwitchNoise->bAllowSpatialization = true;
 
 	NewIs1 = true;
-	CurrentStation = 0;
+	CurrentStation = -1;
 
 	PlayMusic = true;
 }
@@ -48,7 +48,7 @@ void ATBSRadio::BeginPlay () {
 	Super::BeginPlay ();
 
 	if (PlayMusic) {
-		Music0->Play ();
+		SwitchStation(1);
 	}
 }
 
@@ -59,14 +59,18 @@ void ATBSRadio::Tick (float DeltaTime) {
 
 void ATBSRadio::AudioFinished0 () {
 	if (ChannelToFadeIn == Music0) {
-		Music0->Sound = RadioStations[CurrentStation].NextTrack ();
+		CurrentSong = RadioStations[CurrentStation].NextTrack();
+		OnSongChange(*CurrentSong);
+		Music0->Sound = CurrentSong->ActualClip;
 		Music0->Play (0.0f);
 	}
 }
 
 void ATBSRadio::AudioFinished1 () {
 	if (ChannelToFadeIn == Music1) {
-		Music1->Sound = RadioStations[CurrentStation].NextTrack ();
+		CurrentSong = RadioStations[CurrentStation].NextTrack();
+		OnSongChange(*CurrentSong);
+		Music1->Sound = CurrentSong->ActualClip;
 		Music1->Play (0.0f);
 	}
 }
@@ -81,7 +85,8 @@ void ATBSRadio::SwitchStation(int32 direction) {
 
 	UAudioComponent* CurrentComponent = NewIs1 ? Music0 : Music1;
 	UAudioComponent* NewComponent = NewIs1 ? Music1 : Music0;
-	NewComponent->Sound = RadioStations[CurrentStation].NextTrack ();
+	CurrentSong = RadioStations[CurrentStation].NextTrack();
+	NewComponent->Sound = CurrentSong->ActualClip;
 
 	ChannelToFadeIn = NewComponent;
 
@@ -94,9 +99,6 @@ void ATBSRadio::SwitchStation(int32 direction) {
 		FMath::Fmod (GetWorld ()->TimeSeconds, ChannelToFadeIn->Sound->Duration)
 		);
 	NewIs1 = !NewIs1;
-}
 
-void ATBSRadio::SwitchStationFadeIn () {
-	GetWorldTimerManager ().ClearTimer (ChannelFadeIn);
-	
+	OnSongChange(*CurrentSong);
 }

@@ -37,11 +37,10 @@ public:
 	void AddHUDState (TEnumAsByte<ETBSHUDState> NewState);
 
 	UFUNCTION (BlueprintCallable, Category = "State")
-	void RemoveHUDState (TEnumAsByte<ETBSHUDState> NewState);
+	void RemoveHUDState(TEnumAsByte<ETBSHUDState> NewState);
 
-	UFUNCTION (BlueprintCallable, Category = "State")
-	void ToggleHUDState (TEnumAsByte<ETBSHUDState> NewState);
-
+	UFUNCTION(BlueprintCallable, Category = "State")
+	void ToggleHUDState(TEnumAsByte<ETBSHUDState> NewState);
 
 	ATBSHUD (const FObjectInitializer& ObjectInitializer);
 };

@@ -40,4 +40,3 @@ void ATBSHUD::ToggleHUDState (TEnumAsByte<ETBSHUDState> NewState) {
 		return AddHUDState (NewState);
 	}
 }
-

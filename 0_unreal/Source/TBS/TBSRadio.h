@@ -5,6 +5,30 @@
 #include "GameFramework/Actor.h"
 #include "TBSRadio.generated.h"
 
+USTRUCT(BlueprintType)
+struct FTBSRadioSong {
+	GENERATED_USTRUCT_BODY()
+
+public:
+
+	FTBSRadioSong()
+		: Artist(TEXT(""))
+		, Title(TEXT(""))
+		, ActualClip(nullptr)
+	{}
+
+	FTBSRadioSong(FName artist, FName title) {
+		Artist = artist;
+		Title = title;
+		ActualClip = nullptr;
+	}
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Meta")	FName Artist;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Meta")	FName Title;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "File")	USoundBase* ActualClip;
+};
+
 USTRUCT (BlueprintType)
 struct FTBSRadioStation {
 	GENERATED_USTRUCT_BODY ()
@@ -14,15 +38,14 @@ public:
 	uint32 CurrentTrack;
 
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = Audio)
-	TArray<USoundBase*> MusicPieces;
+	TArray<FTBSRadioSong> MusicPieces;
 
-	USoundBase* NextTrack () {
-		USoundBase* Track = MusicPieces[CurrentTrack];
+	FTBSRadioSong* NextTrack() {
 
 		CurrentTrack += 1;
 		CurrentTrack %= MusicPieces.Num ();
 
-		return Track;
+		return &MusicPieces[CurrentTrack];
 	}
 };
 
@@ -63,7 +86,10 @@ public:
 	// Called when the game starts or when spawned
 	UFUNCTION (BlueprintCallable, Category = Radio)
 	void SwitchStation (int32 direction);
-	void SwitchStationFadeIn ();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Radio")
+	void OnSongChange(FTBSRadioSong NewSong);
+	FTBSRadioSong* CurrentSong;
 
 	UFUNCTION (Category = Radio)
 	void AudioFinished0 ();
