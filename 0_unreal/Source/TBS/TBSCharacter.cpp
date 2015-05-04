@@ -100,12 +100,22 @@ void ATBSCharacter::LoadNewCustomer () {
 
 // Returns the remaining time of the current customer
 // Returns -1.f if timer is inactive
-float ATBSCharacter::GetTimeLeft () {
-	if (GetWorldTimerManager ().IsTimerActive (TimerHandle)) {
+float ATBSCharacter::GetTimeLeft() {
+	if (GetWorldTimerManager().IsTimerActive(TimerHandle)) {
 		float TimeLeft;
-		TimeLeft = GetWorldTimerManager ().GetTimerRemaining (TimerHandle);
+		TimeLeft = GetWorldTimerManager().GetTimerRemaining(TimerHandle);
 		//UE_LOG (LogClass, Log, TEXT ("*** Time Left: %.2f from %.2f ***"), TimeLeft, TimeLimit);
 		return TimeLeft;
+	}
+	return -1.f;
+}
+
+float ATBSCharacter::GetTimeElapsed() {
+	if (GetWorldTimerManager().IsTimerActive(TimerHandle)) {
+		float TimeElapsed;
+		TimeElapsed = GetWorldTimerManager().GetTimerElapsed(TimerHandle);
+		//UE_LOG (LogClass, Log, TEXT ("*** Time Left: %.2f from %.2f ***"), TimeLeft, TimeLimit);
+		return TimeElapsed;
 	}
 	return -1.f;
 }

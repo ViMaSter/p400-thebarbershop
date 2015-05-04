@@ -141,8 +141,9 @@ public:
 	virtual void BeginPlay () override;
 
 	// (BP-)Helper functions
-	UFUNCTION (BlueprintCallable, Category = "Timer") float GetTimeLeft ();
-	UFUNCTION (BlueprintCallable, Category = "EXP") void IncreaseEXP (int32 Value);
+	UFUNCTION(BlueprintCallable, Category = "Timer") float GetTimeElapsed();
+	UFUNCTION(BlueprintCallable, Category = "Timer") float GetTimeLeft();
+	UFUNCTION(BlueprintCallable, Category = "EXP") void IncreaseEXP(int32 Value);
 
 	void FinishCurrentCustomer ();
 	void SwitchTool (bool IsNextTool);
