@@ -30,12 +30,22 @@ ATBSRadio::ATBSRadio () {
 	Music1->AttachTo (AudioComponentOffset);
 	Music1->bOverrideAttenuation = true;
 	Music1->bAllowSpatialization = true;
-	Music1->OnAudioFinished.AddDynamic (this, &ATBSRadio::AudioFinished1);
+	Music1->OnAudioFinished.AddDynamic(this, &ATBSRadio::AudioFinished1);
 
-	ChannelSwitchNoise = CreateDefaultSubobject<UAudioComponent> (TEXT ("ChannelSwitchNoise"));
-	ChannelSwitchNoise->AttachTo (AudioComponentOffset);
+	ChannelSwitchNoise = CreateDefaultSubobject<UAudioComponent>(TEXT("ChannelSwitchNoise"));
+	ChannelSwitchNoise->AttachTo(AudioComponentOffset);
 	ChannelSwitchNoise->bOverrideAttenuation = true;
 	ChannelSwitchNoise->bAllowSpatialization = true;
+
+	RadioTurnOffNoise = CreateDefaultSubobject<UAudioComponent>(TEXT("RadioTurnOffNoise"));
+	RadioTurnOffNoise->AttachTo(AudioComponentOffset);
+	RadioTurnOffNoise->bOverrideAttenuation = true;
+	RadioTurnOffNoise->bAllowSpatialization = true;
+
+	RadioTurnOnNoise = CreateDefaultSubobject<UAudioComponent>(TEXT("RadioTurnOnNoise"));
+	RadioTurnOnNoise->AttachTo(AudioComponentOffset);
+	RadioTurnOnNoise->bOverrideAttenuation = true;
+	RadioTurnOnNoise->bAllowSpatialization = true;
 
 	NewIs1 = true;
 	CurrentStation = -1;
@@ -77,28 +87,47 @@ void ATBSRadio::AudioFinished1 () {
 
 void ATBSRadio::SwitchStation(int32 direction) {
 	CurrentStation += direction;
-	while (CurrentStation < 0) {
-		CurrentStation += RadioStations.Num ();
+	while (CurrentStation < -1) {
+		CurrentStation += RadioStations.Num ()+1;
 	}
 
-	CurrentStation %= RadioStations.Num ();
+	CurrentStation += 1;
+	CurrentStation %= RadioStations.Num() + 1;
+	CurrentStation -= 1;
 
-	UAudioComponent* CurrentComponent = NewIs1 ? Music0 : Music1;
-	UAudioComponent* NewComponent = NewIs1 ? Music1 : Music0;
-	CurrentSong = RadioStations[CurrentStation].NextTrack();
-	NewComponent->Sound = CurrentSong->ActualClip;
+	if (CurrentStation == -1) { // Turned radio off
+		UAudioComponent* CurrentComponent = NewIs1 ? Music0 : Music1;
+		RadioTurnOffNoise->Play();
+		CurrentComponent->FadeOut(1.0f, 0.0f);
 
-	ChannelToFadeIn = NewComponent;
+		OnSongChange(FTBSRadioSong("", "Turned off"));
+	}
+	else {						// Turned radio on/tune in to the next station
+		UAudioComponent* CurrentComponent = NewIs1 ? Music0 : Music1;
+		UAudioComponent* NewComponent = NewIs1 ? Music1 : Music0;
+		CurrentSong = RadioStations[CurrentStation].NextTrack();
+		NewComponent->Sound = CurrentSong->ActualClip;
 
-	CurrentComponent->FadeOut (0.5f, 0.0f);
-	ChannelSwitchNoise->Play ();
-	ChannelToFadeIn->Stop ();
-	ChannelToFadeIn->FadeIn (
-		0.5f,
-		1.0f,
-		FMath::Fmod (GetWorld ()->TimeSeconds, ChannelToFadeIn->Sound->Duration)
-		);
-	NewIs1 = !NewIs1;
+		ChannelToFadeIn = NewComponent;
 
-	OnSongChange(*CurrentSong);
+		CurrentComponent->FadeOut(0.5f, 0.0f);
+		if (CurrentStation != 0) {
+			ChannelSwitchNoise->Play();
+		}
+		else {
+			RadioTurnOnNoise->Play();
+		}
+		
+		ChannelToFadeIn->Stop();
+		ChannelToFadeIn->FadeIn(
+			0.5f,
+			1.0f,
+			FMath::Fmod(GetWorld()->TimeSeconds, ChannelToFadeIn->Sound->Duration)
+			);
+		NewIs1 = !NewIs1;
+
+		OnSongChange(*CurrentSong);
+	}
+
+	
 }

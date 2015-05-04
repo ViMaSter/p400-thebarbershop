@@ -67,8 +67,15 @@ public:
 	UPROPERTY (VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UAudioComponent* Music1;
 
-	UPROPERTY (VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UAudioComponent* ChannelSwitchNoise;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UAudioComponent* RadioTurnOnNoise;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UAudioComponent* RadioTurnOffNoise;
+
 	UAudioComponent* ChannelToFadeIn;
 	FTimerHandle ChannelFadeIn;
 
