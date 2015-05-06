@@ -235,13 +235,13 @@ void ATBSPlayerController::FinishCurrentCustomer() {
 #pragma region Beard Data Management
 
 bool ATBSPlayerController::ClearBeardData() {
+	TArray<FBeardNameLevelData> Beards = GetBeardNameLevelData();
 	if (PlayerCharacter){
-		TArray<FName> Beards = GetBeardNames();
 		for (int32 i = 0; i < Beards.Num(); i++) {
 			ClearBeardID(Beards[i]);
 		}
 	}
-	if (GetBeardNames().Num() == 0) {
+	if (Beards.Num() == 0) {
 		return true;
 	}
 	else {
