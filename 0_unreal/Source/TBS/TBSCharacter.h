@@ -29,7 +29,7 @@ struct FBeardComparisonData : public FTableRowBase {
 public:
 
 	FBeardComparisonData ()
-		:HairState (0)
+		: HairState (0)
 	{}
 
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "HairInfo")
@@ -42,9 +42,10 @@ struct FBeardCollectionData : public FTableRowBase {
 
 public:
 
-	FBeardCollectionData ()
-		:BeardName ("")
-		, BeardSlotName ("")
+	FBeardCollectionData()
+		: BeardName("")
+		, BeardSlotName("")
+		, BeardLevel(0)
 	{}
 
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "BeardCollection")
@@ -53,6 +54,8 @@ public:
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "BeardCollection")
 	FName BeardSlotName;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeardCollection")
+	int32 BeardLevel;
 };
 
 UCLASS(Blueprintable)

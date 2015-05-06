@@ -76,8 +76,6 @@ void ATBSCharacter::BeginPlay () {
 			CurrentExperienceToLvl = CurrentData->XPtoLvl;
 		}
 	}
-
-	if (CurrentCustomer) LoadNewCustomer ();
 }
 
 void ATBSCharacter::FinishCurrentCustomer () {
@@ -93,7 +91,7 @@ void ATBSCharacter::LoadNewCustomer () {
 
 	// Create New Customer
 	if (CurrentCustomer) {
-		((ATBSCustomer*) CurrentCustomer)->CreateNewCustomer ();
+		((ATBSCustomer*) CurrentCustomer)->CreateNewCustomer(CurrentLevel);
 	}
 	else UE_LOG (LogClass, Warning, TEXT ("*** No Customer Reference! ***"));
 }

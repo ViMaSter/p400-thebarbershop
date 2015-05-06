@@ -98,16 +98,6 @@ void ATBSPlayerController::RotateToolTop (float Value) {
 	}
 }
 
-// Deprecated
-// Note: Want confirmation - just remove it and commit that, if realy unnecessary
-void ATBSPlayerController::RotateToolRight (float Value) {
-	if (RotationActive && Value != 0.f) {
-		Value *= 10;
-		ToolRotationTarget += FRotator (0, Value, 0);
-	}
-}
-
-
 void ATBSPlayerController::OnSetShavedPressed () {
 	ShaveActive = true;
 }
@@ -264,11 +254,11 @@ bool ATBSPlayerController::ClearBeardID (FName BeardName) {
 	return false;
 }
 
-bool ATBSPlayerController::SaveBeardID (FName BeardName) {
+bool ATBSPlayerController::SaveBeardID (FName BeardName, int32 BeardLevel) {
 	if (PlayerCharacter) {
 		bool success = true;
 		UDataTable* DataTable;
-		success = SetBeardToCollectionData(BeardName);
+		success = SetBeardToCollectionData(BeardName, BeardLevel);
 		DataTable = FindDataTableToName (BeardName);
 		if (DataTable) {
 			return success && SetCurrentBeardDataToCSV(DataTable);
@@ -404,24 +394,6 @@ UDataTable* ATBSPlayerController::FindDataTableToName (FName BeardName) {
 	return NULL;
 }
 
-// Call from the HUD to get an FName Array of the saved beards
-TArray<FName> ATBSPlayerController::GetBeardNames () {
-	TArray<FName> BeardNames;
-	if (PlayerCharacter == NULL) return BeardNames;
-	FBeardCollectionData* CurrentData;
-	if (PlayerCharacter->BeardCollection) {
-		const FString Context;
-		for (int32 i = 0; i < PlayerCharacter->BeardCollection->GetRowNames ().Num (); i++) {
-			FName Row = PlayerCharacter->BeardCollection->GetRowNames ()[i];
-			CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData> (Row, Context, false);
-			if (CurrentData) {
-				BeardNames.Add (CurrentData->BeardName);
-			}
-		}
-	}
-	return BeardNames;
-}
-
 bool ATBSPlayerController::RemoveBeardFromCollection (FName BeardName) {
 	FBeardCollectionData* CurrentData;
 	bool Success = false;
@@ -443,7 +415,7 @@ bool ATBSPlayerController::RemoveBeardFromCollection (FName BeardName) {
 	return Success;
 }
 
-bool ATBSPlayerController::SetBeardToCollectionData (FName BeardName) {
+bool ATBSPlayerController::SetBeardToCollectionData (FName BeardName, int32 BeardLevel) {
 	FBeardCollectionData* CurrentData;
 	bool Success = false;
 	if (PlayerCharacter->BeardCollection) {
@@ -454,6 +426,7 @@ bool ATBSPlayerController::SetBeardToCollectionData (FName BeardName) {
 			CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData> (Row, Context, false);
 			if (CurrentData && CurrentData->BeardName == BeardName) {
 				Success = true;
+				CurrentData->BeardLevel = BeardLevel;
 				break;
 			}
 		}
@@ -506,11 +479,55 @@ bool ATBSPlayerController::SetBeardToCollectionData (FName BeardName) {
 			if (CurrentData) {
 				CurrentData->BeardName = BeardName;
 				CurrentData->BeardSlotName = NewSlotName;
+				CurrentData->BeardLevel = BeardLevel;
 				return true;
 			}
 		}
 	}
 	return Success;
+}
+
+// DEPRECATED! TO BE REMOVED WITH NEXT UI UPDATE
+// Please use GetBeardNameLevelData in future
+// Call from the HUD to get an FName Array of the saved beards
+TArray<FName> ATBSPlayerController::GetBeardNames() {
+	TArray<FName> BeardNames;
+	if (PlayerCharacter == NULL) return BeardNames;
+	FBeardCollectionData* CurrentData;
+	if (PlayerCharacter->BeardCollection) {
+		const FString Context;
+		for (int32 i = 0; i < PlayerCharacter->BeardCollection->GetRowNames().Num(); i++) {
+			FName Row = PlayerCharacter->BeardCollection->GetRowNames()[i];
+			CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData>(Row, Context, false);
+			if (CurrentData) {
+				BeardNames.Add(CurrentData->BeardName);
+			}
+		}
+	}
+	return BeardNames;
+}
+
+// Call from the HUD to get an array of Name, int32 struct of the saved beards
+TArray<FBeardNameLevelData> ATBSPlayerController::GetBeardNameLevelData() {
+	TArray<FBeardNameLevelData> BeardNameLevelData;
+	if (PlayerCharacter == NULL) return BeardNameLevelData;
+
+	FBeardCollectionData* CurrentData;
+	if (PlayerCharacter->BeardCollection) {
+		const FString Context;
+		for (int32 i = 0; i < PlayerCharacter->BeardCollection->GetRowNames().Num(); i++) {
+			FName Row = PlayerCharacter->BeardCollection->GetRowNames()[i];
+			CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData>(Row, Context, false);
+
+			if (CurrentData) {
+				FBeardNameLevelData Data;
+				Data.BeardLevel = CurrentData->BeardLevel;
+				Data.BeardName = CurrentData->BeardName;
+				BeardNameLevelData.Add(Data);
+			}
+		}
+	}
+	return BeardNameLevelData;
 }
 
 #pragma endregion

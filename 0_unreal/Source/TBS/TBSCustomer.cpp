@@ -2,6 +2,7 @@
 
 #include "TBS.h"
 #include "TBSCustomer.h"
+#include "TBSCharacter.h"
 
 
 // Sets default values
@@ -22,19 +23,27 @@ ATBSCustomer::ATBSCustomer (const FObjectInitializer& ObjectInitializer)
 // Called when the game starts or when spawned
 void ATBSCustomer::BeginPlay () {
 	Super::BeginPlay ();
-
-	CreateNewCustomer ();
-}
-
-void ATBSCustomer::CreateNewCustomer () {
-	if (Beard) Beard->Destroy ();
-
 	if (BeardClass) {
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Instigator = Instigator;
 		SpawnParams.Owner = this;
-		Beard = GetWorld ()->SpawnActor<AActor> (BeardClass, FVector (0, 0, 340), FRotator::ZeroRotator, SpawnParams);
+		Beard = GetWorld()->SpawnActor<AActor>(BeardClass, FVector(0, 0, 340), FRotator::ZeroRotator, SpawnParams);
 	}
+	CreatedCustomer();
+	UE_LOG(LogClass, Log, TEXT("*** Customer Customer created ***"))
+}
+
+void ATBSCustomer::CreateNewCustomer (int32 CharacterLevel) {
+	// Reset the beard to Trimmed 0 and visibile.
+	TArray<UActorComponent*> Components;
+	Components = Beard->GetComponentsByClass(UStaticMeshComponent::StaticClass());
+	for (int32 i = 0; i < Components.Num(); i++) {
+		UStaticMeshComponent* Mesh = (UStaticMeshComponent*)Components[i];
+		Mesh->SetVisibility(true);
+		Mesh->SetCollisionResponseToAllChannels(ECR_Overlap);
+		((ATBSCharacter*)GetOwner())->Tool->Trimmed(0, Components[i]);
+	}
+
 	CreatedCustomer();
 	UE_LOG(LogClass, Log, TEXT("*** Customer Customer created ***"))
 }

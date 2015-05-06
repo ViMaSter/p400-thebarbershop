@@ -6,6 +6,15 @@
 #include "Engine/LocalPlayer.h"
 #include "TBSPlayerController.generated.h"
 
+USTRUCT(BlueprintType)
+struct FBeardNameLevelData{
+	GENERATED_USTRUCT_BODY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeardCollection")
+		FName BeardName;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeardCollection")
+		int32 BeardLevel;
+};
+
 UCLASS()
 class ATBSPlayerController : public APlayerController {
 	GENERATED_BODY ()
@@ -16,10 +25,11 @@ public:
 	/// Vincent: Needed to move this from protected to public, since this methods will be called from the HUD
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool ClearBeardData ();
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool ClearBeardID (FName BeardName);
-	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool SaveBeardID (FName BeardName);
+	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool SaveBeardID(FName BeardName, int32 BeardLevel = 1);
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool LoadBeardID (FName BeardName);
-	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") TArray<FName> GetBeardNames ();
-	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") void SpawnNextCustomer ();
+	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") void SpawnNextCustomer();
+	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") TArray<FName> GetBeardNames();
+	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") TArray<FBeardNameLevelData> GetBeardNameLevelData();
 
 	//BeginPlay
 	virtual void BeginPlay () override;
@@ -81,7 +91,6 @@ protected:
 	void RotateTop (float Value);
 	void RotateRight (float Value);
 	void RotateToolTop (float Value);
-	void RotateToolRight (float Value);
 	void SwitchToNextTool ();
 	void SwitchToPrevTool ();
 	void OnSetShavedPressed ();
@@ -104,7 +113,7 @@ protected:
 	bool RemoveBeardFromCollection (FName BeardName);
 	bool LoadBeardDataToCurrentCustomer(UDataTable* Datatable);
 	bool SetCurrentBeardDataToCSV (UDataTable* DataTable);
-	bool SetBeardToCollectionData (FName BeardName);
+	bool SetBeardToCollectionData(FName BeardName, int32 BeardLevel);
 };
 
 

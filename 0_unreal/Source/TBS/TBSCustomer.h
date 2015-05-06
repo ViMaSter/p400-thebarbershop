@@ -47,7 +47,7 @@ public:
 	UFUNCTION (BlueprintImplementableEvent, Category = "Beard")
 	void CreatedCustomer ();
 
-	void CreateNewCustomer ();
+	void CreateNewCustomer(int32 CharacterLevel = 1);
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay () override;
