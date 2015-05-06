@@ -3,6 +3,7 @@
 #include "TBS.h"
 #include "TBSCustomer.h"
 #include "TBSCharacter.h"
+#include "TBSPlayerController.h"
 
 
 // Sets default values
@@ -11,6 +12,7 @@ ATBSCustomer::ATBSCustomer (const FObjectInitializer& ObjectInitializer)
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	DesiredBeard = "DEFAULT";
 
 	/* FClassfinder does not find the Blueprint for some reason. So it resets for some reason the Bearclass with Null.
 	   This is a short fix, so the autobuilt will work properly.
@@ -23,28 +25,55 @@ ATBSCustomer::ATBSCustomer (const FObjectInitializer& ObjectInitializer)
 // Called when the game starts or when spawned
 void ATBSCustomer::BeginPlay () {
 	Super::BeginPlay ();
-	if (BeardClass) {
+	if (BeardClass && Beard == NULL) {
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Instigator = Instigator;
 		SpawnParams.Owner = this;
 		Beard = GetWorld()->SpawnActor<AActor>(BeardClass, FVector(0, 0, 340), FRotator::ZeroRotator, SpawnParams);
 	}
-	CreatedCustomer();
-	UE_LOG(LogClass, Log, TEXT("*** Customer Customer created ***"))
 }
 
 void ATBSCustomer::CreateNewCustomer (int32 CharacterLevel) {
 	// Reset the beard to Trimmed 0 and visibile.
-	TArray<UActorComponent*> Components;
-	Components = Beard->GetComponentsByClass(UStaticMeshComponent::StaticClass());
-	for (int32 i = 0; i < Components.Num(); i++) {
-		UStaticMeshComponent* Mesh = (UStaticMeshComponent*)Components[i];
-		Mesh->SetVisibility(true);
-		Mesh->SetCollisionResponseToAllChannels(ECR_Overlap);
-		((ATBSCharacter*)GetOwner())->Tool->Trimmed(0, Components[i]);
+	if (Beard != NULL) {
+		TArray<UActorComponent*> Components;
+		Components = Beard->GetComponentsByClass(UStaticMeshComponent::StaticClass());
+		for (int32 i = 0; i < Components.Num(); i++) {
+			UStaticMeshComponent* Mesh = (UStaticMeshComponent*)Components[i];
+			Mesh->SetVisibility(true);
+			Mesh->SetCollisionResponseToAllChannels(ECR_Overlap);
+			((ATBSCharacter*)GetOwner())->Tool->Trimmed(0, Components[i]);
+		}
 	}
+	CreateRandomDesiredBeard(CharacterLevel);
 
 	CreatedCustomer();
 	UE_LOG(LogClass, Log, TEXT("*** Customer Customer created ***"))
 }
 
+void ATBSCustomer::CreateRandomDesiredBeard(int32 MaxLevelBeard){
+	ATBSCharacter* Character = (ATBSCharacter*) GetOwner();
+	ATBSPlayerController* PlayerController = NULL;
+	if (Character) {
+		PlayerController = (ATBSPlayerController*) Character->GetController();
+		
+		if (PlayerController) {
+			TArray<FName> PossibleBeardNames;
+			TArray<FBeardNameLevelData> Data = PlayerController->GetBeardNameLevelData();
+			for (int32 i = 0; i < Data.Num(); i++) {
+				if (Data[i].BeardLevel <= MaxLevelBeard) {
+					PossibleBeardNames.Add(Data[i].BeardName);
+				}
+			}
+			if (PossibleBeardNames.Num() > 0) {
+				int32 randomIndex;
+				randomIndex = FMath::RandRange(0, PossibleBeardNames.Num()-1);
+				DesiredBeard = PossibleBeardNames[randomIndex];
+			}
+			else {
+				UE_LOG(LogClass, Warning, TEXT("*** No possible beard in data for level ***"));
+				UE_LOG(LogClass, Warning, TEXT("*** Could not generate desired beard for Customer! ***"));
+			}
+		}
+	}
+}

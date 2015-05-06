@@ -1,8 +1,11 @@
 // Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
 #pragma once
+
 #include "GameFramework/Pawn.h"
-#include "TBSRazor.h"
+#include "EngineUtils.h"
 #include "Engine/DataTable.h"
+
+#include "TBSRazor.h"
 #include "TBSCustomer.h"
 #include "TBSCharacter.generated.h"
 
@@ -119,6 +122,9 @@ public:
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus")
 	int32 CurrentExperienceToLvl;
 
+	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus")
+	int32 CurrentCash;
+
 
 	// Timer
 	FTimerHandle TimerHandle;
@@ -136,6 +142,8 @@ public:
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus")
 	ATBSCustomer* CurrentCustomer;
 
+	UFUNCTION(BlueprintCallable, Category = "PlayerStatus") FName GetDesiredCustomerBeard();
+
 
 	// Constructor
 	ATBSCharacter (const FObjectInitializer& ObjectInitializer);
@@ -144,16 +152,21 @@ public:
 	virtual void BeginPlay () override;
 
 	// (BP-)Helper functions
-	UFUNCTION(BlueprintCallable, Category = "Timer") float GetTimeElapsed();
-	UFUNCTION(BlueprintCallable, Category = "Timer") float GetTimeLeft();
-	UFUNCTION(BlueprintCallable, Category = "EXP") void IncreaseEXP(int32 Value);
+	UFUNCTION (BlueprintCallable, Category = "Timer") float GetTimeElapsed();
+	UFUNCTION (BlueprintCallable, Category = "Timer") float GetTimeLeft();
+	UFUNCTION (BlueprintCallable, Category = "EXP") void IncreaseEXP(int32 Value);
+	UFUNCTION (BlueprintCallable, Category = "Cash") void IncreaseCash(float ComparisionResult);
+	UFUNCTION (BlueprintCallable, Category = "Customer") void LoadNewCustomer();
+	UFUNCTION (BlueprintCallable, Category = "Customer") void FinishCurrentCustomer();
+	
+	UFUNCTION(BlueprintImplementableEvent, Category = "Timer")
+	void TimePassed();
 
-	void FinishCurrentCustomer ();
 	void SwitchTool (bool IsNextTool);
-
-	void LoadNewCustomer ();
-
 	float CalculateResult ();
+	
+
+
 };
 
 

@@ -4,6 +4,7 @@
 
 #include "GameFramework/Actor.h"
 #include "Engine/DataTable.h"
+
 #include "TBSCustomer.generated.h"
 
 USTRUCT (BlueprintType)
@@ -41,13 +42,16 @@ public:
 	UPROPERTY (EditAnywhere, noclear, BlueprintReadWrite, Category = "Beard", meta = (DisplayName = "Beard Class"))
 	TSubclassOf<class AActor> BeardClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Beard")
+	FName DesiredBeard;
+
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "Beard")
 	AActor* Beard;
 
 	UFUNCTION (BlueprintImplementableEvent, Category = "Beard")
 	void CreatedCustomer ();
-
 	void CreateNewCustomer(int32 CharacterLevel = 1);
+	void CreateRandomDesiredBeard(int32 MaxLevelBeard);
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay () override;

@@ -2,7 +2,7 @@
 
 #include "TBS.h"
 #include "TBSCharacter.h"
-#include "EngineUtils.h"
+#include "TBSPlayerController.h"
 
 ATBSCharacter::ATBSCharacter (const FObjectInitializer& ObjectInitializer)
 	: Super (ObjectInitializer) {
@@ -36,9 +36,10 @@ ATBSCharacter::ATBSCharacter (const FObjectInitializer& ObjectInitializer)
 	VerticalUpperCameraRotationBorder = -35;
 	VerticalLowerCameraRotationBorder = 10;
 
-	CurrentLevel = 1;
+	CurrentLevel = 0;
 	CurrentExperience = 0;
 	CurrentExperienceToLvl = 0;
+	CurrentCash = 0;
 
 	TimeLimit = 15.f;
 }
@@ -52,6 +53,9 @@ void ATBSCharacter::BeginPlay () {
 		SpawnParams.Instigator = Instigator;
 		SpawnParams.Owner = this;
 		CurrentCustomer = World->SpawnActor<ATBSCustomer> (CustomerClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+		if (CurrentCustomer) {
+			CurrentCustomer->CreateNewCustomer(CurrentLevel);
+		}
 	}
 
 	// Spawn Tool
@@ -76,24 +80,30 @@ void ATBSCharacter::BeginPlay () {
 			CurrentExperienceToLvl = CurrentData->XPtoLvl;
 		}
 	}
+	GetWorldTimerManager().ClearTimer(TimerHandle);
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &ATBSCharacter::TimePassed, TimeLimit, false, -1.f);
 }
 
 void ATBSCharacter::FinishCurrentCustomer () {
-	CalculateResult ();
-	IncreaseEXP (50);
-	GetWorldTimerManager ().ClearTimer (TimerHandle);
+	float Result = CalculateResult();
+	int32 EXP = (int32)Result;
+	IncreaseEXP(EXP);
+	IncreaseCash(Result);
+	GetWorldTimerManager().ClearTimer (TimerHandle);
 }
 
 void ATBSCharacter::LoadNewCustomer () {
-	// Set Timer
-	GetWorldTimerManager ().ClearTimer (TimerHandle);
-	GetWorldTimerManager ().SetTimer (TimerHandle, this, &ATBSCharacter::FinishCurrentCustomer, TimeLimit, false, -1.f);
-
 	// Create New Customer
 	if (CurrentCustomer) {
+		// Set Timer
+		GetWorldTimerManager().ClearTimer(TimerHandle);
+		GetWorldTimerManager().SetTimer(TimerHandle, this, &ATBSCharacter::TimePassed, TimeLimit, false, -1.f);
+
 		((ATBSCustomer*) CurrentCustomer)->CreateNewCustomer(CurrentLevel);
 	}
-	else UE_LOG (LogClass, Warning, TEXT ("*** No Customer Reference! ***"));
+	else {
+		UE_LOG(LogClass, Warning, TEXT("*** No Customer Reference! ***"));
+	}
 }
 
 // Returns the remaining time of the current customer
@@ -135,6 +145,24 @@ void ATBSCharacter::IncreaseEXP (int32 Value) {
 	}
 }
 
+void ATBSCharacter::IncreaseCash(float ComparisionResult) {
+	if (ComparisionResult < 10.0f) {
+		CurrentCash += 0;
+	}
+	else if (ComparisionResult < 37.0f) {
+		CurrentCash += 10;
+	}
+	else if (ComparisionResult < 64.0f) {
+		CurrentCash += 20;
+	}
+	else if (ComparisionResult < 91.0f) {
+		CurrentCash += 30;
+	}
+	else {
+		CurrentCash += 45;
+	}
+}
+
 void ATBSCharacter::SwitchTool (bool IsNextTool) {
 	if (Tool) {
 		uint8 CurrentTool = Tool->ToolType;
@@ -148,8 +176,10 @@ void ATBSCharacter::SwitchTool (bool IsNextTool) {
 // Returns -99 as a errorcode in case of file loading issues
 float ATBSCharacter::CalculateResult () {
 	FBeardComparisonData* CurrentData;
+	FName DesiredCustomerBeard = CurrentCustomer->DesiredBeard;
+	UDataTable* BeardDataTable = ((ATBSPlayerController*)GetController())->FindDataTableToName(DesiredCustomerBeard);
 	const FString Context;
-	if (BeardData[0]) {
+	if (BeardDataTable) {
 		if (CurrentCustomer && CurrentCustomer->Beard) {
 			TArray<UActorComponent*> Components;
 			int32 Total = 0;
@@ -169,7 +199,7 @@ float ATBSCharacter::CalculateResult () {
 				}
 				FString String = FString::FromInt (i);
 				FName Row = FName (*String);
-				CurrentData = BeardData[0]->FindRow<FBeardComparisonData> (Row, Context, false);
+				CurrentData = BeardDataTable->FindRow<FBeardComparisonData>(Row, Context, false);
 
 				if (CurrentData && CurrentData->HairState == ComponentStatus) Correct++;
 				Total++;
@@ -184,3 +214,9 @@ float ATBSCharacter::CalculateResult () {
 	return -99;
 }
 
+FName ATBSCharacter::GetDesiredCustomerBeard(){
+	if (CurrentCustomer) {
+		return CurrentCustomer->DesiredBeard;
+	}
+	return "DEFAULT";
+}

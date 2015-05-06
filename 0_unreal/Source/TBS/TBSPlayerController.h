@@ -28,6 +28,8 @@ public:
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool SaveBeardID(FName BeardName, int32 BeardLevel = 1);
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool LoadBeardID (FName BeardName);
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") void SpawnNextCustomer();
+	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") void FinishCurrentCustomer();
+	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") UDataTable* FindDataTableToName(FName BeardName);
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") TArray<FName> GetBeardNames();
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") TArray<FBeardNameLevelData> GetBeardNameLevelData();
 
@@ -109,7 +111,7 @@ protected:
 	void UpdateCamera (float DeltaTime);
 	void ApplyCamera (float DeltaTime);
 
-	UDataTable* FindDataTableToName (FName BeardName);
+	
 	bool RemoveBeardFromCollection (FName BeardName);
 	bool LoadBeardDataToCurrentCustomer(UDataTable* Datatable);
 	bool SetCurrentBeardDataToCSV (UDataTable* DataTable);
