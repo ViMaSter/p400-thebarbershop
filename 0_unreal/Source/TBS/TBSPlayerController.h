@@ -30,7 +30,6 @@ public:
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") void SpawnNextCustomer();
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") void FinishCurrentCustomer();
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") UDataTable* FindDataTableToName(FName BeardName);
-	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") TArray<FName> GetBeardNames();
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") TArray<FBeardNameLevelData> GetBeardNameLevelData();
 
 	//BeginPlay

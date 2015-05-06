@@ -494,26 +494,6 @@ bool ATBSPlayerController::SetBeardToCollectionData (FName BeardName, int32 Bear
 	return Success;
 }
 
-// DEPRECATED! TO BE REMOVED WITH NEXT UI UPDATE
-// Please use GetBeardNameLevelData in future
-// Call from the HUD to get an FName Array of the saved beards
-TArray<FName> ATBSPlayerController::GetBeardNames() {
-	TArray<FName> BeardNames;
-	if (PlayerCharacter == NULL) return BeardNames;
-	FBeardCollectionData* CurrentData;
-	if (PlayerCharacter->BeardCollection) {
-		const FString Context;
-		for (int32 i = 0; i < PlayerCharacter->BeardCollection->GetRowNames().Num(); i++) {
-			FName Row = PlayerCharacter->BeardCollection->GetRowNames()[i];
-			CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData>(Row, Context, false);
-			if (CurrentData) {
-				BeardNames.Add(CurrentData->BeardName);
-			}
-		}
-	}
-	return BeardNames;
-}
-
 // Call from the HUD to get an array of Name, int32 struct of the saved beards
 TArray<FBeardNameLevelData> ATBSPlayerController::GetBeardNameLevelData() {
 	TArray<FBeardNameLevelData> BeardNameLevelData;
