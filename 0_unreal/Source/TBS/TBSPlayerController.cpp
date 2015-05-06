@@ -57,6 +57,7 @@ void ATBSPlayerController::SetupInputComponent () {
 	InputComponent->BindAction ("Rotate", IE_Released, this, &ATBSPlayerController::OnSetRotationReleased);
 
 	// Cheat Codes Pitch Hack
+	InputComponent->BindAction("FinishCustomer", IE_Pressed, this, &ATBSPlayerController::FinishCurrentCustomer);
 	InputComponent->BindAction ("SpawnNextCustomer", IE_Pressed, this, &ATBSPlayerController::SpawnNextCustomer);
 
 }
@@ -219,6 +220,12 @@ void ATBSPlayerController::ApplyCamera (float DeltaTime) {
 void ATBSPlayerController::SpawnNextCustomer () {
 	if (PlayerCharacter) {
 		PlayerCharacter->LoadNewCustomer ();
+	}
+}
+
+void ATBSPlayerController::FinishCurrentCustomer() {
+	if (PlayerCharacter) {
+		PlayerCharacter->FinishCurrentCustomer();
 	}
 }
 #pragma endregion
