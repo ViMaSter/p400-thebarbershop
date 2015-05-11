@@ -49,6 +49,7 @@ public:
 		: BeardName("")
 		, BeardSlotName("")
 		, BeardLevel(0)
+		, UniqueIdentifier(0)
 	{}
 
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "BeardCollection")
@@ -59,6 +60,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeardCollection")
 	int32 BeardLevel;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeardCollection")
+	int32 UniqueIdentifier;
 };
 
 UCLASS(Blueprintable)
@@ -112,6 +116,9 @@ public:
 	// Player Status	
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "CSV Data")
 	UDataTable* LevelData;
+
+	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "CSV Data")
+	UDataTable* BeardPoolData;
 
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus")
 	int32 CurrentLevel;

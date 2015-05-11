@@ -31,6 +31,23 @@ public:
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "Rotation")		float Yaw;
 };
 
+USTRUCT(BlueprintType)
+struct FBeardPoolData : public FTableRowBase {
+	GENERATED_USTRUCT_BODY()
+
+public:
+
+	FBeardPoolData()
+		: PlayerLevel(0)
+		, BeardMinNumber(1)
+		, BeardMaxNumber(1)
+	{}
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeardPool")	int32 PlayerLevel;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeardPool")	int32 BeardMinNumber;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeardPool")	int32 BeardMaxNumber;
+};
+
 UCLASS()
 class TBS_API ATBSCustomer : public AActor {
 	GENERATED_BODY ()
@@ -52,6 +69,7 @@ public:
 	void CreatedCustomer ();
 	void CreateNewCustomer(int32 CharacterLevel = 1);
 	void CreateRandomDesiredBeard(int32 MaxLevelBeard);
+	void FindDesiredBeardFromPool(int32 Playerlevel);
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay () override;

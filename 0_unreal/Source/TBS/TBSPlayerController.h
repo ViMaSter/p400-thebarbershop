@@ -9,10 +9,15 @@
 USTRUCT(BlueprintType)
 struct FBeardNameLevelData{
 	GENERATED_USTRUCT_BODY()
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeardCollection")
 		FName BeardName;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeardCollection")
 		int32 BeardLevel;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeardCollection")
+		int32 UniqueID;
 };
 
 UCLASS()
@@ -25,7 +30,7 @@ public:
 	/// Vincent: Needed to move this from protected to public, since this methods will be called from the HUD
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool ClearBeardData ();
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool ClearBeardID (FName BeardName);
-	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool SaveBeardID(FName BeardName, int32 BeardLevel = 1);
+	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool SaveBeardID(FName BeardName, int32 BeardLevel = 1, int32 UniqueId = 0);
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool LoadBeardID (FName BeardName);
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") void SpawnNextCustomer();
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") void FinishCurrentCustomer();
@@ -114,7 +119,7 @@ protected:
 	bool RemoveBeardFromCollection (FName BeardName);
 	bool LoadBeardDataToCurrentCustomer(UDataTable* Datatable);
 	bool SetCurrentBeardDataToCSV (UDataTable* DataTable);
-	bool SetBeardToCollectionData(FName BeardName, int32 BeardLevel);
+	bool SetBeardToCollectionData(FName BeardName, int32 BeardLevel, int32 UniqueId);
 };
 
 

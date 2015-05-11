@@ -45,12 +45,18 @@ void ATBSCustomer::CreateNewCustomer (int32 CharacterLevel) {
 			((ATBSCharacter*)GetOwner())->Tool->Trimmed(0, Components[i]);
 		}
 	}
-	CreateRandomDesiredBeard(CharacterLevel);
+	// Deprecated!
+	// CreateRandomDesiredBeard(CharacterLevel);
+
+	FindDesiredBeardFromPool(CharacterLevel);
 
 	CreatedCustomer();
 	UE_LOG(LogClass, Log, TEXT("*** Customer Customer created ***"))
 }
 
+// THIS IS DEPRECATED!
+// Might become handy in MS2 when tweaking some stuff
+// Dont delete please
 void ATBSCustomer::CreateRandomDesiredBeard(int32 MaxLevelBeard){
 	ATBSCharacter* Character = (ATBSCharacter*) GetOwner();
 	ATBSPlayerController* PlayerController = NULL;
@@ -74,6 +80,53 @@ void ATBSCustomer::CreateRandomDesiredBeard(int32 MaxLevelBeard){
 				UE_LOG(LogClass, Warning, TEXT("*** No possible beard in data for level ***"));
 				UE_LOG(LogClass, Warning, TEXT("*** Could not generate desired beard for Customer! ***"));
 			}
+		}
+	}
+}
+
+
+void ATBSCustomer::FindDesiredBeardFromPool(int32 Playerlevel){
+	ATBSCharacter* Character = (ATBSCharacter*)GetOwner();
+	ATBSPlayerController* PlayerController = NULL;
+	if (Character && Character->BeardPoolData) {
+		PlayerController = (ATBSPlayerController*)Character->GetController();
+		if (PlayerController) {
+			TArray<FBeardNameLevelData> Data = PlayerController->GetBeardNameLevelData();
+
+			const FString Context;
+			FBeardPoolData* CurrentData;
+
+			int32 MinBeardID = -99;
+			int32 MaxBeardID = -99;
+			for (int32 i = 0; i < Character->BeardCollection->GetRowNames().Num(); i++) {
+				FName Row = Character->BeardCollection->GetRowNames()[i];
+				CurrentData = Character->BeardPoolData->FindRow<FBeardPoolData>(Row, Context, false);
+				if (CurrentData) {
+					if (CurrentData->PlayerLevel == Playerlevel) {
+						MinBeardID = CurrentData->BeardMinNumber;
+						MaxBeardID = CurrentData->BeardMaxNumber;
+						break;
+					}
+				}
+				else {
+					UE_LOG(LogClass, Warning, TEXT("*** Could not find Playerlevel in BeardPoolData! ***"));
+					DesiredBeard = "DEFAULT";
+					return;
+				}
+			}
+
+
+			int32 randID = FMath::RandRange(MinBeardID, MaxBeardID);
+
+			// Random stuff
+			for (int32 i = 0; i < Data.Num(); i++) {
+				if (Data[i].UniqueID == randID) {
+					DesiredBeard = Data[i].BeardName;
+				}
+			}
+		}
+		else {
+			UE_LOG(LogClass, Warning, TEXT("*** Could not find Character or BeardPoolData! ***"));
 		}
 	}
 }

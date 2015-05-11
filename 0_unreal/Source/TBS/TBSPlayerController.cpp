@@ -261,11 +261,11 @@ bool ATBSPlayerController::ClearBeardID (FName BeardName) {
 	return false;
 }
 
-bool ATBSPlayerController::SaveBeardID (FName BeardName, int32 BeardLevel) {
+bool ATBSPlayerController::SaveBeardID(FName BeardName, int32 BeardLevel, int32 UniqueId) {
 	if (PlayerCharacter) {
 		bool success = true;
 		UDataTable* DataTable;
-		success = SetBeardToCollectionData(BeardName, BeardLevel);
+		success = SetBeardToCollectionData(BeardName, BeardLevel , UniqueId);
 		DataTable = FindDataTableToName (BeardName);
 		if (DataTable) {
 			return success && SetCurrentBeardDataToCSV(DataTable);
@@ -422,7 +422,7 @@ bool ATBSPlayerController::RemoveBeardFromCollection (FName BeardName) {
 	return Success;
 }
 
-bool ATBSPlayerController::SetBeardToCollectionData (FName BeardName, int32 BeardLevel) {
+bool ATBSPlayerController::SetBeardToCollectionData(FName BeardName, int32 BeardLevel, int32 UniqueId) {
 	FBeardCollectionData* CurrentData;
 	bool Success = false;
 	if (PlayerCharacter->BeardCollection) {
@@ -434,6 +434,7 @@ bool ATBSPlayerController::SetBeardToCollectionData (FName BeardName, int32 Bear
 			if (CurrentData && CurrentData->BeardName == BeardName) {
 				Success = true;
 				CurrentData->BeardLevel = BeardLevel;
+				CurrentData->UniqueIdentifier = UniqueId;
 				break;
 			}
 		}
@@ -487,6 +488,7 @@ bool ATBSPlayerController::SetBeardToCollectionData (FName BeardName, int32 Bear
 				CurrentData->BeardName = BeardName;
 				CurrentData->BeardSlotName = NewSlotName;
 				CurrentData->BeardLevel = BeardLevel;
+				CurrentData->UniqueIdentifier = UniqueId;
 				return true;
 			}
 		}
@@ -510,6 +512,7 @@ TArray<FBeardNameLevelData> ATBSPlayerController::GetBeardNameLevelData() {
 				FBeardNameLevelData Data;
 				Data.BeardLevel = CurrentData->BeardLevel;
 				Data.BeardName = CurrentData->BeardName;
+				Data.UniqueID = CurrentData->UniqueIdentifier;
 				BeardNameLevelData.Add(Data);
 			}
 		}
