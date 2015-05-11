@@ -37,6 +37,8 @@ public:
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") UDataTable* FindDataTableToName(FName BeardName);
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") TArray<FBeardNameLevelData> GetBeardNameLevelData();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Customer") void FinishedCurrentCustomer();
+
 	//BeginPlay
 	virtual void BeginPlay () override;
 

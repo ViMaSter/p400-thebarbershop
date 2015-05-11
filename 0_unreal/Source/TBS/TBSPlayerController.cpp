@@ -224,6 +224,7 @@ void ATBSPlayerController::SpawnNextCustomer () {
 }
 
 void ATBSPlayerController::FinishCurrentCustomer() {
+	FinishedCurrentCustomer();
 	if (PlayerCharacter) {
 		PlayerCharacter->FinishCurrentCustomer();
 	}
