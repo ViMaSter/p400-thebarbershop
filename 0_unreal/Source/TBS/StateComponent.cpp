@@ -46,7 +46,7 @@ void UStateComponent::SetState(uint8 offset, bool value) {
 }
 
 void UStateComponent::ToggleState(uint8 offset) {
-	SetState(offset, GetState(offset));
+	SetState(offset, !GetState(offset));
 }
 
 void UStateComponent::SetToState(uint8 offset) {
