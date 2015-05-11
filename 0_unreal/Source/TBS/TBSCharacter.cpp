@@ -147,21 +147,24 @@ void ATBSCharacter::IncreaseEXP (int32 Value) {
 }
 
 void ATBSCharacter::IncreaseCash(float ComparisionResult) {
+	int32 CashEarned = 0;
 	if (ComparisionResult < 10.0f) {
-		CurrentCash += 0;
+		CashEarned = 0;
 	}
 	else if (ComparisionResult < 37.0f) {
-		CurrentCash += 10;
+		CashEarned = 10;
 	}
 	else if (ComparisionResult < 64.0f) {
-		CurrentCash += 20;
+		CashEarned = 20;
 	}
 	else if (ComparisionResult < 91.0f) {
-		CurrentCash += 30;
+		CashEarned = 30;
 	}
 	else {
-		CurrentCash += 45;
+		CashEarned = 45;
 	}
+	CurrentCash += CashEarned;
+	UE_LOG(LogClass, Log, TEXT("*** Player earned %d $ ***"), CashEarned);
 }
 
 void ATBSCharacter::SwitchTool (bool IsNextTool) {
