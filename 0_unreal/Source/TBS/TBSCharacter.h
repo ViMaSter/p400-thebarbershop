@@ -170,7 +170,7 @@ public:
 	void TimePassed();
 
 	void SwitchTool (bool IsNextTool);
-	float CalculateResult ();
+	UFUNCTION(BlueprintCallable, Category = "EXP") float CalculateResult();
 	
 
 
