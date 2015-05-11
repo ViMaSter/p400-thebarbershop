@@ -41,7 +41,7 @@ ATBSCharacter::ATBSCharacter (const FObjectInitializer& ObjectInitializer)
 	CurrentExperienceToLvl = 0;
 	CurrentCash = 0;
 
-	TimeLimit = 15.f;
+	TimeLimit = 99999.f;		// Hack until final Bonustimerdecision is made ~ 27.7h per customer until the Clock in UI is broken :D
 }
 
 
@@ -81,7 +81,7 @@ void ATBSCharacter::BeginPlay () {
 		}
 	}
 	GetWorldTimerManager().ClearTimer(TimerHandle);
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &ATBSCharacter::TimePassed, TimeLimit, false, -1.f);
+	GetWorldTimerManager().SetTimer(TimerHandle, TimeLimit, false, -1.f);
 }
 
 void ATBSCharacter::FinishCurrentCustomer () {
@@ -89,7 +89,8 @@ void ATBSCharacter::FinishCurrentCustomer () {
 	int32 EXP = (int32)Result;
 	IncreaseEXP(EXP);
 	IncreaseCash(Result);
-	GetWorldTimerManager().ClearTimer (TimerHandle);
+	CalculateBonusCash();
+	GetWorldTimerManager().PauseTimer(TimerHandle);
 }
 
 void ATBSCharacter::LoadNewCustomer () {
@@ -97,7 +98,7 @@ void ATBSCharacter::LoadNewCustomer () {
 	if (CurrentCustomer) {
 		// Set Timer
 		GetWorldTimerManager().ClearTimer(TimerHandle);
-		GetWorldTimerManager().SetTimer(TimerHandle, this, &ATBSCharacter::TimePassed, TimeLimit, false, -1.f);
+		GetWorldTimerManager().SetTimer(TimerHandle, TimeLimit, false, -1.f);
 
 		((ATBSCustomer*) CurrentCustomer)->CreateNewCustomer(CurrentLevel);
 	}
@@ -146,21 +147,24 @@ void ATBSCharacter::IncreaseEXP (int32 Value) {
 }
 
 void ATBSCharacter::IncreaseCash(float ComparisionResult) {
+	int32 CashEarned = 0;
 	if (ComparisionResult < 10.0f) {
-		CurrentCash += 0;
+		CashEarned = 0;
 	}
 	else if (ComparisionResult < 37.0f) {
-		CurrentCash += 10;
+		CashEarned = 10;
 	}
 	else if (ComparisionResult < 64.0f) {
-		CurrentCash += 20;
+		CashEarned = 20;
 	}
 	else if (ComparisionResult < 91.0f) {
-		CurrentCash += 30;
+		CashEarned = 30;
 	}
 	else {
-		CurrentCash += 45;
+		CashEarned = 45;
 	}
+	CurrentCash += CashEarned;
+	UE_LOG(LogClass, Log, TEXT("*** Player earned %d $ ***"), CashEarned);
 }
 
 void ATBSCharacter::SwitchTool (bool IsNextTool) {
@@ -169,6 +173,25 @@ void ATBSCharacter::SwitchTool (bool IsNextTool) {
 		CurrentTool += IsNextTool ? 1 : -1;
 		CurrentTool = (4 + CurrentTool) % 4;
 		Tool->SwitchRazorTypeTo ((ETBSRazor::Type)CurrentTool);
+	}
+}
+
+void ATBSCharacter::CalculateBonusCash(){
+	if (BonusCashData) {
+		FTimeBonusData* CurrentData;
+		const FString Context;
+		for (int32 i = 0; i < BonusCashData->GetRowNames().Num(); i++) {
+			FName Row = BonusCashData->GetRowNames()[i];
+			CurrentData = BonusCashData->FindRow<FTimeBonusData>(Row, Context, false);
+			if (CurrentData && IsInTimeRange(GetTimeElapsed(),CurrentData->TimeMin, CurrentData->TimeMax)) {
+				CurrentCash += CurrentData->BonusCash;
+				UE_LOG(LogClass, Log, TEXT("*** Player earned %d $ as a bonus! ***"), CurrentData->BonusCash);
+				return;
+			}
+		}
+	}
+	else {
+		UE_LOG(LogClass, Warning, TEXT("*** Could not load BonusCashData! ***"));
 	}
 }
 
@@ -219,4 +242,11 @@ FName ATBSCharacter::GetDesiredCustomerBeard(){
 		return CurrentCustomer->DesiredBeard;
 	}
 	return "DEFAULT";
+}
+
+bool ATBSCharacter::IsInTimeRange(float Time, int32 MinTime, int32 MaxTime){
+	if (Time >= MinTime && Time <= MaxTime) {
+		return true;
+	}
+	return false;
 }

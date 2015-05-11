@@ -25,6 +25,25 @@ public:
 	int32 XPtoLvl;
 };
 
+USTRUCT(BlueprintType)
+struct FTimeBonusData : public FTableRowBase {
+	GENERATED_USTRUCT_BODY()
+
+public:
+	FTimeBonusData()
+		: TimeMin(0)
+		, TimeMax(0)
+		, BonusCash(0)
+	{}
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BonusCash")
+		int32 TimeMin;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BonusCash")
+		int32 TimeMax;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BonusCash")
+		int32 BonusCash;
+};
+
 USTRUCT (BlueprintType)
 struct FBeardComparisonData : public FTableRowBase {
 	GENERATED_USTRUCT_BODY ()
@@ -132,10 +151,11 @@ public:
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus")
 	int32 CurrentCash;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CSV Data")
+	UDataTable* BonusCashData;
 
 	// Timer
 	FTimerHandle TimerHandle;
-	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus")
 	float TimeLimit;
 
 
@@ -166,14 +186,11 @@ public:
 	UFUNCTION (BlueprintCallable, Category = "Customer") void LoadNewCustomer();
 	UFUNCTION (BlueprintCallable, Category = "Customer") void FinishCurrentCustomer();
 	
-	UFUNCTION(BlueprintImplementableEvent, Category = "Timer")
-	void TimePassed();
-
 	void SwitchTool (bool IsNextTool);
 	UFUNCTION(BlueprintCallable, Category = "EXP") float CalculateResult();
-	
+	void CalculateBonusCash();
 
-
+	bool IsInTimeRange(float Time, int32 MinTime, int32 MaxTime);
 };
 
 
