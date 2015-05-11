@@ -41,7 +41,7 @@ ATBSCharacter::ATBSCharacter (const FObjectInitializer& ObjectInitializer)
 	CurrentExperienceToLvl = 0;
 	CurrentCash = 0;
 
-	TimeLimit = 15.f;
+	TimeLimit = 99999.f;		// Hack until final Bonustimerdecision is made ~ 27.7h per customer until the Clock in UI is broken :D
 }
 
 
@@ -81,7 +81,7 @@ void ATBSCharacter::BeginPlay () {
 		}
 	}
 	GetWorldTimerManager().ClearTimer(TimerHandle);
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &ATBSCharacter::TimePassed, TimeLimit, false, -1.f);
+	GetWorldTimerManager().SetTimer(TimerHandle, TimeLimit, false, -1.f);
 }
 
 void ATBSCharacter::FinishCurrentCustomer () {
@@ -89,7 +89,8 @@ void ATBSCharacter::FinishCurrentCustomer () {
 	int32 EXP = (int32)Result;
 	IncreaseEXP(EXP);
 	IncreaseCash(Result);
-	GetWorldTimerManager().ClearTimer (TimerHandle);
+	CalculateBonusCash();
+	GetWorldTimerManager().PauseTimer(TimerHandle);
 }
 
 void ATBSCharacter::LoadNewCustomer () {
@@ -97,7 +98,7 @@ void ATBSCharacter::LoadNewCustomer () {
 	if (CurrentCustomer) {
 		// Set Timer
 		GetWorldTimerManager().ClearTimer(TimerHandle);
-		GetWorldTimerManager().SetTimer(TimerHandle, this, &ATBSCharacter::TimePassed, TimeLimit, false, -1.f);
+		GetWorldTimerManager().SetTimer(TimerHandle, TimeLimit, false, -1.f);
 
 		((ATBSCustomer*) CurrentCustomer)->CreateNewCustomer(CurrentLevel);
 	}
@@ -172,6 +173,25 @@ void ATBSCharacter::SwitchTool (bool IsNextTool) {
 	}
 }
 
+void ATBSCharacter::CalculateBonusCash(){
+	if (BonusCashData) {
+		FTimeBonusData* CurrentData;
+		const FString Context;
+		for (int32 i = 0; i < BonusCashData->GetRowNames().Num(); i++) {
+			FName Row = BonusCashData->GetRowNames()[i];
+			CurrentData = BonusCashData->FindRow<FTimeBonusData>(Row, Context, false);
+			if (CurrentData && IsInTimeRange(GetTimeElapsed(),CurrentData->TimeMin, CurrentData->TimeMax)) {
+				CurrentCash += CurrentData->BonusCash;
+				UE_LOG(LogClass, Log, TEXT("*** Player earned %d $ as a bonus! ***"), CurrentData->BonusCash);
+				return;
+			}
+		}
+	}
+	else {
+		UE_LOG(LogClass, Warning, TEXT("*** Could not load BonusCashData! ***"));
+	}
+}
+
 // Returns the comparison Result from the shaved beard of the customer and the CSV data
 // Returns -99 as a errorcode in case of file loading issues
 float ATBSCharacter::CalculateResult () {
@@ -219,4 +239,11 @@ FName ATBSCharacter::GetDesiredCustomerBeard(){
 		return CurrentCustomer->DesiredBeard;
 	}
 	return "DEFAULT";
+}
+
+bool ATBSCharacter::IsInTimeRange(float Time, int32 MinTime, int32 MaxTime){
+	if (Time >= MinTime && Time <= MaxTime) {
+		return true;
+	}
+	return false;
 }
