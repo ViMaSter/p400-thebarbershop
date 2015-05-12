@@ -218,8 +218,8 @@ void ATBSPlayerController::ApplyCamera (float DeltaTime) {
 
 #pragma region Pitch Hacks
 void ATBSPlayerController::SpawnNextCustomer () {
+	SpawnedNextCustomer();
 	if (PlayerCharacter) {
-		SpawnedNextCustomer();
 		PlayerCharacter->LoadNewCustomer ();
 	}
 }
