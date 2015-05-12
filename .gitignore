@@ -300,8 +300,5 @@ FakesAssemblies/
 ###############
 credentials.dat
 ArtContent/
-<<<<<<< HEAD
 Builds/
-=======
 backup_log.txt
->>>>>>> 8a5d2550da9d4be4483689fa7110c4d043a7b4d3
