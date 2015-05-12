@@ -33,11 +33,12 @@ public:
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool SaveBeardID(FName BeardName, int32 BeardLevel = 1, int32 UniqueId = 0);
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool LoadBeardID (FName BeardName);
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") void SpawnNextCustomer();
+	UFUNCTION (BlueprintImplementableEvent, Category = "Beard Control") void SpawnedNextCustomer();
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") void FinishCurrentCustomer();
+	UFUNCTION (BlueprintImplementableEvent, Category = "Beard Control") void FinishedCurrentCustomer();
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") UDataTable* FindDataTableToName(FName BeardName);
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") TArray<FBeardNameLevelData> GetBeardNameLevelData();
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Customer") void FinishedCurrentCustomer();
 
 	//BeginPlay
 	virtual void BeginPlay () override;
