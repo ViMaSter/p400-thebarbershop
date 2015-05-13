@@ -72,8 +72,40 @@ public:
 	void FindDesiredBeardFromPool(int32 Playerlevel);
 
 	// Called when the game starts or when spawned
-	virtual void BeginPlay () override;
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
+	void SetupInputComponent();
 
+	// Lifting of seat
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lift")
+	float LiftUpSteps;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lift")
+	float LiftDownSpeed;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lift")
+	FVector2D LiftLimits;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lift")
+	float LiftPositionTarget;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lift")
+	float LiftPositionCurrent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lift")
+	float LiftPositionLerpSpeed;
 
+	FVector BeardStartPosition;
+	FVector CustomerStartPosition;
+	float LiftLastPressed;
+	float LiftTimeForHold;
+	UFUNCTION(BlueprintCallable, Category = "Lift")
+	void LiftPositionPressed();
+	UFUNCTION(BlueprintCallable, Category = "Lift")
+	void LiftPositionReleased();
+
+	UFUNCTION(BlueprintCallable, Category = "Lift")
+	void LiftPositionApply();
+	UFUNCTION(BlueprintCallable, Category = "Lift")
+	void LiftPositionUpdate(float DeltaTime);
+	UFUNCTION(BlueprintCallable, Category = "Lift")
+	void LiftPositionUp();
+	UFUNCTION(BlueprintCallable, Category = "Lift")
+	void LiftPositionDown(float DeltaTime);
 };

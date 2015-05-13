@@ -1,7 +1,6 @@
 // Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
 #pragma once
 #include "GameFramework/PlayerController.h"
-#include "TBSCustomer.h"
 #include "TBSCharacter.h"
 #include "Engine/LocalPlayer.h"
 #include "TBSPlayerController.generated.h"
@@ -93,6 +92,13 @@ protected:
 	bool RotationActive;	// RMB
 #pragma endregion
 
+#pragma region Lift
+	UFUNCTION(BlueprintCallable, Category = "Beard")
+	void LiftPositionPressed();
+	UFUNCTION(BlueprintCallable, Category = "Beard")
+	void LiftPositionReleased();
+#pragma endregion
+
 	virtual void PlayerTick (float DeltaTime) override;
 	virtual void SetupInputComponent () override;
 
@@ -117,7 +123,6 @@ protected:
 
 	void UpdateCamera (float DeltaTime);
 	void ApplyCamera (float DeltaTime);
-
 	
 	bool RemoveBeardFromCollection (FName BeardName);
 	bool LoadBeardDataToCurrentCustomer(UDataTable* Datatable);

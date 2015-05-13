@@ -1,6 +1,7 @@
 // Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
 
 #include "TBS.h"
+#include "TBSCustomer.h"
 #include "TBSPlayerController.h"
 
 ATBSPlayerController::ATBSPlayerController (const FObjectInitializer& ObjectInitializer)
@@ -57,9 +58,11 @@ void ATBSPlayerController::SetupInputComponent () {
 	InputComponent->BindAction ("Rotate", IE_Released, this, &ATBSPlayerController::OnSetRotationReleased);
 
 	// Cheat Codes Pitch Hack
-	InputComponent->BindAction("FinishCustomer", IE_Pressed, this, &ATBSPlayerController::FinishCurrentCustomer);
-	InputComponent->BindAction ("SpawnNextCustomer", IE_Pressed, this, &ATBSPlayerController::SpawnNextCustomer);
-
+	InputComponent->BindAction ("FinishCustomer", IE_Pressed, this, &ATBSPlayerController::FinishCurrentCustomer);
+	InputComponent->BindAction("SpawnNextCustomer", IE_Pressed, this, &ATBSPlayerController::SpawnNextCustomer);
+	
+	InputComponent->BindAction("MoveChair", IE_Pressed, this, &ATBSPlayerController::LiftPositionPressed);
+	InputComponent->BindAction("MoveChair", IE_Released, this, &ATBSPlayerController::LiftPositionReleased);
 }
 
 #pragma region Camera Control
@@ -232,7 +235,15 @@ void ATBSPlayerController::FinishCurrentCustomer() {
 }
 #pragma endregion
 
+#pragma region Lift
+void ATBSPlayerController::LiftPositionPressed() {
+	((ATBSCharacter*)UGameplayStatics::GetPlayerPawn(GetWorld(), 0))->CurrentCustomer->LiftPositionPressed();
+}
 
+void ATBSPlayerController::LiftPositionReleased() {
+	((ATBSCharacter*)UGameplayStatics::GetPlayerPawn(GetWorld(), 0))->CurrentCustomer->LiftPositionReleased();
+}
+#pragma endregion
 
 #pragma region Beard Data Management
 

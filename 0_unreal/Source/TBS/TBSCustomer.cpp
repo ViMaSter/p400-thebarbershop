@@ -21,6 +21,18 @@ ATBSCustomer::ATBSCustomer (const FObjectInitializer& ObjectInitializer)
 	   BeardClass = BeardBP.Class;
 	   }*/
 
+	// Lifting of seat
+#pragma region Lift
+	LiftPositionTarget = 0.0f;
+	LiftPositionCurrent = LiftPositionTarget;
+	LiftPositionLerpSpeed = 0.05f;
+
+	LiftLastPressed = -1.0f;
+	LiftTimeForHold = 0.2f;
+
+	LiftUpSteps = 10.0f;
+	LiftDownSpeed = 50.0f;
+#pragma endregion Lift
 }
 // Called when the game starts or when spawned
 void ATBSCustomer::BeginPlay () {
@@ -31,6 +43,16 @@ void ATBSCustomer::BeginPlay () {
 		SpawnParams.Owner = this;
 		Beard = GetWorld()->SpawnActor<AActor>(BeardClass, FVector(0, 0, 340), FRotator::ZeroRotator, SpawnParams);
 	}
+
+	CustomerStartPosition = GetActorLocation();
+	BeardStartPosition = Beard->GetActorLocation();
+}
+
+void ATBSCustomer::Tick(float DeltaTime) {
+	Super::Tick(DeltaTime);
+
+	LiftPositionUpdate(DeltaTime);
+	LiftPositionApply();
 }
 
 void ATBSCustomer::CreateNewCustomer (int32 CharacterLevel) {
@@ -84,7 +106,6 @@ void ATBSCustomer::CreateRandomDesiredBeard(int32 MaxLevelBeard){
 	}
 }
 
-
 void ATBSCustomer::FindDesiredBeardFromPool(int32 Playerlevel){
 	ATBSCharacter* Character = (ATBSCharacter*)GetOwner();
 	ATBSPlayerController* PlayerController = NULL;
@@ -129,4 +150,41 @@ void ATBSCustomer::FindDesiredBeardFromPool(int32 Playerlevel){
 			UE_LOG(LogClass, Warning, TEXT("*** Could not find Character or BeardPoolData! ***"));
 		}
 	}
+}
+
+void ATBSCustomer::LiftPositionPressed() {
+	LiftLastPressed = GetWorld()->GetTimeSeconds();
+}
+
+void ATBSCustomer::LiftPositionReleased() {
+	if ((GetWorld()->GetTimeSeconds() - LiftLastPressed) <= LiftTimeForHold) {
+		this->LiftPositionUp();
+	}
+	LiftLastPressed = -1.0f;
+}
+
+void ATBSCustomer::LiftPositionApply() {
+	SetActorLocation(CustomerStartPosition + FVector(0, 0, LiftPositionCurrent));
+	
+	// @TODO: Enabling the line below does move the beard, but causes huge performance issues
+	// Beard->SetActorLocation(BeardStartPosition + FVector(0, 0, LiftPositionCurrent));
+}
+
+void ATBSCustomer::LiftPositionUpdate(float DeltaTime) {
+	if ((GetWorld()->GetTimeSeconds() - LiftLastPressed) > LiftTimeForHold && LiftLastPressed != -1.0f) {
+		LiftPositionDown(DeltaTime);
+	}
+
+	LiftPositionTarget = FMath::Clamp(LiftPositionTarget, LiftLimits.X, LiftLimits.Y);
+	LiftPositionCurrent = FMath::Lerp(LiftPositionCurrent, LiftPositionTarget, LiftPositionLerpSpeed);
+}
+
+void ATBSCustomer::LiftPositionUp() {
+	float currentOffset = FMath::Fmod(LiftPositionTarget, LiftUpSteps);
+	LiftPositionTarget -= currentOffset;
+	LiftPositionTarget += LiftUpSteps;
+}
+
+void ATBSCustomer::LiftPositionDown(float DeltaTime) {
+	LiftPositionTarget -= LiftDownSpeed * DeltaTime;
 }
