@@ -2,6 +2,7 @@
 
 #include "TBS.h"
 #include "TBSCustomer.h"
+#include "TBSRazor.h"
 #include "TBSPlayerController.h"
 
 ATBSPlayerController::ATBSPlayerController (const FObjectInitializer& ObjectInitializer)
@@ -157,7 +158,7 @@ void ATBSPlayerController::UpdateRazor (float DeltaTime) {
 			FHitResult Hitresult;
 			GetHitResultUnderCursor (ECC_WorldDynamic, true, Hitresult);
 
-			if (Hitresult.GetActor () && Hitresult.GetActor ()->GetClass ()->IsChildOf (ATBSCustomer::StaticClass ())) {
+			if (Hitresult.GetActor() && (Hitresult.GetActor()->GetClass()->IsChildOf(ATBSRazor::StaticClass()) || Hitresult.GetActor()->GetClass()->IsChildOf(ATBSCustomer::StaticClass()))) {
 				// Save hitresult info
 				LastValidMouseCursorImpactPoint = Hitresult.ImpactPoint;
 				LastValidMouseCursorImpactNormal = Hitresult.ImpactNormal;
