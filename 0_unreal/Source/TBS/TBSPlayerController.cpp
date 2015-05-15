@@ -41,6 +41,8 @@ void ATBSPlayerController::PlayerTick (float DeltaTime) {
 		ApplyRazor (DeltaTime);
 		ApplyCamera (DeltaTime);
 	}
+
+	bShowMouseCursor = !PointingAtCustomer;
 }
 
 void ATBSPlayerController::SetupInputComponent () {
@@ -156,7 +158,11 @@ void ATBSPlayerController::UpdateRazor (float DeltaTime) {
 		if (!RotationActive) {
 			// Get hit from mouse cursor ray
 			FHitResult Hitresult;
-			GetHitResultUnderCursor (ECC_WorldDynamic, true, Hitresult);
+			GetHitResultUnderCursor (ECC_Camera, true, Hitresult);
+
+			if (Hitresult.GetActor()) {
+				UE_LOG(LogClass, Log, TEXT("%s"), *Hitresult.GetActor()->GetName());
+			}
 
 			if (Hitresult.GetActor() && (Hitresult.GetActor()->GetClass()->IsChildOf(ATBSRazor::StaticClass()) || Hitresult.GetActor()->GetClass()->IsChildOf(ATBSCustomer::StaticClass()))) {
 				// Save hitresult info
