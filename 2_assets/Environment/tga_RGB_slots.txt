@@ -1,0 +1,5 @@
+R = Metal
+G = Specular
+B = Roughness
+
+(Same order as in UE4)
