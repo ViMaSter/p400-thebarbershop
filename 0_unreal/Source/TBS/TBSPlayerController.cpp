@@ -160,10 +160,6 @@ void ATBSPlayerController::UpdateRazor (float DeltaTime) {
 			FHitResult Hitresult;
 			GetHitResultUnderCursor (ECC_Camera, true, Hitresult);
 
-			if (Hitresult.GetActor()) {
-				UE_LOG(LogClass, Log, TEXT("%s"), *Hitresult.GetActor()->GetName());
-			}
-
 			if (Hitresult.GetActor() && (Hitresult.GetActor()->GetClass()->IsChildOf(ATBSRazor::StaticClass()) || Hitresult.GetActor()->GetClass()->IsChildOf(ATBSCustomer::StaticClass()))) {
 				// Save hitresult info
 				LastValidMouseCursorImpactPoint = Hitresult.ImpactPoint;
