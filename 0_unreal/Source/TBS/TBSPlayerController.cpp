@@ -160,39 +160,41 @@ void ATBSPlayerController::UpdateRazor (float DeltaTime) {
 			FHitResult Hitresult;
 			GetHitResultUnderCursor (ECC_Camera, true, Hitresult);
 
-			if (Hitresult.GetActor() && (Hitresult.GetActor()->GetClass()->IsChildOf(ATBSRazor::StaticClass()) || Hitresult.GetActor()->GetClass()->IsChildOf(ATBSCustomer::StaticClass()))) {
-				// Save hitresult info
-				LastValidMouseCursorImpactPoint = Hitresult.ImpactPoint;
-				LastValidMouseCursorImpactNormal = Hitresult.ImpactNormal;
+			if (Hitresult.GetActor()) {
+				if(Hitresult.GetActor()->GetClass()->IsChildOf(ATBSCustomer::StaticClass())) {
+					// Save hitresult info
+					LastValidMouseCursorImpactPoint = Hitresult.ImpactPoint;
+					LastValidMouseCursorImpactNormal = Hitresult.ImpactNormal;
 
-				// SKIN OFFSET
-				// Lower/raise the tool based on ::ShaveActive
-				if (ShaveActive) {
-					ToolHeightOffsetTarget = FVector::ZeroVector;
+					// SKIN OFFSET
+					// Lower/raise the tool based on ::ShaveActive
+					if (ShaveActive) {
+						ToolHeightOffsetTarget = FVector::ZeroVector;
+					}
+					else {
+						ToolHeightOffsetTarget = Hitresult.ImpactNormal*PlayerCharacter->Tool->ToolInactiveHight;
+					}
+					ToolHeightOffsetCurrent = FMath::Lerp (ToolHeightOffsetCurrent, ToolHeightOffsetTarget, (1.0f / DeltaTime / 60.0f) * RazorLoweringLerpIntensity);
+
+					// Whether or not the tool is active, is now dependent on the razors distance from the skin
+					PlayerCharacter->Tool->IsActive = ToolHeightOffsetCurrent.Size () < ShavingThreshold;
+
+					// POSITION
+					ToolLocationTarget = Hitresult.ImpactPoint + ToolHeightOffsetCurrent;
+
+					// ROTATION
+					ToolRotationTarget.Pitch = Hitresult.ImpactNormal.Rotation ().Pitch;
+					ToolRotationTarget.Yaw = Hitresult.ImpactNormal.Rotation ().Yaw - 180;
+
+					PointingAtCustomer = true;
 				}
-				else {
-					ToolHeightOffsetTarget = Hitresult.ImpactNormal*PlayerCharacter->Tool->ToolInactiveHight;
+				else if (!Hitresult.GetActor()->GetClass()->IsChildOf(ATBSRazor::StaticClass())) {
+					// Fall back to our default position
+					ToolLocationTarget = PlayerCharacter->ToolResetPosition->GetComponentLocation ();
+					ToolRotationTarget = PlayerCharacter->ToolResetPosition->GetComponentRotation ();
+
+					PointingAtCustomer = false;
 				}
-				ToolHeightOffsetCurrent = FMath::Lerp (ToolHeightOffsetCurrent, ToolHeightOffsetTarget, (1.0f / DeltaTime / 60.0f) * RazorLoweringLerpIntensity);
-
-				// Whether or not the tool is active, is now dependent on the razors distance from the skin
-				PlayerCharacter->Tool->IsActive = ToolHeightOffsetCurrent.Size () < ShavingThreshold;
-
-				// POSITION
-				ToolLocationTarget = Hitresult.ImpactPoint + ToolHeightOffsetCurrent;
-
-				// ROTATION
-				ToolRotationTarget.Pitch = Hitresult.ImpactNormal.Rotation ().Pitch;
-				ToolRotationTarget.Yaw = Hitresult.ImpactNormal.Rotation ().Yaw - 180;
-
-				PointingAtCustomer = true;
-			}
-			else {
-				// Fall back to our default position
-				ToolLocationTarget = PlayerCharacter->ToolResetPosition->GetComponentLocation ();
-				ToolRotationTarget = PlayerCharacter->ToolResetPosition->GetComponentRotation ();
-
-				PointingAtCustomer = false;
 			}
 		}
 	}
