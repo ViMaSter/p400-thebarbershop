@@ -14,6 +14,7 @@ namespace csv_concatenator
         [STAThreadAttribute]
         static void Main(string[] args)
         {
+            bool openedUsingArguments = args.Length >= 1;
             Console.WriteLine("Loading .PNG-files...");
 
             if (args.Length < 1)
@@ -46,8 +47,11 @@ namespace csv_concatenator
 
             Console.WriteLine("");
             Console.WriteLine("FERTIG!");
-            Console.WriteLine("Eingabetaste zum Schliessen druecken!");
-            Console.Read();
+            if (!openedUsingArguments)
+            {
+                Console.WriteLine("Eingabetaste zum Schliessen druecken!");
+                Console.Read();
+            }
         }
     }
 }
