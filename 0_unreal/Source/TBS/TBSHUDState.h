@@ -14,6 +14,7 @@ enum class ETBSHUDState : uint8 {
 	Editor			= 7		UMETA (DisplayName = "Editor"),
 	Results			= 8		UMETA (DisplayName = "Results"),
 	Shop			= 9		UMETA (DisplayName = "Shop"),
+	BeardOverview	= 10	UMETA (DisplayName = "BeardOverview")
 };
 
 
