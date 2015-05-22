@@ -6,7 +6,7 @@ UENUM (BlueprintType)
 enum class ETBSHUDState : uint8 {
 	None			= 0		UMETA (DisplayName = "None"),
 	Intro			= 1		UMETA (DisplayName = "Intro"),
-	StartScreen		= 2		UMETA (DisplayName = "Start Screen"),
+	PauseMenu		= 2		UMETA (DisplayName = "Pause Menu"),
 	Options			= 3		UMETA (DisplayName = "Options"),
 	Options_Audio	= 4		UMETA (DisplayName = "Options Audio"),
 	Options_Video	= 5		UMETA (DisplayName = "Options Video"),
@@ -14,7 +14,8 @@ enum class ETBSHUDState : uint8 {
 	Editor			= 7		UMETA (DisplayName = "Editor"),
 	Results			= 8		UMETA (DisplayName = "Results"),
 	Shop			= 9		UMETA (DisplayName = "Shop"),
-	BeardOverview	= 10	UMETA (DisplayName = "BeardOverview")
+	BeardOverview	= 10	UMETA (DisplayName = "BeardOverview"),
+	MainMenu		= 11	UMETA (DisplayName = "Main Menu"),
 };
 
 
