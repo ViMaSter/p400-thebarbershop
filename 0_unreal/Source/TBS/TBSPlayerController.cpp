@@ -252,10 +252,18 @@ void ATBSPlayerController::FinishCurrentCustomer() {
 
 #pragma region Lift
 void ATBSPlayerController::LiftPositionPressed() {
+	if (CheckPaused()) {
+		UE_LOG(LogClass, Log, TEXT("*** Game is paused! ***"));
+		return;
+	}
 	((ATBSCharacter*)UGameplayStatics::GetPlayerPawn(GetWorld(), 0))->CurrentCustomer->LiftPositionPressed();
 }
 
 void ATBSPlayerController::LiftPositionReleased() {
+	if (CheckPaused()) {
+		UE_LOG(LogClass, Log, TEXT("*** Game is paused! ***"));
+		return;
+	}
 	((ATBSCharacter*)UGameplayStatics::GetPlayerPawn(GetWorld(), 0))->CurrentCustomer->LiftPositionReleased();
 }
 #pragma endregion
