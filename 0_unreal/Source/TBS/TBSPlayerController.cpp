@@ -4,6 +4,7 @@
 #include "TBSCustomer.h"
 #include "TBSRazor.h"
 #include "TBSPlayerController.h"
+#include "TBSGameState.h"
 
 ATBSPlayerController::ATBSPlayerController (const FObjectInitializer& ObjectInitializer)
 	: Super (ObjectInitializer) {
@@ -19,7 +20,10 @@ ATBSPlayerController::ATBSPlayerController (const FObjectInitializer& ObjectInit
 	RazorPositionLerpIntensity = 1.0f;
 	RazorLoweringLerpIntensity = 1.0f;
 	ShavingThreshold = 0.1f;
+
+	PrimaryActorTick.bCanEverTick = true;
 }
+
 
 void ATBSPlayerController::BeginPlay () {
 	Super::BeginPlay ();
@@ -34,7 +38,7 @@ void ATBSPlayerController::PlayerTick (float DeltaTime) {
 		return;
 	}
 
-	if (PlayerCharacter) {
+	if (PlayerCharacter && !CheckPaused()) {
 		UpdateRazor (DeltaTime);
 		UpdateCamera (DeltaTime);
 
@@ -49,19 +53,24 @@ void ATBSPlayerController::SetupInputComponent () {
 	// set up gameplay key bindings
 	Super::SetupInputComponent ();
 
-	InputComponent->BindAxis ("RotateTop", this, &ATBSPlayerController::RotateTop);
-	InputComponent->BindAxis ("RotateRight", this, &ATBSPlayerController::RotateRight);
-	InputComponent->BindAxis ("RotateRazorTop", this, &ATBSPlayerController::RotateToolTop);
+	InputComponent->BindAxis("RotateTop", this, &ATBSPlayerController::RotateTop);
+	InputComponent->BindAxis("RotateRight", this, &ATBSPlayerController::RotateRight);
+	InputComponent->BindAxis("RotateRazorTop", this, &ATBSPlayerController::RotateToolTop);
 
-	InputComponent->BindAction ("SwitchToNextTool", IE_Pressed, this, &ATBSPlayerController::SwitchToNextTool);
-	InputComponent->BindAction ("SwitchToPrevTool", IE_Pressed, this, &ATBSPlayerController::SwitchToPrevTool);
-	InputComponent->BindAction ("Shave", IE_Pressed, this, &ATBSPlayerController::OnSetShavedPressed);
-	InputComponent->BindAction ("Shave", IE_Released, this, &ATBSPlayerController::OnSetShavedReleased);
-	InputComponent->BindAction ("Rotate", IE_Pressed, this, &ATBSPlayerController::OnSetRotationPressed);
-	InputComponent->BindAction ("Rotate", IE_Released, this, &ATBSPlayerController::OnSetRotationReleased);
+	InputComponent->BindAction("SwitchToNextTool", IE_Pressed, this, &ATBSPlayerController::SwitchToNextTool);
+	InputComponent->BindAction("SwitchToPrevTool", IE_Pressed, this, &ATBSPlayerController::SwitchToPrevTool);
+	InputComponent->BindAction("Shave", IE_Pressed, this, &ATBSPlayerController::OnSetShavedPressed);
+	InputComponent->BindAction("Shave", IE_Released, this, &ATBSPlayerController::OnSetShavedReleased);
+	InputComponent->BindAction("Rotate", IE_Pressed, this, &ATBSPlayerController::OnSetRotationPressed);
+	InputComponent->BindAction("Rotate", IE_Released, this, &ATBSPlayerController::OnSetRotationReleased);
+
+	InputComponent->BindAction("TogglePause", IE_Pressed, this, &ATBSPlayerController::TogglePause);
+
+	InputComponent->BindAction("UndoLastChange", IE_Pressed, this, &ATBSPlayerController::InputUndoBeardChanges);
+	InputComponent->BindAction("RedoLastChange", IE_Pressed, this, &ATBSPlayerController::InputRedoBeardChanges);
 
 	// Cheat Codes Pitch Hack
-	InputComponent->BindAction ("FinishCustomer", IE_Pressed, this, &ATBSPlayerController::FinishCurrentCustomer);
+	InputComponent->BindAction("FinishCustomer", IE_Pressed, this, &ATBSPlayerController::FinishCurrentCustomer);
 	InputComponent->BindAction("SpawnNextCustomer", IE_Pressed, this, &ATBSPlayerController::SpawnNextCustomer);
 	
 	InputComponent->BindAction("MoveChair", IE_Pressed, this, &ATBSPlayerController::LiftPositionPressed);
@@ -111,6 +120,7 @@ void ATBSPlayerController::OnSetShavedPressed () {
 
 void ATBSPlayerController::OnSetShavedReleased () {
 	ShaveActive = false;
+	SaveStep();
 }
 
 void ATBSPlayerController::OnSetRotationPressed () {
@@ -202,16 +212,16 @@ void ATBSPlayerController::UpdateRazor (float DeltaTime) {
 
 void ATBSPlayerController::ApplyRazor (float DeltaTime) {
 	// Fetch current values
-	ToolRotationCurrent = PlayerCharacter->Tool->GetActorRotation ();
-	ToolLocationCurrent = PlayerCharacter->Tool->GetActorLocation ();
+	ToolRotationCurrent = PlayerCharacter->Tool->GetActorRotation();
+	ToolLocationCurrent = PlayerCharacter->Tool->GetActorLocation();
 
 	// Could handle special PointingAtCustomer-case here
-	PlayerCharacter->Tool->SetActorLocation (
-		FMath::Lerp (ToolLocationCurrent, ToolLocationTarget, (1.0f / DeltaTime / 60.0f) * RazorPositionLerpIntensity)
+	PlayerCharacter->Tool->SetActorLocation(
+		FMath::Lerp(ToolLocationCurrent, ToolLocationTarget, (1.0f / DeltaTime / 60.0f) * RazorPositionLerpIntensity)
 		);
 
-	PlayerCharacter->Tool->SetActorRotation (
-		FMath::Lerp (ToolRotationCurrent, ToolRotationTarget, (1.0f / DeltaTime / 60.0f) * RazorRotationLerpIntensity)
+	PlayerCharacter->Tool->SetActorRotation(
+		FMath::Lerp(ToolRotationCurrent, ToolRotationTarget, (1.0f / DeltaTime / 60.0f) * RazorRotationLerpIntensity)
 		);
 }
 
@@ -226,6 +236,10 @@ void ATBSPlayerController::ApplyCamera (float DeltaTime) {
 
 #pragma region Pitch Hacks
 void ATBSPlayerController::SpawnNextCustomer () {
+	if (CheckPaused()){
+		UE_LOG(LogClass, Log, TEXT("*** Game is paused! ***"));
+		return;
+	}
 	SpawnedNextCustomer();
 	if (PlayerCharacter) {
 		PlayerCharacter->LoadNewCustomer ();
@@ -233,6 +247,10 @@ void ATBSPlayerController::SpawnNextCustomer () {
 }
 
 void ATBSPlayerController::FinishCurrentCustomer() {
+	if (CheckPaused()) {
+		UE_LOG(LogClass, Log, TEXT("*** Game is paused! ***"));
+		return;
+	}
 	FinishedCurrentCustomer();
 	if (PlayerCharacter) {
 		PlayerCharacter->FinishCurrentCustomer();
@@ -242,17 +260,106 @@ void ATBSPlayerController::FinishCurrentCustomer() {
 
 #pragma region Lift
 void ATBSPlayerController::LiftPositionPressed() {
+	if (CheckPaused()) {
+		UE_LOG(LogClass, Log, TEXT("*** Game is paused! ***"));
+		return;
+	}
 	((ATBSCharacter*)UGameplayStatics::GetPlayerPawn(GetWorld(), 0))->CurrentCustomer->LiftPositionPressed();
 }
 
 void ATBSPlayerController::LiftPositionReleased() {
+	if (CheckPaused()) {
+		UE_LOG(LogClass, Log, TEXT("*** Game is paused! ***"));
+		return;
+	}
 	((ATBSCharacter*)UGameplayStatics::GetPlayerPawn(GetWorld(), 0))->CurrentCustomer->LiftPositionReleased();
 }
 #pragma endregion
 
 #pragma region Beard Data Management
 
+// Wrapper for Input
+void ATBSPlayerController::InputRedoBeardChanges() {
+	RedoBeardChanges();
+}
+
+// Wrapper for Input
+void ATBSPlayerController::InputUndoBeardChanges() {
+	UndoBeardChanges();
+}
+
+
+// Saves the last Step for Undo/Redo purpose
+bool ATBSPlayerController::SaveStep() {
+	if (PlayerCharacter && ChangedBeard && GetEditorMode()) {
+		ChangedBeard = false;
+		bool success = false;
+
+		StepIndex++;
+		StepIndex = StepIndex % MAXREDOSTEPS;
+
+		UDataTable* StepData;
+		StepData = PlayerCharacter->RedoUndoData[StepIndex];
+		success = SetCurrentBeardDataToCSV(StepData);
+
+		if (TotalSteps < MAXREDOSTEPS) {
+			TotalSteps++;
+		}
+		TotalUndoedSteps = 0;							// If saved Step reset UndoedSteps. Never returning back after Undoing and Saving again
+		return success;
+	}
+	return false;
+}
+
+void ATBSPlayerController::SetChangedBeard() {
+	ChangedBeard = true;
+}
+
+// Call from HUD
+bool ATBSPlayerController::RedoBeardChanges() {
+	if (PlayerCharacter && GetEditorMode()) {
+		if (TotalUndoedSteps > 0) {					// Make sure u can redo as much as u had undoed
+			bool success = false;
+			StepIndex++;
+			StepIndex = StepIndex % MAXREDOSTEPS;
+
+			UDataTable* RedoStepData;
+			RedoStepData = PlayerCharacter->RedoUndoData[StepIndex];
+			success = LoadBeardDataToCurrentCustomer(RedoStepData);
+
+			TotalUndoedSteps--;
+			return success;
+		}
+	}
+	return false;
+}
+
+// Call from HUD
+bool ATBSPlayerController::UndoBeardChanges() {
+	if (PlayerCharacter && GetEditorMode()) {
+		if (TotalSteps > 1) {			// Make sure maximal MAXREDOSTEPS-1 are possible. We cant go further than the 1st real step
+			bool success = false;
+			StepIndex--;
+			StepIndex = StepIndex % MAXREDOSTEPS;
+
+			UDataTable* UndoStepData;
+			UndoStepData = PlayerCharacter->RedoUndoData[StepIndex];
+			success = LoadBeardDataToCurrentCustomer(UndoStepData);
+
+			TotalSteps--;
+			TotalUndoedSteps++;
+			return success;
+		}
+	}
+	return false;
+}
+
+
 bool ATBSPlayerController::ClearBeardData() {
+	if (!GetEditorMode()){
+		UE_LOG(LogClass, Log, TEXT("*** No editor mode active ***"));
+		return false;
+	}
 	TArray<FBeardNameLevelData> Beards = GetBeardNameLevelData();
 	if (PlayerCharacter){
 		for (int32 i = 0; i < Beards.Num(); i++) {
@@ -267,7 +374,11 @@ bool ATBSPlayerController::ClearBeardData() {
 	}
 }
 
-bool ATBSPlayerController::ClearBeardID (FName BeardName) {
+bool ATBSPlayerController::ClearBeardID(FName BeardName) {
+	if (!GetEditorMode()) {
+		UE_LOG(LogClass, Log, TEXT("*** No editor mode active ***"));
+		return false;
+	}
 	if (PlayerCharacter) {
 		UDataTable* DataTable;
 		DataTable = FindDataTableToName (BeardName);
@@ -280,6 +391,10 @@ bool ATBSPlayerController::ClearBeardID (FName BeardName) {
 }
 
 bool ATBSPlayerController::SaveBeardID(FName BeardName, int32 BeardLevel, int32 UniqueId) {
+	if (!GetEditorMode()) {
+		UE_LOG(LogClass, Log, TEXT("*** No editor mode active ***"));
+		return false;
+	}
 	if (PlayerCharacter) {
 		bool success = true;
 		UDataTable* DataTable;
@@ -292,7 +407,11 @@ bool ATBSPlayerController::SaveBeardID(FName BeardName, int32 BeardLevel, int32 
 	return false;
 }
 
-bool ATBSPlayerController::LoadBeardID (FName BeardName) {
+bool ATBSPlayerController::LoadBeardID(FName BeardName) {
+	if (!GetEditorMode()) {
+		UE_LOG(LogClass, Log, TEXT("*** No editor mode active ***"));
+		return false;
+	}
 	if (PlayerCharacter) {
 		UDataTable* DataTable;
 		DataTable = FindDataTableToName (BeardName);
@@ -539,3 +658,103 @@ TArray<FBeardNameLevelData> ATBSPlayerController::GetBeardNameLevelData() {
 }
 
 #pragma endregion
+
+#pragma region GamePause
+
+// Returns true if game is PAUSED!
+bool ATBSPlayerController::CheckPaused() {
+	ATBSGameState* gameState;
+	if (GetWorld()) {
+		gameState = GetWorld()->GetGameState<ATBSGameState>();
+		if (gameState) {
+			return gameState->GetPaused();
+		}
+		else {
+			UE_LOG(LogClass, Warning, TEXT("*** No Game State found! ***"));
+		}
+	}
+	return false;
+}
+
+void ATBSPlayerController::PauseGame() {
+	ATBSGameState* gameState;
+	if (GetWorld()) {
+		gameState = GetWorld()->GetGameState<ATBSGameState>();
+		if (gameState) {
+			gameState->SetPaused(true);
+			if (PlayerCharacter) {
+				PlayerCharacter->PauseGameTimer();
+			}
+		}
+		else {
+			UE_LOG(LogClass, Warning, TEXT("*** No Game State found! ***"));
+		}
+	}
+}
+
+void ATBSPlayerController::UnpauseGame() {
+	ATBSGameState* gameState;
+	if (GetWorld()) {
+		gameState = GetWorld()->GetGameState<ATBSGameState>();
+		if (gameState) {
+			gameState->SetPaused(false);
+			if (PlayerCharacter) {
+				PlayerCharacter->UnpauseGameTimer();
+			}
+		}
+		else {
+			UE_LOG(LogClass, Warning, TEXT("*** No Game State found! ***"));
+		}
+	}
+}
+
+void ATBSPlayerController::TogglePause() {
+	ATBSGameState* gameState;
+	if (GetWorld()) {
+		gameState = GetWorld()->GetGameState<ATBSGameState>();
+		if (gameState) {
+			gameState->TogglePause();
+			if (PlayerCharacter) {
+				PlayerCharacter->ToggleGameTimer();
+			}
+		}
+		else {
+			UE_LOG(LogClass, Warning, TEXT("*** No Game State found! ***"));
+		}
+	}
+}
+
+#pragma endregion GamePause
+
+#pragma region GameMode
+
+// Returns true if Beard Editor Mode is ACTIVE!
+bool ATBSPlayerController::GetEditorMode() {
+	ATBSGameState* gameState;
+	if (GetWorld()) {
+		gameState = GetWorld()->GetGameState<ATBSGameState>();
+		if (gameState) {
+			return gameState->GetEditorModeActive();
+		}
+		else {
+			UE_LOG(LogClass, Warning, TEXT("*** No Game State found! ***"));
+		}
+	}
+	return false;
+}
+
+
+void ATBSPlayerController::SetEditorMode(bool EditorModeActive) {
+	ATBSGameState* gameState;
+	if (GetWorld()) {
+		gameState = GetWorld()->GetGameState<ATBSGameState>();
+		if (gameState) {
+			gameState->SetEditorModeActive(EditorModeActive);
+		}
+		else {
+			UE_LOG(LogClass, Warning, TEXT("*** No Game State found! ***"));
+		}
+	}
+}
+
+#pragma endregion GameMode

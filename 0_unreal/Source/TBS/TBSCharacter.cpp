@@ -24,12 +24,17 @@ ATBSCharacter::ATBSCharacter (const FObjectInitializer& ObjectInitializer)
 	ToolResetPosition->AttachTo (CameraComponent);
 	ToolResetPosition->RelativeRotation = FRotator (-59.6, 156.8, -168.0);
 	ToolResetPosition->RelativeLocation = FVector (33.1f, 16.6f, 12.0f);
-
-	static ConstructorHelpers::FClassFinder<ATBSRazor> ToolBP (TEXT ("/Game/TheBarberShop/Assets/Tool_BP"));
-	ToolClass = ToolBP.Class;
+	
+	/*
+	static ConstructorHelpers::FClassFinder<ATBSRazor> ToolBP (TEXT ("Blueprint'/Game/TheBarberShop/Assets/Tool_BP.Tool_BP'"));
+	if (ToolBP.Class != NULL) {
+		ToolClass = ToolBP.Class;
+	}
 
 	static ConstructorHelpers::FClassFinder<ATBSCustomer> CustomerBP (TEXT ("/Game/TheBarberShop/Assets/Customer_BP"));
-	CustomerClass = CustomerBP.Class;
+	if (CustomerBP.Class != NULL) {
+		CustomerClass = CustomerBP.Class;
+	}*/
 
 	CameraRotationLerpIntensity = 1.0f;
 	HorizontalCameraRotationBorder = 75;
@@ -127,6 +132,33 @@ float ATBSCharacter::GetTimeElapsed() {
 		return TimeElapsed;
 	}
 	return -1.f;
+}
+
+void ATBSCharacter::PauseGameTimer() {
+	if (!GetWorldTimerManager().IsTimerPaused(TimerHandle)) {
+		GetWorldTimerManager().PauseTimer(TimerHandle);
+	}
+	else {
+		UE_LOG(LogClass, Warning, TEXT("*** No game timer active or already paused! ***"));
+	}
+}
+
+void ATBSCharacter::UnpauseGameTimer() {
+	if (GetWorldTimerManager().IsTimerPaused(TimerHandle)) {
+		GetWorldTimerManager().UnPauseTimer(TimerHandle);
+	}
+	else {
+		UE_LOG(LogClass, Warning, TEXT("*** No game timer active or already not paused! ***"));
+	}
+}
+
+void ATBSCharacter::ToggleGameTimer() {
+	if (GetWorldTimerManager().IsTimerPaused(TimerHandle)) {
+		GetWorldTimerManager().UnPauseTimer(TimerHandle);
+	}
+	else {
+		GetWorldTimerManager().PauseTimer(TimerHandle);
+	}
 }
 
 

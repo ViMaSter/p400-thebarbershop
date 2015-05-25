@@ -14,12 +14,12 @@ ATBSCustomer::ATBSCustomer (const FObjectInitializer& ObjectInitializer)
 
 	DesiredBeard = "DEFAULT";
 
-	/* FClassfinder does not find the Blueprint for some reason. So it resets for some reason the Bearclass with Null.
-	   This is a short fix, so the autobuilt will work properly.
+	//FClassfinder does not find the Blueprint for some reason. So it resets for some reason the Bearclass with Null.
+	//   This is a short fix, so the autobuilt will work properly.
 	   static ConstructorHelpers::FClassFinder<AActor> BeardBP(TEXT("/Game/TheBarberShop/Assets/Characters/BeardStyles/BeardStyle_00_BP"));
 	   if (BeardBP.Class != NULL){
-	   BeardClass = BeardBP.Class;
-	   }*/
+		BeardClass = BeardBP.Class;
+	   }
 
 	// Lifting of seat
 #pragma region Lift
@@ -43,6 +43,18 @@ void ATBSCustomer::BeginPlay () {
 		SpawnParams.Owner = this;
 		Beard = GetWorld()->SpawnActor<AActor>(BeardClass, FVector(0, 0, 340), FRotator::ZeroRotator, SpawnParams);
 	}
+	/*if (Beard) {
+		// Initial Save in Ediormode
+		ATBSCharacter* Character = (ATBSCharacter*)GetOwner();
+		ATBSPlayerController* PlayerController = NULL;
+		if (Character) {
+			PlayerController = (ATBSPlayerController*)Character->GetController();
+			if (PlayerController && PlayerController->GetEditorMode()) {
+				PlayerController->SetChangedBeard();
+				PlayerController->SaveStep();
+			}
+		}
+	}*/
 
 	CustomerStartPosition = GetActorLocation();
 	BeardStartPosition = Beard->GetActorLocation();

@@ -5,6 +5,9 @@
 #include "Engine/LocalPlayer.h"
 #include "TBSPlayerController.generated.h"
 
+
+#define MAXREDOSTEPS 10
+
 USTRUCT(BlueprintType)
 struct FBeardNameLevelData{
 	GENERATED_USTRUCT_BODY()
@@ -27,16 +30,29 @@ public:
 	ATBSPlayerController (const FObjectInitializer& ObjectInitializer);
 
 	/// Vincent: Needed to move this from protected to public, since this methods will be called from the HUD
+	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool RedoBeardChanges();
+	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool UndoBeardChanges();
+	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool SaveStep();
+	UFUNCTION (BlueprintCallable, Category = "Beard Control") void SetChangedBeard();
+
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool ClearBeardData ();
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool ClearBeardID (FName BeardName);
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool SaveBeardID(FName BeardName, int32 BeardLevel = 1, int32 UniqueId = 0);
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool LoadBeardID (FName BeardName);
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") void SpawnNextCustomer();
-	UFUNCTION (BlueprintImplementableEvent, Category = "Beard Control") void SpawnedNextCustomer();
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") void FinishCurrentCustomer();
-	UFUNCTION (BlueprintImplementableEvent, Category = "Beard Control") void FinishedCurrentCustomer();
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") UDataTable* FindDataTableToName(FName BeardName);
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") TArray<FBeardNameLevelData> GetBeardNameLevelData();
+	UFUNCTION (BlueprintImplementableEvent, Category = "Beard Control") void SpawnedNextCustomer();
+	UFUNCTION (BlueprintImplementableEvent, Category = "Beard Control") void FinishedCurrentCustomer();
+
+	UFUNCTION (BlueprintCallable, exec, Category = "Game Pause") void PauseGame();
+	UFUNCTION (BlueprintCallable, exec, Category = "Game Pause") void UnpauseGame();
+	UFUNCTION (BlueprintCallable, exec, Category = "Game Pause") void TogglePause();
+	UFUNCTION (BlueprintCallable, Category = "Game Pause") bool CheckPaused();
+
+	UFUNCTION (BlueprintCallable, exec, Category = "Game Mode") void SetEditorMode(bool EditorModeActive);
+	UFUNCTION (BlueprintCallable, Category = "Game Mode") bool GetEditorMode();
 
 
 	//BeginPlay
@@ -117,7 +133,7 @@ protected:
 
 	// Methods used in tick
 	// Update: Prepares the target values
-	// Apply: Checks wether or not these values should be used and applies them
+	// Apply: Checks whether or not these values should be used and applies them
 	void UpdateRazor (float DeltaTime);
 	void ApplyRazor (float DeltaTime);
 
@@ -128,6 +144,15 @@ protected:
 	bool LoadBeardDataToCurrentCustomer(UDataTable* Datatable);
 	bool SetCurrentBeardDataToCSV (UDataTable* DataTable);
 	bool SetBeardToCollectionData(FName BeardName, int32 BeardLevel, int32 UniqueId);
+
+
+	bool ChangedBeard = false;
+	int32 StepIndex = -1;			// Starting with -1 cause initial SaveStep jumping to 0
+	int32 TotalSteps = 0;
+	int32 TotalUndoedSteps = 0;
+	void InputRedoBeardChanges();
+	void InputUndoBeardChanges();
+
 };
 
 

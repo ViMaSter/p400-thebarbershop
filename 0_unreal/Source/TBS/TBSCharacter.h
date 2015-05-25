@@ -110,7 +110,7 @@ public:
 	UPROPERTY (EditAnywhere, noclear, BlueprintReadWrite, Category = "Razor Class", meta = (DisplayName = "Tool Class"))
 	TSubclassOf<ATBSRazor> ToolClass;
 
-	UPROPERTY (EditAnywhere, noclear, BlueprintReadWrite, Category = "Razor Class", meta = (DisplayName = "Tool Class"))
+	UPROPERTY (EditAnywhere, noclear, BlueprintReadWrite, Category = "Razor Class", meta = (DisplayName = "Customer Class"))
 	TSubclassOf<ATBSCustomer> CustomerClass;
 
 	UPROPERTY (VisibleAnywhere, BlueprintReadOnly, Category = "Tool")
@@ -166,6 +166,9 @@ public:
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "CSV Data")
 	UDataTable* BeardCollection;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CSV Data")
+	TArray<UDataTable*> RedoUndoData;
+
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus")
 	ATBSCustomer* CurrentCustomer;
 
@@ -181,6 +184,10 @@ public:
 	// (BP-)Helper functions
 	UFUNCTION (BlueprintCallable, Category = "Timer") float GetTimeElapsed();
 	UFUNCTION (BlueprintCallable, Category = "Timer") float GetTimeLeft();
+	UFUNCTION (BlueprintCallable, Category = "Timer") void PauseGameTimer();
+	UFUNCTION (BlueprintCallable, Category = "Timer") void UnpauseGameTimer();
+	UFUNCTION (BlueprintCallable, Category = "Timer") void ToggleGameTimer();
+
 	UFUNCTION (BlueprintCallable, Category = "EXP") void IncreaseEXP(int32 Value);
 	UFUNCTION (BlueprintCallable, Category = "Cash") void IncreaseCash(float ComparisionResult);
 	UFUNCTION (BlueprintCallable, Category = "Customer") void LoadNewCustomer();
