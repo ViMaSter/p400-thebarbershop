@@ -273,7 +273,7 @@ void ATBSPlayerController::LiftPositionReleased() {
 #pragma region Beard Data Management
 
 bool ATBSPlayerController::ClearBeardData() {
-	if (!CheckEditorMode()){
+	if (!GetEditorMode()){
 		UE_LOG(LogClass, Log, TEXT("*** No editor mode active ***"));
 		return false;
 	}
@@ -292,7 +292,7 @@ bool ATBSPlayerController::ClearBeardData() {
 }
 
 bool ATBSPlayerController::ClearBeardID(FName BeardName) {
-	if (!CheckEditorMode()) {
+	if (!GetEditorMode()) {
 		UE_LOG(LogClass, Log, TEXT("*** No editor mode active ***"));
 		return false;
 	}
@@ -308,7 +308,7 @@ bool ATBSPlayerController::ClearBeardID(FName BeardName) {
 }
 
 bool ATBSPlayerController::SaveBeardID(FName BeardName, int32 BeardLevel, int32 UniqueId) {
-	if (!CheckEditorMode()) {
+	if (!GetEditorMode()) {
 		UE_LOG(LogClass, Log, TEXT("*** No editor mode active ***"));
 		return false;
 	}
@@ -325,7 +325,7 @@ bool ATBSPlayerController::SaveBeardID(FName BeardName, int32 BeardLevel, int32 
 }
 
 bool ATBSPlayerController::LoadBeardID(FName BeardName) {
-	if (!CheckEditorMode()) {
+	if (!GetEditorMode()) {
 		UE_LOG(LogClass, Log, TEXT("*** No editor mode active ***"));
 		return false;
 	}
@@ -646,7 +646,7 @@ void ATBSPlayerController::TogglePause() {
 #pragma region GameMode
 
 // Returns true if Beard Editor Mode is ACTIVE!
-bool ATBSPlayerController::CheckEditorMode() {
+bool ATBSPlayerController::GetEditorMode() {
 	ATBSGameState* gameState;
 	if (GetWorld()) {
 		gameState = GetWorld()->GetGameState<ATBSGameState>();
@@ -661,7 +661,7 @@ bool ATBSPlayerController::CheckEditorMode() {
 }
 
 
-void ATBSPlayerController::SetGameMode(bool EditorModeActive) {
+void ATBSPlayerController::SetEditorMode(bool EditorModeActive) {
 	ATBSGameState* gameState;
 	if (GetWorld()) {
 		gameState = GetWorld()->GetGameState<ATBSGameState>();
