@@ -148,16 +148,11 @@ void ATBSCharacter::UnpauseGameTimer() {
 }
 
 void ATBSCharacter::ToggleGameTimer() {
-	if (GetWorldTimerManager().IsTimerActive(TimerHandle)) {
-		if (GetWorldTimerManager().IsTimerPaused(TimerHandle)) {
-			GetWorldTimerManager().UnPauseTimer(TimerHandle);
-		}
-		else {
-			GetWorldTimerManager().PauseTimer(TimerHandle);
-		}
+	if (GetWorldTimerManager().IsTimerPaused(TimerHandle)) {
+		GetWorldTimerManager().UnPauseTimer(TimerHandle);
 	}
 	else {
-		UE_LOG(LogClass, Warning, TEXT("*** No game timer active! ***"));
+		GetWorldTimerManager().PauseTimer(TimerHandle);
 	}
 }
 

@@ -51,19 +51,21 @@ void ATBSPlayerController::SetupInputComponent () {
 	// set up gameplay key bindings
 	Super::SetupInputComponent ();
 
-	InputComponent->BindAxis ("RotateTop", this, &ATBSPlayerController::RotateTop);
-	InputComponent->BindAxis ("RotateRight", this, &ATBSPlayerController::RotateRight);
-	InputComponent->BindAxis ("RotateRazorTop", this, &ATBSPlayerController::RotateToolTop);
+	InputComponent->BindAxis("RotateTop", this, &ATBSPlayerController::RotateTop);
+	InputComponent->BindAxis("RotateRight", this, &ATBSPlayerController::RotateRight);
+	InputComponent->BindAxis("RotateRazorTop", this, &ATBSPlayerController::RotateToolTop);
 
-	InputComponent->BindAction ("SwitchToNextTool", IE_Pressed, this, &ATBSPlayerController::SwitchToNextTool);
-	InputComponent->BindAction ("SwitchToPrevTool", IE_Pressed, this, &ATBSPlayerController::SwitchToPrevTool);
-	InputComponent->BindAction ("Shave", IE_Pressed, this, &ATBSPlayerController::OnSetShavedPressed);
-	InputComponent->BindAction ("Shave", IE_Released, this, &ATBSPlayerController::OnSetShavedReleased);
-	InputComponent->BindAction ("Rotate", IE_Pressed, this, &ATBSPlayerController::OnSetRotationPressed);
-	InputComponent->BindAction ("Rotate", IE_Released, this, &ATBSPlayerController::OnSetRotationReleased);
+	InputComponent->BindAction("SwitchToNextTool", IE_Pressed, this, &ATBSPlayerController::SwitchToNextTool);
+	InputComponent->BindAction("SwitchToPrevTool", IE_Pressed, this, &ATBSPlayerController::SwitchToPrevTool);
+	InputComponent->BindAction("Shave", IE_Pressed, this, &ATBSPlayerController::OnSetShavedPressed);
+	InputComponent->BindAction("Shave", IE_Released, this, &ATBSPlayerController::OnSetShavedReleased);
+	InputComponent->BindAction("Rotate", IE_Pressed, this, &ATBSPlayerController::OnSetRotationPressed);
+	InputComponent->BindAction("Rotate", IE_Released, this, &ATBSPlayerController::OnSetRotationReleased);
+
+	InputComponent->BindAction("TogglePause", IE_Pressed, this, &ATBSPlayerController::TogglePause);
 
 	// Cheat Codes Pitch Hack
-	InputComponent->BindAction ("FinishCustomer", IE_Pressed, this, &ATBSPlayerController::FinishCurrentCustomer);
+	InputComponent->BindAction("FinishCustomer", IE_Pressed, this, &ATBSPlayerController::FinishCurrentCustomer);
 	InputComponent->BindAction("SpawnNextCustomer", IE_Pressed, this, &ATBSPlayerController::SpawnNextCustomer);
 	
 	InputComponent->BindAction("MoveChair", IE_Pressed, this, &ATBSPlayerController::LiftPositionPressed);
