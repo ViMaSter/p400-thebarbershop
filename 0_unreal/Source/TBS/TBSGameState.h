@@ -6,6 +6,10 @@
 #include "TBSGameState.generated.h"
 
 /**
+ *
+ * Using this Class for session storage and general game properties!
+ * @Vincent think we should use this class for saving and loading
+ * and for showing the last result in comparison
  * 
  */
 UCLASS()
