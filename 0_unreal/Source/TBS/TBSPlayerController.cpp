@@ -228,6 +228,10 @@ void ATBSPlayerController::ApplyCamera (float DeltaTime) {
 
 #pragma region Pitch Hacks
 void ATBSPlayerController::SpawnNextCustomer () {
+	if (CheckPaused()){
+		UE_LOG(LogClass, Log, TEXT("*** Game is paused! ***"));
+		return;
+	}
 	SpawnedNextCustomer();
 	if (PlayerCharacter) {
 		PlayerCharacter->LoadNewCustomer ();
@@ -235,6 +239,10 @@ void ATBSPlayerController::SpawnNextCustomer () {
 }
 
 void ATBSPlayerController::FinishCurrentCustomer() {
+	if (CheckPaused()) {
+		UE_LOG(LogClass, Log, TEXT("*** Game is paused! ***"));
+		return;
+	}
 	FinishedCurrentCustomer();
 	if (PlayerCharacter) {
 		PlayerCharacter->FinishCurrentCustomer();
