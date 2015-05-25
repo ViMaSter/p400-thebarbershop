@@ -12,8 +12,16 @@ UCLASS()
 class TBS_API ATBSGameState : public AGameState
 {
 	GENERATED_BODY()
-	
-	
-	
-	
+
+private:
+	bool IsEditorModeActive = false;
+	bool IsPaused = false;
+
+public:
+	void SetEditorModeActive(bool IsEditorMode);
+	bool GetEditorModeActive();
+
+	void SetPaused(bool IsPaused);
+	bool GetPaused();
+	void TogglePause();
 };

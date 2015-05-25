@@ -4,6 +4,7 @@
 #include "TBSCustomer.h"
 #include "TBSRazor.h"
 #include "TBSPlayerController.h"
+#include "TBSGameState.h"
 
 ATBSPlayerController::ATBSPlayerController (const FObjectInitializer& ObjectInitializer)
 	: Super (ObjectInitializer) {
@@ -21,6 +22,7 @@ ATBSPlayerController::ATBSPlayerController (const FObjectInitializer& ObjectInit
 	ShavingThreshold = 0.1f;
 }
 
+
 void ATBSPlayerController::BeginPlay () {
 	Super::BeginPlay ();
 	PlayerCharacter = (ATBSCharacter*) GetPawn ();
@@ -34,7 +36,7 @@ void ATBSPlayerController::PlayerTick (float DeltaTime) {
 		return;
 	}
 
-	if (PlayerCharacter) {
+	if (PlayerCharacter && !CheckPaused()) {
 		UpdateRazor (DeltaTime);
 		UpdateCamera (DeltaTime);
 
@@ -539,3 +541,59 @@ TArray<FBeardNameLevelData> ATBSPlayerController::GetBeardNameLevelData() {
 }
 
 #pragma endregion
+
+#pragma region GamePause
+
+bool ATBSPlayerController::CheckPaused() {
+	ATBSGameState* gameState;
+	if (GetWorld()) {
+		gameState = GetWorld()->GetGameState<ATBSGameState>();
+		if (gameState) {
+			return gameState->GetPaused();
+		}
+		else {
+			UE_LOG(LogClass, Warning, TEXT("*** No Game State found! ***"));
+		}
+	}
+}
+
+void ATBSPlayerController::PauseGame() {
+	ATBSGameState* gameState;
+	if (GetWorld()) {
+		gameState = GetWorld()->GetGameState<ATBSGameState>();
+		if (gameState) {
+			gameState->SetPaused(true);
+		}
+		else {
+			UE_LOG(LogClass, Warning, TEXT("*** No Game State found! ***"));
+		}
+	}
+}
+
+void ATBSPlayerController::UnpauseGame() {
+	ATBSGameState* gameState;
+	if (GetWorld()) {
+		gameState = GetWorld()->GetGameState<ATBSGameState>();
+		if (gameState) {
+			gameState->SetPaused(false);
+		}
+		else {
+			UE_LOG(LogClass, Warning, TEXT("*** No Game State found! ***"));
+		}
+	}
+}
+
+void ATBSPlayerController::TogglePause() {
+	ATBSGameState* gameState;
+	if (GetWorld()) {
+		gameState = GetWorld()->GetGameState<ATBSGameState>();
+		if (gameState) {
+			gameState->TogglePause();
+		}
+		else {
+			UE_LOG(LogClass, Warning, TEXT("*** No Game State found! ***"));
+		}
+	}
+}
+
+#pragma endregion GamePause

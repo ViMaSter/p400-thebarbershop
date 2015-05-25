@@ -38,6 +38,11 @@ public:
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") UDataTable* FindDataTableToName(FName BeardName);
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") TArray<FBeardNameLevelData> GetBeardNameLevelData();
 
+	UFUNCTION (BlueprintCallable, exec, Category = "Game Pause") void ATBSPlayerController::PauseGame();
+	UFUNCTION (BlueprintCallable, exec, Category = "Game Pause") void ATBSPlayerController::UnpauseGame();
+	UFUNCTION (BlueprintCallable, exec, Category = "Game Pause") void ATBSPlayerController::TogglePause();
+	UFUNCTION (BlueprintCallable, Category = "Game Pause") bool CheckPaused();
+
 
 	//BeginPlay
 	virtual void BeginPlay () override;
@@ -128,6 +133,7 @@ protected:
 	bool LoadBeardDataToCurrentCustomer(UDataTable* Datatable);
 	bool SetCurrentBeardDataToCSV (UDataTable* DataTable);
 	bool SetBeardToCollectionData(FName BeardName, int32 BeardLevel, int32 UniqueId);
+
 };
 
 
