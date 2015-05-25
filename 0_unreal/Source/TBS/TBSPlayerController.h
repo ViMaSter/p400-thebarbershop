@@ -43,6 +43,9 @@ public:
 	UFUNCTION (BlueprintCallable, exec, Category = "Game Pause") void TogglePause();
 	UFUNCTION (BlueprintCallable, Category = "Game Pause") bool CheckPaused();
 
+	UFUNCTION(BlueprintCallable, exec, Category = "Game Mode") void SetGameMode(bool EditorModeActive);
+	UFUNCTION(BlueprintCallable, Category = "Game Mode") bool CheckEditorMode();
+
 
 	//BeginPlay
 	virtual void BeginPlay () override;

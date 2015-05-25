@@ -273,6 +273,10 @@ void ATBSPlayerController::LiftPositionReleased() {
 #pragma region Beard Data Management
 
 bool ATBSPlayerController::ClearBeardData() {
+	if (!CheckEditorMode()){
+		UE_LOG(LogClass, Log, TEXT("*** No editor mode active ***"));
+		return false;
+	}
 	TArray<FBeardNameLevelData> Beards = GetBeardNameLevelData();
 	if (PlayerCharacter){
 		for (int32 i = 0; i < Beards.Num(); i++) {
@@ -287,7 +291,11 @@ bool ATBSPlayerController::ClearBeardData() {
 	}
 }
 
-bool ATBSPlayerController::ClearBeardID (FName BeardName) {
+bool ATBSPlayerController::ClearBeardID(FName BeardName) {
+	if (!CheckEditorMode()) {
+		UE_LOG(LogClass, Log, TEXT("*** No editor mode active ***"));
+		return false;
+	}
 	if (PlayerCharacter) {
 		UDataTable* DataTable;
 		DataTable = FindDataTableToName (BeardName);
@@ -300,6 +308,10 @@ bool ATBSPlayerController::ClearBeardID (FName BeardName) {
 }
 
 bool ATBSPlayerController::SaveBeardID(FName BeardName, int32 BeardLevel, int32 UniqueId) {
+	if (!CheckEditorMode()) {
+		UE_LOG(LogClass, Log, TEXT("*** No editor mode active ***"));
+		return false;
+	}
 	if (PlayerCharacter) {
 		bool success = true;
 		UDataTable* DataTable;
@@ -312,7 +324,11 @@ bool ATBSPlayerController::SaveBeardID(FName BeardName, int32 BeardLevel, int32 
 	return false;
 }
 
-bool ATBSPlayerController::LoadBeardID (FName BeardName) {
+bool ATBSPlayerController::LoadBeardID(FName BeardName) {
+	if (!CheckEditorMode()) {
+		UE_LOG(LogClass, Log, TEXT("*** No editor mode active ***"));
+		return false;
+	}
 	if (PlayerCharacter) {
 		UDataTable* DataTable;
 		DataTable = FindDataTableToName (BeardName);
@@ -562,6 +578,7 @@ TArray<FBeardNameLevelData> ATBSPlayerController::GetBeardNameLevelData() {
 
 #pragma region GamePause
 
+// Returns true if game is PAUSED!
 bool ATBSPlayerController::CheckPaused() {
 	ATBSGameState* gameState;
 	if (GetWorld()) {
@@ -625,3 +642,36 @@ void ATBSPlayerController::TogglePause() {
 }
 
 #pragma endregion GamePause
+
+#pragma region GameMode
+
+// Returns true if Beard Editor Mode is ACTIVE!
+bool ATBSPlayerController::CheckEditorMode() {
+	ATBSGameState* gameState;
+	if (GetWorld()) {
+		gameState = GetWorld()->GetGameState<ATBSGameState>();
+		if (gameState) {
+			return gameState->GetEditorModeActive();
+		}
+		else {
+			UE_LOG(LogClass, Warning, TEXT("*** No Game State found! ***"));
+		}
+	}
+	return false;
+}
+
+
+void ATBSPlayerController::SetGameMode(bool EditorModeActive) {
+	ATBSGameState* gameState;
+	if (GetWorld()) {
+		gameState = GetWorld()->GetGameState<ATBSGameState>();
+		if (gameState) {
+			gameState->SetEditorModeActive(EditorModeActive);
+		}
+		else {
+			UE_LOG(LogClass, Warning, TEXT("*** No Game State found! ***"));
+		}
+	}
+}
+
+#pragma endregion GameMode
