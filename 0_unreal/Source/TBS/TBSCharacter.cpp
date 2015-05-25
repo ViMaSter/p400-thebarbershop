@@ -129,6 +129,38 @@ float ATBSCharacter::GetTimeElapsed() {
 	return -1.f;
 }
 
+void ATBSCharacter::PauseGameTimer() {
+	if (!GetWorldTimerManager().IsTimerPaused(TimerHandle)) {
+		GetWorldTimerManager().PauseTimer(TimerHandle);
+	}
+	else {
+		UE_LOG(LogClass, Warning, TEXT("*** No game timer active or already paused! ***"));
+	}
+}
+
+void ATBSCharacter::UnpauseGameTimer() {
+	if (GetWorldTimerManager().IsTimerPaused(TimerHandle)) {
+		GetWorldTimerManager().UnPauseTimer(TimerHandle);
+	}
+	else {
+		UE_LOG(LogClass, Warning, TEXT("*** No game timer active or already not paused! ***"));
+	}
+}
+
+void ATBSCharacter::ToggleGameTimer() {
+	if (GetWorldTimerManager().IsTimerActive(TimerHandle)) {
+		if (GetWorldTimerManager().IsTimerPaused(TimerHandle)) {
+			GetWorldTimerManager().UnPauseTimer(TimerHandle);
+		}
+		else {
+			GetWorldTimerManager().PauseTimer(TimerHandle);
+		}
+	}
+	else {
+		UE_LOG(LogClass, Warning, TEXT("*** No game timer active! ***"));
+	}
+}
+
 
 void ATBSCharacter::IncreaseEXP (int32 Value) {
 	const FLevelUpData *CurrentData;

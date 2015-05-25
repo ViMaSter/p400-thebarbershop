@@ -555,6 +555,7 @@ bool ATBSPlayerController::CheckPaused() {
 			UE_LOG(LogClass, Warning, TEXT("*** No Game State found! ***"));
 		}
 	}
+	return false;
 }
 
 void ATBSPlayerController::PauseGame() {
@@ -563,6 +564,9 @@ void ATBSPlayerController::PauseGame() {
 		gameState = GetWorld()->GetGameState<ATBSGameState>();
 		if (gameState) {
 			gameState->SetPaused(true);
+			if (PlayerCharacter) {
+				PlayerCharacter->PauseGameTimer();
+			}
 		}
 		else {
 			UE_LOG(LogClass, Warning, TEXT("*** No Game State found! ***"));
@@ -576,6 +580,9 @@ void ATBSPlayerController::UnpauseGame() {
 		gameState = GetWorld()->GetGameState<ATBSGameState>();
 		if (gameState) {
 			gameState->SetPaused(false);
+			if (PlayerCharacter) {
+				PlayerCharacter->UnpauseGameTimer();
+			}
 		}
 		else {
 			UE_LOG(LogClass, Warning, TEXT("*** No Game State found! ***"));
@@ -589,6 +596,9 @@ void ATBSPlayerController::TogglePause() {
 		gameState = GetWorld()->GetGameState<ATBSGameState>();
 		if (gameState) {
 			gameState->TogglePause();
+			if (PlayerCharacter) {
+				PlayerCharacter->ToggleGameTimer();
+			}
 		}
 		else {
 			UE_LOG(LogClass, Warning, TEXT("*** No Game State found! ***"));
