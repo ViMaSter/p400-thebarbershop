@@ -24,12 +24,17 @@ ATBSCharacter::ATBSCharacter (const FObjectInitializer& ObjectInitializer)
 	ToolResetPosition->AttachTo (CameraComponent);
 	ToolResetPosition->RelativeRotation = FRotator (-59.6, 156.8, -168.0);
 	ToolResetPosition->RelativeLocation = FVector (33.1f, 16.6f, 12.0f);
-
-	static ConstructorHelpers::FClassFinder<ATBSRazor> ToolBP (TEXT ("/Game/TheBarberShop/Assets/Tool_BP"));
-	ToolClass = ToolBP.Class;
+	
+	/*
+	static ConstructorHelpers::FClassFinder<ATBSRazor> ToolBP (TEXT ("Blueprint'/Game/TheBarberShop/Assets/Tool_BP.Tool_BP'"));
+	if (ToolBP.Class != NULL) {
+		ToolClass = ToolBP.Class;
+	}
 
 	static ConstructorHelpers::FClassFinder<ATBSCustomer> CustomerBP (TEXT ("/Game/TheBarberShop/Assets/Customer_BP"));
-	CustomerClass = CustomerBP.Class;
+	if (CustomerBP.Class != NULL) {
+		CustomerClass = CustomerBP.Class;
+	}*/
 
 	CameraRotationLerpIntensity = 1.0f;
 	HorizontalCameraRotationBorder = 75;

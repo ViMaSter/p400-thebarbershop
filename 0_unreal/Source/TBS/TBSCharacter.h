@@ -110,7 +110,7 @@ public:
 	UPROPERTY (EditAnywhere, noclear, BlueprintReadWrite, Category = "Razor Class", meta = (DisplayName = "Tool Class"))
 	TSubclassOf<ATBSRazor> ToolClass;
 
-	UPROPERTY (EditAnywhere, noclear, BlueprintReadWrite, Category = "Razor Class", meta = (DisplayName = "Tool Class"))
+	UPROPERTY (EditAnywhere, noclear, BlueprintReadWrite, Category = "Razor Class", meta = (DisplayName = "Customer Class"))
 	TSubclassOf<ATBSCustomer> CustomerClass;
 
 	UPROPERTY (VisibleAnywhere, BlueprintReadOnly, Category = "Tool")
@@ -165,6 +165,9 @@ public:
 
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "CSV Data")
 	UDataTable* BeardCollection;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CSV Data")
+	TArray<UDataTable*> RedoUndoData;
 
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus")
 	ATBSCustomer* CurrentCustomer;

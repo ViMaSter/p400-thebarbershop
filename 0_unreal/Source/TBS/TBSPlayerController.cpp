@@ -20,6 +20,8 @@ ATBSPlayerController::ATBSPlayerController (const FObjectInitializer& ObjectInit
 	RazorPositionLerpIntensity = 1.0f;
 	RazorLoweringLerpIntensity = 1.0f;
 	ShavingThreshold = 0.1f;
+
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 
@@ -63,6 +65,9 @@ void ATBSPlayerController::SetupInputComponent () {
 	InputComponent->BindAction("Rotate", IE_Released, this, &ATBSPlayerController::OnSetRotationReleased);
 
 	InputComponent->BindAction("TogglePause", IE_Pressed, this, &ATBSPlayerController::TogglePause);
+
+	InputComponent->BindAction("UndoLastChange", IE_Pressed, this, &ATBSPlayerController::InputUndoBeardChanges);
+	InputComponent->BindAction("RedoLastChange", IE_Pressed, this, &ATBSPlayerController::InputRedoBeardChanges);
 
 	// Cheat Codes Pitch Hack
 	InputComponent->BindAction("FinishCustomer", IE_Pressed, this, &ATBSPlayerController::FinishCurrentCustomer);
@@ -115,6 +120,7 @@ void ATBSPlayerController::OnSetShavedPressed () {
 
 void ATBSPlayerController::OnSetShavedReleased () {
 	ShaveActive = false;
+	SaveStep();
 }
 
 void ATBSPlayerController::OnSetRotationPressed () {
@@ -206,16 +212,16 @@ void ATBSPlayerController::UpdateRazor (float DeltaTime) {
 
 void ATBSPlayerController::ApplyRazor (float DeltaTime) {
 	// Fetch current values
-	ToolRotationCurrent = PlayerCharacter->Tool->GetActorRotation ();
-	ToolLocationCurrent = PlayerCharacter->Tool->GetActorLocation ();
+	ToolRotationCurrent = PlayerCharacter->Tool->GetActorRotation();
+	ToolLocationCurrent = PlayerCharacter->Tool->GetActorLocation();
 
 	// Could handle special PointingAtCustomer-case here
-	PlayerCharacter->Tool->SetActorLocation (
-		FMath::Lerp (ToolLocationCurrent, ToolLocationTarget, (1.0f / DeltaTime / 60.0f) * RazorPositionLerpIntensity)
+	PlayerCharacter->Tool->SetActorLocation(
+		FMath::Lerp(ToolLocationCurrent, ToolLocationTarget, (1.0f / DeltaTime / 60.0f) * RazorPositionLerpIntensity)
 		);
 
-	PlayerCharacter->Tool->SetActorRotation (
-		FMath::Lerp (ToolRotationCurrent, ToolRotationTarget, (1.0f / DeltaTime / 60.0f) * RazorRotationLerpIntensity)
+	PlayerCharacter->Tool->SetActorRotation(
+		FMath::Lerp(ToolRotationCurrent, ToolRotationTarget, (1.0f / DeltaTime / 60.0f) * RazorRotationLerpIntensity)
 		);
 }
 
@@ -271,6 +277,83 @@ void ATBSPlayerController::LiftPositionReleased() {
 #pragma endregion
 
 #pragma region Beard Data Management
+
+// Wrapper for Input
+void ATBSPlayerController::InputRedoBeardChanges() {
+	RedoBeardChanges();
+}
+
+// Wrapper for Input
+void ATBSPlayerController::InputUndoBeardChanges() {
+	UndoBeardChanges();
+}
+
+
+// Saves the last Step for Undo/Redo purpose
+bool ATBSPlayerController::SaveStep() {
+	if (PlayerCharacter && ChangedBeard && GetEditorMode()) {
+		ChangedBeard = false;
+		bool success = false;
+
+		StepIndex++;
+		StepIndex = StepIndex % MAXREDOSTEPS;
+
+		UDataTable* StepData;
+		StepData = PlayerCharacter->RedoUndoData[StepIndex];
+		success = SetCurrentBeardDataToCSV(StepData);
+
+		if (TotalSteps < MAXREDOSTEPS) {
+			TotalSteps++;
+		}
+		TotalUndoedSteps = 0;							// If saved Step reset UndoedSteps. Never returning back after Undoing and Saving again
+		return success;
+	}
+	return false;
+}
+
+void ATBSPlayerController::SetChangedBeard() {
+	ChangedBeard = true;
+}
+
+// Call from HUD
+bool ATBSPlayerController::RedoBeardChanges() {
+	if (PlayerCharacter && GetEditorMode()) {
+		if (TotalUndoedSteps > 0) {					// Make sure u can redo as much as u had undoed
+			bool success = false;
+			StepIndex++;
+			StepIndex = StepIndex % MAXREDOSTEPS;
+
+			UDataTable* RedoStepData;
+			RedoStepData = PlayerCharacter->RedoUndoData[StepIndex];
+			success = LoadBeardDataToCurrentCustomer(RedoStepData);
+
+			TotalUndoedSteps--;
+			return success;
+		}
+	}
+	return false;
+}
+
+// Call from HUD
+bool ATBSPlayerController::UndoBeardChanges() {
+	if (PlayerCharacter && GetEditorMode()) {
+		if (TotalSteps > 1) {			// Make sure maximal MAXREDOSTEPS-1 are possible. We cant go further than the 1st real step
+			bool success = false;
+			StepIndex--;
+			StepIndex = StepIndex % MAXREDOSTEPS;
+
+			UDataTable* UndoStepData;
+			UndoStepData = PlayerCharacter->RedoUndoData[StepIndex];
+			success = LoadBeardDataToCurrentCustomer(UndoStepData);
+
+			TotalSteps--;
+			TotalUndoedSteps++;
+			return success;
+		}
+	}
+	return false;
+}
+
 
 bool ATBSPlayerController::ClearBeardData() {
 	if (!GetEditorMode()){
