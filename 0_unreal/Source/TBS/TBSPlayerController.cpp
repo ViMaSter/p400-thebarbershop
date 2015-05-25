@@ -38,7 +38,7 @@ void ATBSPlayerController::PlayerTick (float DeltaTime) {
 		return;
 	}
 
-	if (PlayerCharacter && !CheckPaused()) {
+	if (PlayerCharacter && !GetIsPaused()) {
 		UpdateRazor (DeltaTime);
 		UpdateCamera (DeltaTime);
 
@@ -63,8 +63,6 @@ void ATBSPlayerController::SetupInputComponent () {
 	InputComponent->BindAction("Shave", IE_Released, this, &ATBSPlayerController::OnSetShavedReleased);
 	InputComponent->BindAction("Rotate", IE_Pressed, this, &ATBSPlayerController::OnSetRotationPressed);
 	InputComponent->BindAction("Rotate", IE_Released, this, &ATBSPlayerController::OnSetRotationReleased);
-
-	InputComponent->BindAction("TogglePause", IE_Pressed, this, &ATBSPlayerController::TogglePause);
 
 	InputComponent->BindAction("UndoLastChange", IE_Pressed, this, &ATBSPlayerController::InputUndoBeardChanges);
 	InputComponent->BindAction("RedoLastChange", IE_Pressed, this, &ATBSPlayerController::InputRedoBeardChanges);
@@ -236,7 +234,7 @@ void ATBSPlayerController::ApplyCamera (float DeltaTime) {
 
 #pragma region Pitch Hacks
 void ATBSPlayerController::SpawnNextCustomer () {
-	if (CheckPaused()){
+	if (GetIsPaused()){
 		UE_LOG(LogClass, Log, TEXT("*** Game is paused! ***"));
 		return;
 	}
@@ -247,7 +245,7 @@ void ATBSPlayerController::SpawnNextCustomer () {
 }
 
 void ATBSPlayerController::FinishCurrentCustomer() {
-	if (CheckPaused()) {
+	if (GetIsPaused()) {
 		UE_LOG(LogClass, Log, TEXT("*** Game is paused! ***"));
 		return;
 	}
@@ -260,7 +258,7 @@ void ATBSPlayerController::FinishCurrentCustomer() {
 
 #pragma region Lift
 void ATBSPlayerController::LiftPositionPressed() {
-	if (CheckPaused()) {
+	if (GetIsPaused()) {
 		UE_LOG(LogClass, Log, TEXT("*** Game is paused! ***"));
 		return;
 	}
@@ -268,7 +266,7 @@ void ATBSPlayerController::LiftPositionPressed() {
 }
 
 void ATBSPlayerController::LiftPositionReleased() {
-	if (CheckPaused()) {
+	if (GetIsPaused()) {
 		UE_LOG(LogClass, Log, TEXT("*** Game is paused! ***"));
 		return;
 	}
@@ -291,7 +289,7 @@ void ATBSPlayerController::InputUndoBeardChanges() {
 
 // Saves the last Step for Undo/Redo purpose
 bool ATBSPlayerController::SaveStep() {
-	if (PlayerCharacter && ChangedBeard && GetEditorMode()) {
+	if (PlayerCharacter && ChangedBeard && GetIsEditorMode()) {
 		ChangedBeard = false;
 		bool success = false;
 
@@ -317,7 +315,7 @@ void ATBSPlayerController::SetChangedBeard() {
 
 // Call from HUD
 bool ATBSPlayerController::RedoBeardChanges() {
-	if (PlayerCharacter && GetEditorMode()) {
+	if (PlayerCharacter && GetIsEditorMode()) {
 		if (TotalUndoedSteps > 0) {					// Make sure u can redo as much as u had undoed
 			bool success = false;
 			StepIndex++;
@@ -336,7 +334,7 @@ bool ATBSPlayerController::RedoBeardChanges() {
 
 // Call from HUD
 bool ATBSPlayerController::UndoBeardChanges() {
-	if (PlayerCharacter && GetEditorMode()) {
+	if (PlayerCharacter && GetIsEditorMode()) {
 		if (TotalSteps > 1) {			// Make sure maximal MAXREDOSTEPS-1 are possible. We cant go further than the 1st real step
 			bool success = false;
 			StepIndex--;
@@ -356,7 +354,7 @@ bool ATBSPlayerController::UndoBeardChanges() {
 
 
 bool ATBSPlayerController::ClearBeardData() {
-	if (!GetEditorMode()){
+	if (!GetIsEditorMode()) {
 		UE_LOG(LogClass, Log, TEXT("*** No editor mode active ***"));
 		return false;
 	}
@@ -375,7 +373,7 @@ bool ATBSPlayerController::ClearBeardData() {
 }
 
 bool ATBSPlayerController::ClearBeardID(FName BeardName) {
-	if (!GetEditorMode()) {
+	if (!GetIsEditorMode()) {
 		UE_LOG(LogClass, Log, TEXT("*** No editor mode active ***"));
 		return false;
 	}
@@ -391,7 +389,7 @@ bool ATBSPlayerController::ClearBeardID(FName BeardName) {
 }
 
 bool ATBSPlayerController::SaveBeardID(FName BeardName, int32 BeardLevel, int32 UniqueId) {
-	if (!GetEditorMode()) {
+	if (!GetIsEditorMode()) {
 		UE_LOG(LogClass, Log, TEXT("*** No editor mode active ***"));
 		return false;
 	}
@@ -408,7 +406,7 @@ bool ATBSPlayerController::SaveBeardID(FName BeardName, int32 BeardLevel, int32 
 }
 
 bool ATBSPlayerController::LoadBeardID(FName BeardName) {
-	if (!GetEditorMode()) {
+	if (!GetIsEditorMode()) {
 		UE_LOG(LogClass, Log, TEXT("*** No editor mode active ***"));
 		return false;
 	}
@@ -659,15 +657,14 @@ TArray<FBeardNameLevelData> ATBSPlayerController::GetBeardNameLevelData() {
 
 #pragma endregion
 
-#pragma region GamePause
-
-// Returns true if game is PAUSED!
-bool ATBSPlayerController::CheckPaused() {
+#pragma region GameState Wrapper
+#pragma region IsPaused
+bool ATBSPlayerController::GetIsPaused() {
 	ATBSGameState* gameState;
 	if (GetWorld()) {
 		gameState = GetWorld()->GetGameState<ATBSGameState>();
 		if (gameState) {
-			return gameState->GetPaused();
+			return gameState->GetIsPaused();
 		}
 		else {
 			UE_LOG(LogClass, Warning, TEXT("*** No Game State found! ***"));
@@ -676,12 +673,12 @@ bool ATBSPlayerController::CheckPaused() {
 	return false;
 }
 
-void ATBSPlayerController::PauseGame() {
+void ATBSPlayerController::SetIsPaused(bool IsPaused) {
 	ATBSGameState* gameState;
 	if (GetWorld()) {
 		gameState = GetWorld()->GetGameState<ATBSGameState>();
 		if (gameState) {
-			gameState->SetPaused(true);
+			gameState->SetIsPaused(IsPaused);
 			if (PlayerCharacter) {
 				PlayerCharacter->PauseGameTimer();
 			}
@@ -691,50 +688,15 @@ void ATBSPlayerController::PauseGame() {
 		}
 	}
 }
+#pragma endregion
 
-void ATBSPlayerController::UnpauseGame() {
+#pragma region IsEditorMode
+bool ATBSPlayerController::GetIsEditorMode() {
 	ATBSGameState* gameState;
 	if (GetWorld()) {
 		gameState = GetWorld()->GetGameState<ATBSGameState>();
 		if (gameState) {
-			gameState->SetPaused(false);
-			if (PlayerCharacter) {
-				PlayerCharacter->UnpauseGameTimer();
-			}
-		}
-		else {
-			UE_LOG(LogClass, Warning, TEXT("*** No Game State found! ***"));
-		}
-	}
-}
-
-void ATBSPlayerController::TogglePause() {
-	ATBSGameState* gameState;
-	if (GetWorld()) {
-		gameState = GetWorld()->GetGameState<ATBSGameState>();
-		if (gameState) {
-			gameState->TogglePause();
-			if (PlayerCharacter) {
-				PlayerCharacter->ToggleGameTimer();
-			}
-		}
-		else {
-			UE_LOG(LogClass, Warning, TEXT("*** No Game State found! ***"));
-		}
-	}
-}
-
-#pragma endregion GamePause
-
-#pragma region GameMode
-
-// Returns true if Beard Editor Mode is ACTIVE!
-bool ATBSPlayerController::GetEditorMode() {
-	ATBSGameState* gameState;
-	if (GetWorld()) {
-		gameState = GetWorld()->GetGameState<ATBSGameState>();
-		if (gameState) {
-			return gameState->GetEditorModeActive();
+			return gameState->GetIsEditorMode();
 		}
 		else {
 			UE_LOG(LogClass, Warning, TEXT("*** No Game State found! ***"));
@@ -744,17 +706,47 @@ bool ATBSPlayerController::GetEditorMode() {
 }
 
 
-void ATBSPlayerController::SetEditorMode(bool EditorModeActive) {
+void ATBSPlayerController::SetIsEditorMode(bool IsEditorMode) {
 	ATBSGameState* gameState;
 	if (GetWorld()) {
 		gameState = GetWorld()->GetGameState<ATBSGameState>();
 		if (gameState) {
-			gameState->SetEditorModeActive(EditorModeActive);
+			gameState->SetIsEditorMode(IsEditorMode);
 		}
 		else {
 			UE_LOG(LogClass, Warning, TEXT("*** No Game State found! ***"));
 		}
 	}
 }
+#pragma endregion
 
-#pragma endregion GameMode
+#pragma region IsIngame
+bool ATBSPlayerController::GetIsIngame() {
+	ATBSGameState* gameState;
+	if (GetWorld()) {
+		gameState = GetWorld()->GetGameState<ATBSGameState>();
+		if (gameState) {
+			return gameState->GetIsIngame();
+		}
+		else {
+			UE_LOG(LogClass, Warning, TEXT("*** No Game State found! ***"));
+		}
+	}
+	return false;
+}
+
+
+void ATBSPlayerController::SetIsIngame(bool IsIngame) {
+	ATBSGameState* gameState;
+	if (GetWorld()) {
+		gameState = GetWorld()->GetGameState<ATBSGameState>();
+		if (gameState) {
+			gameState->SetIsIngame(IsIngame);
+		}
+		else {
+			UE_LOG(LogClass, Warning, TEXT("*** No Game State found! ***"));
+		}
+	}
+}
+#pragma endregion
+#pragma endregion

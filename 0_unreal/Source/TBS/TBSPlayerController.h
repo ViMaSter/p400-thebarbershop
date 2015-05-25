@@ -46,14 +46,16 @@ public:
 	UFUNCTION (BlueprintImplementableEvent, Category = "Beard Control") void SpawnedNextCustomer();
 	UFUNCTION (BlueprintImplementableEvent, Category = "Beard Control") void FinishedCurrentCustomer();
 
-	UFUNCTION (BlueprintCallable, exec, Category = "Game Pause") void PauseGame();
-	UFUNCTION (BlueprintCallable, exec, Category = "Game Pause") void UnpauseGame();
-	UFUNCTION (BlueprintCallable, exec, Category = "Game Pause") void TogglePause();
-	UFUNCTION (BlueprintCallable, Category = "Game Pause") bool CheckPaused();
+#pragma region GameState Wrapper
+	UFUNCTION(BlueprintCallable, exec, Category = "GameState Wrapper") bool GetIsPaused();
+	UFUNCTION(BlueprintCallable, exec, Category = "GameState Wrapper") void SetIsPaused(bool IsPaused);
 
-	UFUNCTION (BlueprintCallable, exec, Category = "Game Mode") void SetEditorMode(bool EditorModeActive);
-	UFUNCTION (BlueprintCallable, Category = "Game Mode") bool GetEditorMode();
+	UFUNCTION(BlueprintCallable, exec, Category = "GameState Wrapper") bool GetIsEditorMode();
+	UFUNCTION(BlueprintCallable, exec, Category = "GameState Wrapper") void SetIsEditorMode(bool IsEditorMode);
 
+	UFUNCTION(BlueprintCallable, exec, Category = "GameState Wrapper") bool GetIsIngame();
+	UFUNCTION(BlueprintCallable, exec, Category = "GameState Wrapper") void SetIsIngame(bool IsIngame);
+#pragma endregion
 
 	//BeginPlay
 	virtual void BeginPlay () override;

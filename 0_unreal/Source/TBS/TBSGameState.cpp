@@ -3,25 +3,26 @@
 #include "TBS.h"
 #include "TBSGameState.h"
 
-void ATBSGameState::TogglePause() {
-	IsPaused = !IsPaused;
+void ATBSGameState::SetIsIngame(bool NewState) {
+	IsIngame = NewState;
 }
 
-void ATBSGameState::SetEditorModeActive(bool IsEditorMode) {
-	IsEditorModeActive = IsEditorMode;
+bool ATBSGameState::GetIsIngame() {
+	return IsIngame;
 }
 
-bool ATBSGameState::GetEditorModeActive()
-{
-	return IsEditorModeActive;
+void ATBSGameState::SetIsEditorMode(bool NewState) {
+	IsEditorMode = NewState;
 }
 
-void ATBSGameState::SetPaused(bool IsPaused)
-{
-	this->IsPaused = IsPaused;
+bool ATBSGameState::GetIsEditorMode() {
+	return IsEditorMode;
 }
 
-bool ATBSGameState::GetPaused()
-{
+void ATBSGameState::SetIsPaused(bool NewState) {
+	IsPaused = NewState;
+}
+
+bool ATBSGameState::GetIsPaused() {
 	return IsPaused;
 }

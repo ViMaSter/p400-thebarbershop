@@ -18,14 +18,17 @@ class TBS_API ATBSGameState : public AGameState
 	GENERATED_BODY()
 
 private:
-	bool IsEditorModeActive = false;
-	bool IsPaused = false;
+	 bool IsIngame = false;
+	 bool IsEditorMode = false;
+	 bool IsPaused = false;
 
 public:
-	void SetEditorModeActive(bool IsEditorMode);
-	bool GetEditorModeActive();
+	void SetIsIngame(bool NewState);
+	bool GetIsIngame();
 
-	void SetPaused(bool IsPaused);
-	bool GetPaused();
-	void TogglePause();
+	void SetIsEditorMode(bool NewState);
+	bool GetIsEditorMode();
+
+	void SetIsPaused(bool NewState);
+	bool GetIsPaused();
 };
