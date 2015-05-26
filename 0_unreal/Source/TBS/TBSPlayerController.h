@@ -146,6 +146,7 @@ protected:
 	bool SetBeardToCollectionData(FName BeardName, int32 BeardLevel, int32 UniqueId);
 
 
+	bool InitialSaved = false;
 	bool ChangedBeard = false;
 	int32 StepIndex = -1;			// Starting with -1 cause initial SaveStep jumping to 0
 	int32 TotalSteps = 0;

@@ -239,6 +239,10 @@ void ATBSPlayerController::SpawnNextCustomer () {
 }
 
 void ATBSPlayerController::FinishCurrentCustomer() {
+	if (GetIsEditorMode()) {
+		return;
+	}
+
 	if (GetIsPaused()) {
 		UE_LOG(LogClass, Log, TEXT("*** Game is paused! ***"));
 		return;
@@ -716,6 +720,11 @@ void ATBSPlayerController::SetIsEditorMode(bool IsEditorMode) {
 		gameState = GetWorld()->GetGameState<ATBSGameState>();
 		if (gameState) {
 			gameState->SetIsEditorMode(IsEditorMode);
+			if (IsEditorMode) {
+				// Make sure to save the first Fullbeard for Undo Step
+				SetChangedBeard();
+				SaveStep();
+			}
 		}
 		else {
 			UE_LOG(LogClass, Warning, TEXT("*** No Game State found! ***"));

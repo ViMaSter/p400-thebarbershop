@@ -43,18 +43,6 @@ void ATBSCustomer::BeginPlay () {
 		SpawnParams.Owner = this;
 		Beard = GetWorld()->SpawnActor<AActor>(BeardClass, FVector(0, 0, 340), FRotator::ZeroRotator, SpawnParams);
 	}
-	/*if (Beard) {
-		// Initial Save in Ediormode
-		ATBSCharacter* Character = (ATBSCharacter*)GetOwner();
-		ATBSPlayerController* PlayerController = NULL;
-		if (Character) {
-			PlayerController = (ATBSPlayerController*)Character->GetController();
-			if (PlayerController && PlayerController->GetEditorMode()) {
-				PlayerController->SetChangedBeard();
-				PlayerController->SaveStep();
-			}
-		}
-	}*/
 
 	CustomerStartPosition = GetActorLocation();
 	BeardStartPosition = Beard->GetActorLocation();
