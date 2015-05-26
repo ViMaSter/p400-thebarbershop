@@ -43,9 +43,9 @@ void ATBSPlayerController::PlayerTick (float DeltaTime) {
 
 		ApplyRazor (DeltaTime);
 		ApplyCamera (DeltaTime);
-	}
 
-	bShowMouseCursor = !PointingAtCustomer;
+		bShowMouseCursor = !PointingAtCustomer;
+	}
 }
 
 void ATBSPlayerController::SetupInputComponent () {
@@ -228,10 +228,10 @@ void ATBSPlayerController::ApplyCamera (float DeltaTime) {
 
 #pragma region Pitch Hacks
 void ATBSPlayerController::SpawnNextCustomer () {
-	if (GetIsPaused()){
-		UE_LOG(LogClass, Log, TEXT("*** Game is paused! ***"));
-		return;
+	if (GetWorld()->GetGameState<ATBSGameState>()) {
+		GetWorld()->GetGameState<ATBSGameState>()->SetIsPaused(false);
 	}
+
 	SpawnedNextCustomer();
 	if (PlayerCharacter) {
 		PlayerCharacter->LoadNewCustomer ();
@@ -243,6 +243,11 @@ void ATBSPlayerController::FinishCurrentCustomer() {
 		UE_LOG(LogClass, Log, TEXT("*** Game is paused! ***"));
 		return;
 	}
+
+	if (GetWorld()->GetGameState<ATBSGameState>()) {
+		GetWorld()->GetGameState<ATBSGameState>()->SetIsPaused(true);
+	}
+
 	FinishedCurrentCustomer();
 	if (PlayerCharacter) {
 		PlayerCharacter->FinishCurrentCustomer();
