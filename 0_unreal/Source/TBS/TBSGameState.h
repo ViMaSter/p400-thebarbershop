@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GameFramework/GameState.h"
+#include "TBSSessionState.h"
 #include "TBSGameState.generated.h"
 
 /**
@@ -23,6 +24,7 @@ private:
 	 bool IsPaused = true;
 
 public:
+#pragma region GameState
 	UFUNCTION(BlueprintCallable, Category = "Game State") void SetIsIngame(bool NewState);
 	UFUNCTION(BlueprintCallable, Category = "Game State") bool GetIsIngame();
 
@@ -31,4 +33,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Game State") void SetIsPaused(bool NewState);
 	UFUNCTION(BlueprintCallable, Category = "Game State") bool GetIsPaused();
+#pragma endregion
+
+#pragma region SessionState
+	TArray<FTBSSessionState> SessionList;
+#pragma endregion
 };

@@ -3,6 +3,7 @@
 #include "TBS.h"
 #include "TBSGameState.h"
 
+#pragma region GameState
 void ATBSGameState::SetIsIngame(bool NewState) {
 	IsIngame = NewState;
 }
@@ -26,3 +27,7 @@ void ATBSGameState::SetIsPaused(bool NewState) {
 bool ATBSGameState::GetIsPaused() {
 	return IsPaused;
 }
+#pragma endregion
+
+#pragma region SessionState
+#pragma endregion
