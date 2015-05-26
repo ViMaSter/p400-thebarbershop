@@ -30,8 +30,8 @@ public:
 	ATBSPlayerController (const FObjectInitializer& ObjectInitializer);
 
 	/// Vincent: Needed to move this from protected to public, since this methods will be called from the HUD
-	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool RedoBeardChanges();
-	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool UndoBeardChanges();
+	UFUNCTION (exec, Category = "Beard Control") bool RedoBeardChanges();
+	UFUNCTION (exec, Category = "Beard Control") bool UndoBeardChanges();
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool SaveStep();
 	UFUNCTION (BlueprintCallable, Category = "Beard Control") void SetChangedBeard();
 
@@ -45,6 +45,8 @@ public:
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") TArray<FBeardNameLevelData> GetBeardNameLevelData();
 	UFUNCTION (BlueprintImplementableEvent, Category = "Beard Control") void SpawnedNextCustomer();
 	UFUNCTION (BlueprintImplementableEvent, Category = "Beard Control") void FinishedCurrentCustomer();
+	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") void InputRedoBeardChanges();
+	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") void InputUndoBeardChanges();
 
 #pragma region GameState Wrapper
 	UFUNCTION(BlueprintCallable, exec, Category = "GameState Wrapper") bool GetIsPaused();
@@ -148,8 +150,6 @@ protected:
 	int32 StepIndex = -1;			// Starting with -1 cause initial SaveStep jumping to 0
 	int32 TotalSteps = 0;
 	int32 TotalUndoedSteps = 0;
-	void InputRedoBeardChanges();
-	void InputUndoBeardChanges();
 
 };
 
