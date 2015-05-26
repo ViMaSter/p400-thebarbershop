@@ -33,8 +33,7 @@ void ATBSPlayerController::BeginPlay () {
 void ATBSPlayerController::PlayerTick (float DeltaTime) {
 	Super::PlayerTick (DeltaTime);
 
-	// TODO: Dirty Pitch-hack - REMOVE THIS FOR GOD SAKES
-	if (InputIgnore) {
+	if (!GetWorld()->GetGameState<ATBSGameState>() || !GetWorld()->GetGameState<ATBSGameState>()->GetIsIngame()) {
 		return;
 	}
 
@@ -86,8 +85,7 @@ void ATBSPlayerController::RotateCamera (float Pitch, float Yaw) {
 }
 
 void ATBSPlayerController::RotateTop (float Value) {
-	// TODO: Dirty Pitch-hack - REMOVE THIS FOR GOD SAKES
-	if (InputIgnore) {
+	if (!GetWorld()->GetGameState<ATBSGameState>() || !GetWorld()->GetGameState<ATBSGameState>()->GetIsIngame()) {
 		return;
 	}
 
@@ -95,8 +93,7 @@ void ATBSPlayerController::RotateTop (float Value) {
 }
 
 void ATBSPlayerController::RotateRight (float Value) {
-	// TODO: Dirty Pitch-hack - REMOVE THIS FOR GOD SAKES
-	if (InputIgnore) {
+	if (!GetWorld()->GetGameState<ATBSGameState>() || !GetWorld()->GetGameState<ATBSGameState>()->GetIsIngame()) {
 		return;
 	}
 
@@ -137,8 +134,7 @@ void ATBSPlayerController::OnSetRotationReleased () {
 }
 
 void ATBSPlayerController::SwitchToNextTool () {
-	// TODO: Dirty Pitch-hack - REMOVE THIS FOR GOD SAKES
-	if (InputIgnore) {
+	if (!GetWorld()->GetGameState<ATBSGameState>() || !GetWorld()->GetGameState<ATBSGameState>()->GetIsIngame()) {
 		return;
 	}
 
@@ -146,8 +142,7 @@ void ATBSPlayerController::SwitchToNextTool () {
 }
 
 void ATBSPlayerController::SwitchToPrevTool () {
-	// TODO: Dirty Pitch-hack - REMOVE THIS FOR GOD SAKES
-	if (InputIgnore) {
+	if (!GetWorld()->GetGameState<ATBSGameState>() || !GetWorld()->GetGameState<ATBSGameState>()->GetIsIngame()) {
 		return;
 	}
 
@@ -157,8 +152,7 @@ void ATBSPlayerController::SwitchToPrevTool () {
 
 #pragma region Tick
 void ATBSPlayerController::UpdateRazor (float DeltaTime) {
-	// TODO: Dirty Pitch-hack - REMOVE THIS FOR GOD SAKES
-	if (InputIgnore) {
+	if (!GetWorld()->GetGameState<ATBSGameState>() || !GetWorld()->GetGameState<ATBSGameState>()->GetIsIngame()) {
 		return;
 	}
 

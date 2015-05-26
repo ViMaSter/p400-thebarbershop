@@ -61,10 +61,6 @@ public:
 	virtual void BeginPlay () override;
 
 protected:
-	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "Input")
-	bool InputIgnore;
-
-
 	// Smoothing of the razor when moving accross the face - higher value, more "snappyness"
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "Juiciness", meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
 	float RazorRotationLerpIntensity;
