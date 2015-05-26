@@ -23,12 +23,12 @@ private:
 	 bool IsPaused = false;
 
 public:
-	void SetIsIngame(bool NewState);
-	bool GetIsIngame();
+	UFUNCTION(BlueprintCallable, Category = "Game State") void SetIsIngame(bool NewState);
+	UFUNCTION(BlueprintCallable, Category = "Game State") bool GetIsIngame();
 
-	void SetIsEditorMode(bool NewState);
-	bool GetIsEditorMode();
+	UFUNCTION(BlueprintCallable, Category = "Game State") void SetIsEditorMode(bool NewState);
+	UFUNCTION(BlueprintCallable, Category = "Game State") bool GetIsEditorMode();
 
-	void SetIsPaused(bool NewState);
-	bool GetIsPaused();
+	UFUNCTION(BlueprintCallable, Category = "Game State") void SetIsPaused(bool NewState);
+	UFUNCTION(BlueprintCallable, Category = "Game State") bool GetIsPaused();
 };
