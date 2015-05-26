@@ -674,7 +674,12 @@ void ATBSPlayerController::SetIsPaused(bool IsPaused) {
 		if (gameState) {
 			gameState->SetIsPaused(IsPaused);
 			if (PlayerCharacter) {
-				PlayerCharacter->PauseGameTimer();
+				if (IsPaused) {
+					PlayerCharacter->PauseGameTimer();
+				}
+				else {
+					PlayerCharacter->UnpauseGameTimer();
+				}
 			}
 		}
 		else {
