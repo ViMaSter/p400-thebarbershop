@@ -20,7 +20,7 @@ class TBS_API ATBSGameState : public AGameState
 private:
 	 bool IsIngame = false;
 	 bool IsEditorMode = false;
-	 bool IsPaused = false;
+	 bool IsPaused = true;
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Game State") void SetIsIngame(bool NewState);
