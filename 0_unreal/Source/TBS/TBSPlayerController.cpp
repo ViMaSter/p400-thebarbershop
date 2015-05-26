@@ -37,7 +37,7 @@ void ATBSPlayerController::PlayerTick (float DeltaTime) {
 		return;
 	}
 
-	if (PlayerCharacter && !GetIsPaused()) {
+	if (PlayerCharacter && PlayerCharacter->Tool && !GetIsPaused()) {
 		UpdateRazor (DeltaTime);
 		UpdateCamera (DeltaTime);
 
