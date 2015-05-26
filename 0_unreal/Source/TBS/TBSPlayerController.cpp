@@ -289,6 +289,15 @@ void ATBSPlayerController::InputUndoBeardChanges() {
 	UndoBeardChanges();
 }
 
+// Helper function cause C++ definition of Modulo operator is different (-1 % 10 = -1 in c++. in other languages its -1 % 10 = 9)
+// Works for negative and positive Value and positive Divider!
+static int32 Modulo(int32 Value, int32 Divider) {
+	int32 tmp = Value % Divider;
+	if (tmp < 0) {
+		tmp += Divider;
+	}
+	return tmp;
+}
 
 // Saves the last Step for Undo/Redo purpose
 bool ATBSPlayerController::SaveStep() {
@@ -297,7 +306,7 @@ bool ATBSPlayerController::SaveStep() {
 		bool success = false;
 
 		StepIndex++;
-		StepIndex = StepIndex % MAXREDOSTEPS;
+		StepIndex = Modulo(StepIndex,MAXREDOSTEPS);
 
 		UDataTable* StepData;
 		StepData = PlayerCharacter->RedoUndoData[StepIndex];
@@ -322,12 +331,13 @@ bool ATBSPlayerController::RedoBeardChanges() {
 		if (TotalUndoedSteps > 0) {					// Make sure u can redo as much as u had undoed
 			bool success = false;
 			StepIndex++;
-			StepIndex = StepIndex % MAXREDOSTEPS;
+			StepIndex = Modulo(StepIndex, MAXREDOSTEPS);
 
 			UDataTable* RedoStepData;
 			RedoStepData = PlayerCharacter->RedoUndoData[StepIndex];
 			success = LoadBeardDataToCurrentCustomer(RedoStepData);
 
+			TotalSteps++;
 			TotalUndoedSteps--;
 			return success;
 		}
@@ -341,7 +351,7 @@ bool ATBSPlayerController::UndoBeardChanges() {
 		if (TotalSteps > 1) {			// Make sure maximal MAXREDOSTEPS-1 are possible. We cant go further than the 1st real step
 			bool success = false;
 			StepIndex--;
-			StepIndex = StepIndex % MAXREDOSTEPS;
+			StepIndex = Modulo(StepIndex, MAXREDOSTEPS);
 
 			UDataTable* UndoStepData;
 			UndoStepData = PlayerCharacter->RedoUndoData[StepIndex];
