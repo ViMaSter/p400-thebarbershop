@@ -36,6 +36,8 @@ public:
 #pragma endregion
 
 #pragma region SessionState
+	// @TODO: Perhabs rethink exposing this variable directly.
+	// Removing and adding elements seems unnecessarily complicated at this point in time
 	TArray<FTBSSessionState> SessionList;
 #pragma endregion
 };
