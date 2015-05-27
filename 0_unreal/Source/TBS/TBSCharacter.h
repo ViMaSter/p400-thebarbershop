@@ -5,28 +5,12 @@
 #include "EngineUtils.h"
 #include "Engine/DataTable.h"
 
+#include "TBSEquipment.h"
 #include "TBSRazor.h"
 #include "TBSCustomer.h"
 #include "TBSCharacter.generated.h"
 
-USTRUCT(BlueprintType)
-struct FTBSEquipmentData : public FTableRowBase {
-	GENERATED_USTRUCT_BODY()
 
-public:
-	FTBSEquipmentData()
-		: EquipmentID(0)
-		, Name("Default")
-		, Cost(0)
-	{}
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment")
-		uint32 EquipmentID;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment")
-		FName Name;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment")
-		uint32 Cost;	
-};
 
 USTRUCT (BlueprintType)
 struct FLevelUpData : public FTableRowBase {
