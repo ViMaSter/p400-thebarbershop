@@ -304,3 +304,59 @@ void ATBSCharacter::SaveSessionData() {
 		return;
 	}
 }
+
+#pragma region Equipment
+
+bool ATBSCharacter::BuyEquipment(uint32 ID) {
+	FTBSEquipmentData* CurrentData;
+	const FString Context;
+	if (EquipmentData) {
+		FString String = FString::FromInt(ID);
+		FName Row = FName(*String);
+		CurrentData = EquipmentData->FindRow<FTBSEquipmentData>(Row, Context, false);
+		if (CurrentData && (int32) CurrentData->Cost <= CurrentCash) {
+			CurrentCash -= CurrentData->Cost;
+			ObtainedEquipment.Add(ID);
+			//UE_LOG(LogClass, Log, TEXT("*** Bought %s! ***"), CurrentData->Name);
+		}
+	}
+	return false;
+}
+
+TArray<uint32> ATBSCharacter::GetObtainedEquipment() {
+	return ObtainedEquipment;
+}
+
+TArray<FTBSEquipmentData> ATBSCharacter::GetEquipmentList() {
+	TArray<FTBSEquipmentData> EquipmentList;
+	if (EquipmentData) {
+		FTBSEquipmentData* CurrentData;
+		const FString Context;
+		for (int32 i = 0; i < EquipmentData->GetRowNames().Num(); i++) {
+			FName Row = EquipmentData->GetRowNames()[i];
+			CurrentData = EquipmentData->FindRow<FTBSEquipmentData>(Row, Context, false);
+
+			if (CurrentData) {
+				FTBSEquipmentData Data;
+				Data.Cost = CurrentData->Cost;
+				Data.Name = CurrentData->Name;
+				Data.EquipmentID = CurrentData->EquipmentID;
+				EquipmentList.Add(Data);
+			}
+		}
+	}
+	return EquipmentList;
+}
+
+bool ATBSCharacter::EquipItem(uint32 ID) {
+	if (ObtainedEquipment.Find(ID) == INDEX_NONE) {
+		UE_LOG(LogClass, Warning, TEXT("*** Wrong ID or Equipment not obtained! ***"));
+		return false;
+	}
+	else {
+		EquipedItem(ID);
+		return true;
+	}
+}
+
+#pragma endregion Equipment

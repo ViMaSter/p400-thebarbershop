@@ -9,6 +9,25 @@
 #include "TBSCustomer.h"
 #include "TBSCharacter.generated.h"
 
+USTRUCT(BlueprintType)
+struct FTBSEquipmentData : public FTableRowBase {
+	GENERATED_USTRUCT_BODY()
+
+public:
+	FTBSEquipmentData()
+		: EquipmentID(0)
+		, Name("Default")
+		, Cost(0)
+	{}
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment")
+		uint32 EquipmentID;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment")
+		FName Name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment")
+		uint32 Cost;	
+};
+
 USTRUCT (BlueprintType)
 struct FLevelUpData : public FTableRowBase {
 	GENERATED_USTRUCT_BODY ()
@@ -199,13 +218,33 @@ public:
 
 	bool IsInTimeRange(float Time, int32 MinTime, int32 MaxTime);
 
-private:
+
 #pragma region SessionData
+private:
 	uint32 SessionID = 0;
 	float BeardResult = 0;
 
 	void SaveSessionData();
 #pragma endregion SessionData
+
+#pragma region Equipment
+public:
+	// Event for Equipping an Item
+	UFUNCTION(BlueprintImplementableEvent, Category = "Equipment")	void EquipedItem(uint32 ID);
+
+	// EquipmentData
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CSV Data")	UDataTable* EquipmentData;
+
+	UFUNCTION(BlueprintCallable, Category = "Equipment")	bool EquipItem(uint32 ID);
+	UFUNCTION(BlueprintCallable, Category = "Equipment")	bool BuyEquipment(uint32 ID);
+	UFUNCTION(BlueprintCallable, Category = "Equipment")	TArray<uint32> GetObtainedEquipment();
+	UFUNCTION(BlueprintCallable, Category = "Equipment")	TArray<FTBSEquipmentData> GetEquipmentList();
+
+private:
+	TArray<uint32> ObtainedEquipment;
+	
+
+#pragma endregion Equipment
 
 };
 
