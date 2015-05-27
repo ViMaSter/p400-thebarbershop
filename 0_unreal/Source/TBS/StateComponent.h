@@ -11,15 +11,7 @@ class TBS_API UStateComponent : public UActorComponent {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this component's properties
 	UStateComponent();
-
-	// Called when the game starts
-	virtual void InitializeComponent() override;
-
-	// Called every frame
-	// virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
-
 
 	TArray<bool> RawStates;
 	void ResizeStateArray(uint8 newSize);

@@ -3,19 +3,7 @@
 #include "TBS.h"
 #include "StateComponent.h"
 
-
-// Sets default values for this component's properties
 UStateComponent::UStateComponent() {
-	bWantsInitializeComponent = true;
-
-	// ...
-}
-
-// Called when the game starts
-void UStateComponent::InitializeComponent() {
-	Super::InitializeComponent();
-
-	// ...
 
 }
 
