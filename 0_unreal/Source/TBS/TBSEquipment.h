@@ -22,6 +22,7 @@ public:
 		: EquipmentID(0)
 		, Type(ETBSEquipment::NONE)
 		, Name("Default")
+		, Icon(nullptr)
 		, Cost(0) {
 	}
 
@@ -31,6 +32,8 @@ public:
 		TEnumAsByte<ETBSEquipment> Type;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment")
 		FName Name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment")
+		UTexture2D* Icon;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment")
 		int32 Cost;
 };
