@@ -63,9 +63,6 @@ void ATBSPlayerController::SetupInputComponent () {
 	InputComponent->BindAction("Rotate", IE_Pressed, this, &ATBSPlayerController::OnSetRotationPressed);
 	InputComponent->BindAction("Rotate", IE_Released, this, &ATBSPlayerController::OnSetRotationReleased);
 
-	InputComponent->BindAction("UndoLastChange", IE_Pressed, this, &ATBSPlayerController::InputUndoBeardChanges);
-	InputComponent->BindAction("RedoLastChange", IE_Pressed, this, &ATBSPlayerController::InputRedoBeardChanges);
-
 	// Cheat Codes Pitch Hack
 	InputComponent->BindAction("FinishCustomer", IE_Pressed, this, &ATBSPlayerController::FinishCurrentCustomer);
 	InputComponent->BindAction("SpawnNextCustomer", IE_Pressed, this, &ATBSPlayerController::SpawnNextCustomer);
@@ -278,17 +275,6 @@ void ATBSPlayerController::LiftPositionReleased() {
 #pragma endregion
 
 #pragma region Beard Data Management
-
-// Wrapper for Input
-void ATBSPlayerController::InputRedoBeardChanges() {
-	RedoBeardChanges();
-}
-
-// Wrapper for Input
-void ATBSPlayerController::InputUndoBeardChanges() {
-	UndoBeardChanges();
-}
-
 // Helper function cause C++ definition of Modulo operator is different (-1 % 10 = -1 in c++. in other languages its -1 % 10 = 9)
 // Works for negative and positive Value and positive Divider!
 static int32 Modulo(int32 Value, int32 Divider) {
