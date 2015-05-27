@@ -327,8 +327,12 @@ TArray<int32> ATBSCharacter::GetObtainedEquipment() {
 	return ObtainedEquipment;
 }
 
-TArray<FTBSEquipmentData> ATBSCharacter::GetEquipmentList() {
-	TArray<FTBSEquipmentData> EquipmentList;
+FTBSEquipmentData ATBSCharacter::GetEquipmentByID(int32 ID) {
+	return (GetEquipmentList()[ID]);
+}
+
+TMap<int32, FTBSEquipmentData> ATBSCharacter::GetEquipmentList() {
+	TMap<int32, FTBSEquipmentData> EquipmentList;
 	if (EquipmentData) {
 		FTBSEquipmentData* CurrentData;
 		const FString Context;
@@ -341,7 +345,7 @@ TArray<FTBSEquipmentData> ATBSCharacter::GetEquipmentList() {
 				Data.Cost = CurrentData->Cost;
 				Data.Name = CurrentData->Name;
 				Data.EquipmentID = CurrentData->EquipmentID;
-				EquipmentList.Add(Data);
+				EquipmentList.Add(Data.EquipmentID, Data);
 			}
 		}
 	}
