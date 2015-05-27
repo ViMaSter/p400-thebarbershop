@@ -198,6 +198,15 @@ public:
 	void CalculateBonusCash();
 
 	bool IsInTimeRange(float Time, int32 MinTime, int32 MaxTime);
+
+private:
+#pragma region SessionData
+	uint32 SessionID = 0;
+	float BeardResult = 0;
+
+	void SaveSessionData();
+#pragma endregion SessionData
+
 };
 
 

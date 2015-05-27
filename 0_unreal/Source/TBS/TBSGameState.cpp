@@ -27,7 +27,27 @@ void ATBSGameState::SetIsPaused(bool NewState) {
 bool ATBSGameState::GetIsPaused() {
 	return IsPaused;
 }
+
 #pragma endregion
 
 #pragma region SessionState
+
+int32 ATBSGameState::AddSessionState(FTBSSessionState SessionState) {
+	return SessionList.Add(SessionState);
+}
+
+int32 ATBSGameState::RemoveSessionState(FTBSSessionState SessionState) {
+	return SessionList.Remove(SessionState);
+}
+
+TArray<FTBSSessionState> ATBSGameState::GetSessionState(FTBSSessionState SessionState) {
+
+	return TArray<FTBSSessionState>();
+}
+
+bool ATBSGameState::EmptySessionState() {
+	SessionList.Empty();
+	return SessionList.Num() == 0;
+}
+
 #pragma endregion

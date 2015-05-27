@@ -9,13 +9,17 @@ struct FTBSSessionState {
 public:
 	FTBSSessionState()
 		: SessionID(0)
-		, BeardID(0)
+		, BeardName("NotInit")
 		, BeardResult(0.0f)
 		, TimeRequired(0.0f) {
 	}
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Session Information")	uint32 SessionID;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Session Information")	int32 BeardID;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Session Information")	FName BeardName;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Session Information")	float BeardResult;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Session Information")	float TimeRequired;
+
+	bool operator==(FTBSSessionState const& Other) const {
+		return SessionID == Other.SessionID;
+	}
 };

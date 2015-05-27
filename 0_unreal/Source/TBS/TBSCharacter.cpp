@@ -3,6 +3,7 @@
 #include "TBS.h"
 #include "TBSCharacter.h"
 #include "TBSPlayerController.h"
+#include "TBSGameState.h"
 
 ATBSCharacter::ATBSCharacter (const FObjectInitializer& ObjectInitializer)
 	: Super (ObjectInitializer) {
@@ -90,11 +91,14 @@ void ATBSCharacter::BeginPlay () {
 }
 
 void ATBSCharacter::FinishCurrentCustomer () {
-	float Result = CalculateResult();
-	int32 EXP = (int32)Result;
+	BeardResult = CalculateResult();
+	int32 EXP = (int32)BeardResult;
 	IncreaseEXP(EXP);
-	IncreaseCash(Result);
+	IncreaseCash(BeardResult);
 	CalculateBonusCash();
+
+	SaveSessionData();
+
 	GetWorldTimerManager().PauseTimer(TimerHandle);
 }
 
@@ -106,6 +110,10 @@ void ATBSCharacter::LoadNewCustomer () {
 		GetWorldTimerManager().SetTimer(TimerHandle, TimeLimit, false, -1.f);
 
 		((ATBSCustomer*) CurrentCustomer)->CreateNewCustomer(CurrentLevel);
+
+		// Setup for next Customer
+		SessionID++;
+		BeardResult = 0;
 	}
 	else {
 		UE_LOG(LogClass, Warning, TEXT("*** No Customer Reference! ***"));
@@ -281,4 +289,18 @@ bool ATBSCharacter::IsInTimeRange(float Time, int32 MinTime, int32 MaxTime){
 		return true;
 	}
 	return false;
+}
+
+void ATBSCharacter::SaveSessionData() {
+	if (GetWorld()->GetGameState<ATBSGameState>()) {
+		ATBSGameState* gameState = GetWorld()->GetGameState<ATBSGameState>();
+		FTBSSessionState sessionState;
+		sessionState.SessionID = SessionID;
+		sessionState.BeardName = CurrentCustomer->DesiredBeard;
+		sessionState.BeardResult = BeardResult;
+		sessionState.TimeRequired = GetTimeElapsed();
+
+		gameState->AddSessionState(sessionState);
+		return;
+	}
 }

@@ -38,6 +38,13 @@ public:
 #pragma region SessionState
 	// @TODO: Perhabs rethink exposing this variable directly.
 	// Removing and adding elements seems unnecessarily complicated at this point in time
+	int32 AddSessionState(FTBSSessionState SessionState);
+	int32 RemoveSessionState(FTBSSessionState SessionState);
+	TArray<FTBSSessionState> GetSessionState(FTBSSessionState SessionState);
+	bool EmptySessionState();
+
+private:
 	TArray<FTBSSessionState> SessionList;
+
 #pragma endregion
 };
