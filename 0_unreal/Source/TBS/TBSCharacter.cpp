@@ -307,7 +307,7 @@ void ATBSCharacter::SaveSessionData() {
 
 #pragma region Equipment
 
-bool ATBSCharacter::BuyEquipment(uint32 ID) {
+bool ATBSCharacter::BuyEquipment(int32 ID) {
 	FTBSEquipmentData* CurrentData;
 	const FString Context;
 	if (EquipmentData) {
@@ -323,7 +323,7 @@ bool ATBSCharacter::BuyEquipment(uint32 ID) {
 	return false;
 }
 
-TArray<uint32> ATBSCharacter::GetObtainedEquipment() {
+TArray<int32> ATBSCharacter::GetObtainedEquipment() {
 	return ObtainedEquipment;
 }
 
@@ -348,7 +348,7 @@ TArray<FTBSEquipmentData> ATBSCharacter::GetEquipmentList() {
 	return EquipmentList;
 }
 
-bool ATBSCharacter::EquipItem(uint32 ID) {
+bool ATBSCharacter::EquipItem(int32 ID) {
 	if (ObtainedEquipment.Find(ID) == INDEX_NONE) {
 		UE_LOG(LogClass, Warning, TEXT("*** Wrong ID or Equipment not obtained! ***"));
 		return false;

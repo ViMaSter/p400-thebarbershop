@@ -214,18 +214,18 @@ private:
 #pragma region Equipment
 public:
 	// Event for Equipping an Item
-	UFUNCTION(BlueprintImplementableEvent, Category = "Equipment")	void EquipedItem(uint32 ID);
+	UFUNCTION(BlueprintImplementableEvent, Category = "Equipment")	void EquipedItem(int32 ID);
 
 	// EquipmentData
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CSV Data")	UDataTable* EquipmentData;
 
-	UFUNCTION(BlueprintCallable, Category = "Equipment")	bool EquipItem(uint32 ID);
-	UFUNCTION(BlueprintCallable, Category = "Equipment")	bool BuyEquipment(uint32 ID);
-	UFUNCTION(BlueprintCallable, Category = "Equipment")	TArray<uint32> GetObtainedEquipment();
+	UFUNCTION(BlueprintCallable, Category = "Equipment")	bool EquipItem(int32 ID);
+	UFUNCTION(BlueprintCallable, Category = "Equipment")	bool BuyEquipment(int32 ID);
+	UFUNCTION(BlueprintCallable, Category = "Equipment")	TArray<int32> GetObtainedEquipment();
 	UFUNCTION(BlueprintCallable, Category = "Equipment")	TArray<FTBSEquipmentData> GetEquipmentList();
 
 private:
-	TArray<uint32> ObtainedEquipment;
+	TArray<int32> ObtainedEquipment;
 	
 
 #pragma endregion Equipment

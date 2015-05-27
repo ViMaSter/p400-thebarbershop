@@ -26,11 +26,11 @@ public:
 	}
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment")
-		uint32 EquipmentID;
+		int32 EquipmentID;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment")
 		TEnumAsByte<ETBSEquipment> Type;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment")
 		FName Name;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment")
-		uint32 Cost;
+		int32 Cost;
 };
