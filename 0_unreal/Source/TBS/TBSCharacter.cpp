@@ -352,6 +352,12 @@ TMap<int32, FTBSEquipmentData> ATBSCharacter::GetEquipmentList() {
 	return EquipmentList;
 }
 
+TArray<FTBSEquipmentData> ATBSCharacter::GetEquipmentListAsArray() {
+	TArray<FTBSEquipmentData> TargetArray;
+	GetEquipmentList().GenerateValueArray(TargetArray);
+	return TargetArray;
+}
+
 bool ATBSCharacter::EquipItem(int32 ID) {
 	if (ObtainedEquipment.Find(ID) == INDEX_NONE) {
 		UE_LOG(LogClass, Warning, TEXT("*** Wrong ID or Equipment not obtained! ***"));
