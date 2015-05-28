@@ -314,7 +314,7 @@ bool ATBSCharacter::BuyEquipment(int32 ID) {
 		FString String = FString::FromInt(ID);
 		FName Row = FName(*String);
 		CurrentData = EquipmentData->FindRow<FTBSEquipmentData>(Row, Context, false);
-		if (CurrentData && (int32) CurrentData->Cost <= CurrentCash) {
+		if (CurrentData && CurrentData->Cost <= CurrentCash) {
 			CurrentCash -= CurrentData->Cost;
 			ObtainedEquipment.Add(ID);
 			return true;

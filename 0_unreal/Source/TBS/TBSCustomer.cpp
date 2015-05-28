@@ -16,10 +16,10 @@ ATBSCustomer::ATBSCustomer (const FObjectInitializer& ObjectInitializer)
 
 	//FClassfinder does not find the Blueprint for some reason. So it resets for some reason the Bearclass with Null.
 	//   This is a short fix, so the autobuilt will work properly.
-	static ConstructorHelpers::FClassFinder<AActor> BeardBP(TEXT("/Game/TheBarberShop/Assets/Characters/BeardStyles/BeardStyle_00_BP"));
+	/*static ConstructorHelpers::FClassFinder<AActor> BeardBP(TEXT("/Game/TheBarberShop/Assets/Characters/BeardStyles/BeardStyle_00_BP"));
 	if (BeardBP.Class != NULL){
 		BeardClass = BeardBP.Class;
-	}
+	}*/
 
 	// Lifting of seat
 #pragma region Lift
