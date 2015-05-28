@@ -2,7 +2,6 @@
 #pragma once
 
 #include "GameFramework/Pawn.h"
-#include "EngineUtils.h"
 #include "Engine/DataTable.h"
 
 #include "TBSEquipment.h"
