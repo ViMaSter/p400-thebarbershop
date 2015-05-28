@@ -317,7 +317,7 @@ bool ATBSCharacter::BuyEquipment(int32 ID) {
 		if (CurrentData && (int32) CurrentData->Cost <= CurrentCash) {
 			CurrentCash -= CurrentData->Cost;
 			ObtainedEquipment.Add(ID);
-			//UE_LOG(LogClass, Log, TEXT("*** Bought %s! ***"), CurrentData->Name);
+			return true;
 		}
 	}
 	return false;
