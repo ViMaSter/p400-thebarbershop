@@ -6,7 +6,7 @@
 #include "TBSEquipment.generated.h"
 
 UENUM (BlueprintType)
-enum class ETBSEquipment : uint8 {
+enum class ETBSEquipmentType : uint8 {
 	NONE			= 0		UMETA (DisplayName = "NONE"),
 	Towel			= 1		UMETA (DisplayName = "Towel"),
 	Clipper			= 2		UMETA (DisplayName = "Clipper"),
@@ -20,7 +20,7 @@ struct FTBSEquipmentData : public FTableRowBase {
 public:
 	FTBSEquipmentData()
 		: EquipmentID(0)
-		, Type(ETBSEquipment::NONE)
+		, Type(ETBSEquipmentType::NONE)
 		, Name("Default")
 		, Icon(nullptr)
 		, Cost(0) {
@@ -29,7 +29,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment")
 		int32 EquipmentID;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment")
-		TEnumAsByte<ETBSEquipment> Type;
+		TEnumAsByte<ETBSEquipmentType> Type;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment")
 		FName Name;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment")
