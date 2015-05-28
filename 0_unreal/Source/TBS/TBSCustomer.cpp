@@ -42,10 +42,10 @@ void ATBSCustomer::BeginPlay () {
 		SpawnParams.Instigator = Instigator;
 		SpawnParams.Owner = this;
 		Beard = GetWorld()->SpawnActor<AActor>(BeardClass, FVector(0, 0, 340), FRotator::ZeroRotator, SpawnParams);
+		BeardStartPosition = Beard->GetActorLocation();
 	}
 
 	CustomerStartPosition = GetActorLocation();
-	BeardStartPosition = Beard->GetActorLocation();
 }
 
 void ATBSCustomer::Tick(float DeltaTime) {
