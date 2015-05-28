@@ -1,0 +1,7 @@
+R = Metal
+G = Specular
+B = Roughness
+
+(Same order as in UE4),
+
+Handle Materials are usable for both razors, that's why it has it's own file. Both FBX for short and long blade already contain the mesh for the handle.
