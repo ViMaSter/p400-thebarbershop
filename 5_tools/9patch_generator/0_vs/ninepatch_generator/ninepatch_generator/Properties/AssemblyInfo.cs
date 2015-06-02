@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("9patch_generator")]
+[assembly: AssemblyTitle("ninepatch_generator")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("9patch_generator")]
+[assembly: AssemblyProduct("ninepatch_generator")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("b874bc40-ed71-45f1-8534-b778b4603f69")]
+[assembly: Guid("cde41f3b-81da-49b5-91e5-fab29a1a400a")]
 
 // Version information for an assembly consists of the following four values:
 //
