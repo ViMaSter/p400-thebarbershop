@@ -47,19 +47,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="9patch_generator.cs">
+    <Compile Include="Exceptions\StretchableImage_TooSmallException.cs" />
+    <Compile Include="Source\9patch_generator.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="9patch_generator.Designer.cs">
+    <Compile Include="Source\9patch_generator.Designer.cs">
       <DependentUpon>9patch_generator.cs</DependentUpon>
     </Compile>
-    <Compile Include="StretchableImage.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Source\Program.cs" />
+    <Compile Include="Source\StretchableArea.cs" />
+    <Compile Include="Source\StretchableImage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StretchableArea.cs" />
-    <EmbeddedResource Include="9patch_generator.resx">
-      <DependentUpon>9patch_generator.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -69,6 +67,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Source\9patch_generator.resx">
+      <DependentUpon>9patch_generator.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="app.manifest">
       <SubType>Designer</SubType>
     </None>
