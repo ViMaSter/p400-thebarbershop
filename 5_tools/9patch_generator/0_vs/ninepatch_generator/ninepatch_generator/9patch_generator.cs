@@ -28,6 +28,7 @@ namespace ninepatch_generator
                     if (File.Exists(fileLoc))
                     {
                         img = new StretchableImage(new System.Drawing.Bitmap(fileLoc));
+                        MessageBox.Show(img);
                     }
                 }
             }
