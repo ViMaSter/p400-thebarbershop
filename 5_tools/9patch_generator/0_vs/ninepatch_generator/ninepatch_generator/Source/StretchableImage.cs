@@ -12,7 +12,7 @@ namespace ninepatch_generator
     }
     class StretchableImage
     {
-        Dictionary<StretchableImageDirection, List<StretchableArea>> StretchableAreas;
+        Dictionary<StretchableImageDirection, List<Area>> Areas;
         Bitmap Source;
         Bitmap CutSource;
 
@@ -39,8 +39,8 @@ namespace ninepatch_generator
 
             result += string.Format(
                 "Total DynamicAreas (H={0}, V={1}): {2}",
-                lhs.StretchableAreas[StretchableImageDirection.Horizontal].Count,
-                lhs.StretchableAreas[StretchableImageDirection.Vertical].Count,
+                lhs.Areas[StretchableImageDirection.Horizontal].Count,
+                lhs.Areas[StretchableImageDirection.Vertical].Count,
                 lhs.DynamicArea.ToString()
             );
 
@@ -65,15 +65,15 @@ namespace ninepatch_generator
         }
         public bool IsValid()
         {
-            return (StretchableAreas[StretchableImageDirection.Horizontal].Count + StretchableAreas[StretchableImageDirection.Vertical].Count) > 0;
+            return (Areas[StretchableImageDirection.Horizontal].Count + Areas[StretchableImageDirection.Vertical].Count) > 0;
         }
 
         #region Constructor
         public StretchableImage(Image source)
         {
-            StretchableAreas = new Dictionary<StretchableImageDirection, List<StretchableArea>>();
-            StretchableAreas[StretchableImageDirection.Vertical] = new List<StretchableArea>();
-            StretchableAreas[StretchableImageDirection.Horizontal] = new List<StretchableArea>();
+            Areas = new Dictionary<StretchableImageDirection, List<Area>>();
+            Areas[StretchableImageDirection.Vertical] = new List<Area>();
+            Areas[StretchableImageDirection.Horizontal] = new List<Area>();
 
             Source = new Bitmap(source);
             CutSource = new Bitmap(Source.Width - 2, Source.Height - 2);
@@ -111,7 +111,7 @@ namespace ninepatch_generator
                 {
                     if (StartedAt != -1)
                     {
-                        StretchableAreas[StretchableImageDirection.Horizontal].Add(new StretchableArea(StartedAt, x - StartedAt, false));
+                        Areas[StretchableImageDirection.Horizontal].Add(new Area(StartedAt, x - StartedAt, false, true));
                         StartedAt = -1;
                     }
                 }
@@ -119,7 +119,7 @@ namespace ninepatch_generator
 
             if (StartedAt != -1)
             {
-                StretchableAreas[StretchableImageDirection.Horizontal].Add(new StretchableArea(StartedAt, (Source.Width - 1) - StartedAt, false));
+                Areas[StretchableImageDirection.Horizontal].Add(new Area(StartedAt, (Source.Width - 1) - StartedAt, false, true));
                 StartedAt = -1;
             }
 
@@ -138,7 +138,7 @@ namespace ninepatch_generator
                 {
                     if (StartedAt != -1)
                     {
-                        StretchableAreas[StretchableImageDirection.Vertical].Add(new StretchableArea(StartedAt, y - StartedAt, false));
+                        Areas[StretchableImageDirection.Vertical].Add(new Area(StartedAt, y - StartedAt, false, true));
                         StartedAt = -1;
                     }
                 }
@@ -146,7 +146,7 @@ namespace ninepatch_generator
 
             if (StartedAt != -1)
             {
-                StretchableAreas[StretchableImageDirection.Vertical].Add(new StretchableArea(StartedAt, (Source.Height - 1) - StartedAt, false));
+                Areas[StretchableImageDirection.Vertical].Add(new Area(StartedAt, (Source.Height - 1) - StartedAt, false, true));
                 StartedAt = -1;
             }
         }
@@ -155,12 +155,12 @@ namespace ninepatch_generator
             CreatePatches();
 
             // Calculate area sizes
-            foreach (StretchableArea area in StretchableAreas[StretchableImageDirection.Horizontal])
+            foreach (Area area in Areas[StretchableImageDirection.Horizontal])
             {
                 dynamicArea.Width += area.Length;
             }
 
-            foreach (StretchableArea area in StretchableAreas[StretchableImageDirection.Vertical])
+            foreach (Area area in Areas[StretchableImageDirection.Vertical])
             {
                 dynamicArea.Height += area.Length;
             }

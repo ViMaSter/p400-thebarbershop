@@ -55,7 +55,7 @@
       <DependentUpon>9patch_generator.cs</DependentUpon>
     </Compile>
     <Compile Include="Source\Program.cs" />
-    <Compile Include="Source\StretchableArea.cs" />
+    <Compile Include="Source\Area.cs" />
     <Compile Include="Source\StretchableImage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
