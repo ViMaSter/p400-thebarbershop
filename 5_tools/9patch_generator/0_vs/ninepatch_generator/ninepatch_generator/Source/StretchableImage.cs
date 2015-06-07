@@ -10,9 +10,33 @@ namespace ninepatch_generator
         Vertical = 0,
         Horizontal = 1
     }
+
+    class AreaContainer
+    {
+        public Dictionary<StretchableImageDirection, List<Area>> Areas;
+
+        public AreaContainer()
+        {
+            Areas = new Dictionary<StretchableImageDirection, List<Area>>();
+            Areas[StretchableImageDirection.Horizontal] = new List<Area>();
+            Areas[StretchableImageDirection.Vertical]   = new List<Area>();
+        }
+
+        public List<Area> GetAreas(StretchableImageDirection direction, bool IsDynamic)
+        {
+            List<Area> result = new List<Area>();
+
+            foreach (Area area in Areas[direction]) {
+                result.Add(area);
+            }
+
+            return result;
+        }
+    }
+
     class StretchableImage
     {
-        Dictionary<StretchableImageDirection, List<Area>> Areas;
+        AreaContainer AreaContainer;
         Bitmap Source;
         Bitmap CutSource;
 
@@ -32,7 +56,7 @@ namespace ninepatch_generator
             result += "\n";
 
             result += "Horizontal Patches:\n";
-            foreach (Area area in lhs.Areas[StretchableImageDirection.Horizontal])
+            foreach (Area area in lhs.AreaContainer.Areas[StretchableImageDirection.Horizontal])
             {
                 result += area;
                 result += "\n";
@@ -40,7 +64,7 @@ namespace ninepatch_generator
             result += "\n";
 
             result += "Vertical Patches:\n";
-            foreach (Area area in lhs.Areas[StretchableImageDirection.Vertical])
+            foreach (Area area in lhs.AreaContainer.Areas[StretchableImageDirection.Vertical])
             {
                 result += area;
                 result += "\n";
@@ -68,15 +92,13 @@ namespace ninepatch_generator
         }
         public bool IsValid()
         {
-            return (Areas[StretchableImageDirection.Horizontal].Count + Areas[StretchableImageDirection.Vertical].Count) > 0;
+            return (AreaContainer.Areas[StretchableImageDirection.Horizontal].Count + AreaContainer.Areas[StretchableImageDirection.Vertical].Count) > 0;
         }
 
         #region Constructor
         public StretchableImage(Image source)
         {
-            Areas = new Dictionary<StretchableImageDirection, List<Area>>();
-            Areas[StretchableImageDirection.Vertical] = new List<Area>();
-            Areas[StretchableImageDirection.Horizontal] = new List<Area>();
+            AreaContainer = new AreaContainer();
 
             Source = new Bitmap(source);
             CutSource = new Bitmap(Source.Width - 2, Source.Height - 2);
@@ -119,14 +141,14 @@ namespace ninepatch_generator
 
                     EndAt = x - 1;
 
-                    Areas[StretchableImageDirection.Horizontal].Add(new Area(StartedAt, EndAt, true, IsDynamicArea));
+                    AreaContainer.Areas[StretchableImageDirection.Horizontal].Add(new Area(StartedAt, EndAt, true, IsDynamicArea));
 
                     StartedAt = x;
 
                     IsDynamicArea = (Source.GetPixel(x, 0).ToArgb() == Color.Black.ToArgb());
                 }
             }
-            Areas[StretchableImageDirection.Horizontal].Add(new Area(StartedAt, Source.Width - 2, true, IsDynamicArea));
+            AreaContainer.Areas[StretchableImageDirection.Horizontal].Add(new Area(StartedAt, Source.Width - 2, true, IsDynamicArea));
             #endregion
 
             #region Vertical
@@ -143,14 +165,14 @@ namespace ninepatch_generator
 
                     EndAt = y - 1;
 
-                    Areas[StretchableImageDirection.Vertical].Add(new Area(StartedAt, EndAt, false, IsDynamicArea));
+                    AreaContainer.Areas[StretchableImageDirection.Vertical].Add(new Area(StartedAt, EndAt, false, IsDynamicArea));
 
                     StartedAt = y;
 
                     IsDynamicArea = (Source.GetPixel(0, y).ToArgb() == Color.Black.ToArgb());
                 }
             }
-            Areas[StretchableImageDirection.Vertical].Add(new Area(StartedAt, Source.Height - 2, false, IsDynamicArea));
+            AreaContainer.Areas[StretchableImageDirection.Vertical].Add(new Area(StartedAt, Source.Height - 2, false, IsDynamicArea));
             #endregion
         }
         private void GenerateAreas()
@@ -158,12 +180,12 @@ namespace ninepatch_generator
             CreatePatches();
 
             // Calculate area sizes
-            foreach (Area area in Areas[StretchableImageDirection.Horizontal])
+            foreach (Area area in AreaContainer.Areas[StretchableImageDirection.Horizontal])
             {
                 dynamicArea.Width += area.Length;
             }
 
-            foreach (Area area in Areas[StretchableImageDirection.Vertical])
+            foreach (Area area in AreaContainer.Areas[StretchableImageDirection.Vertical])
             {
                 dynamicArea.Height += area.Length;
             }
