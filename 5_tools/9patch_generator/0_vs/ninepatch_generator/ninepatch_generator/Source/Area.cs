@@ -9,7 +9,7 @@ namespace ninepatch_generator
     class Area
     {
         private int start = 0;
-        private int length = 0;
+        private int end = 0;
 
         public int Start
         {
@@ -19,7 +19,7 @@ namespace ninepatch_generator
         } 
         public int Length {
             get {
-                return length;
+                return (end - start)+1;
             }
         }
 
@@ -33,14 +33,14 @@ namespace ninepatch_generator
 
         public override string ToString()
         {
-            return string.Format("%s [%d, %d] %s", IsHorizontal ? "H" : "V", IsDynamic ? "dyn" : "sta", Start, Length);
+            return string.Format("{0} {1} [{2}, {3}]", IsHorizontal ? "H" : "V", IsDynamic ? "dyn" : "sta", Start, Length);
         }
         #endregion
 
-        public Area(int start, int length, bool isHorizontal, bool isDynamic)
+        public Area(int start, int end, bool isHorizontal, bool isDynamic)
         {
             this.start = start;
-            this.length = length;
+            this.end = end;
             IsHorizontal = isHorizontal;
             IsDynamic = isDynamic;
         }
