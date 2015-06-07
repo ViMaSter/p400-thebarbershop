@@ -31,18 +31,21 @@ namespace ninepatch_generator
             );
             result += "\n";
 
-            result += string.Format(
-                "Total StaticAreas: {0}",
-                lhs.StaticArea.ToString()
-            );
+            result += "Horizontal Patches:\n";
+            foreach (Area area in lhs.Areas[StretchableImageDirection.Horizontal])
+            {
+                result += area;
+                result += "\n";
+            }
             result += "\n";
 
-            result += string.Format(
-                "Total DynamicAreas (H={0}, V={1}): {2}",
-                lhs.Areas[StretchableImageDirection.Horizontal].Count,
-                lhs.Areas[StretchableImageDirection.Vertical].Count,
-                lhs.DynamicArea.ToString()
-            );
+            result += "Vertical Patches:\n";
+            foreach (Area area in lhs.Areas[StretchableImageDirection.Vertical])
+            {
+                result += area;
+                result += "\n";
+            }
+            result += "\n";
 
             return result;
         }
@@ -94,61 +97,61 @@ namespace ninepatch_generator
         // Dirty solution - optimize this to a more general function (don't seperate horizontal and vertical loop)
         private void CreatePatches()
         {
-            int StartedAt;
+            #region Init
+            bool IsDynamicArea = false;
 
-            // Get horizontal patch pixels
-            StartedAt = -1;
-            for (int x = 0; x < Source.Width - 1; x++)
+            // We store pixels based on the CutSource (-1)
+            int StartedAt = -1;
+            int EndAt = -1;
+            #endregion
+
+            #region Horizontal
+            IsDynamicArea = (Source.GetPixel(1, 0).ToArgb() == Color.Black.ToArgb());
+
+            // We store pixels based on the CutSource (-1)
+            StartedAt = 1;
+            EndAt = -1;
+
+            for (int x = 2; x < Source.Width - 1; x++)
             {
-                if (Source.GetPixel(x, 0).ToArgb() == Color.Black.ToArgb())
+                if (IsDynamicArea != (Source.GetPixel(x, 0).ToArgb() == Color.Black.ToArgb()))
                 {
-                    if (StartedAt == -1)
-                    {
-                        StartedAt = x;
-                    }
-                }
-                else
-                {
-                    if (StartedAt != -1)
-                    {
-                        Areas[StretchableImageDirection.Horizontal].Add(new Area(StartedAt, x - StartedAt, false, true));
-                        StartedAt = -1;
-                    }
+
+                    EndAt = x - 1;
+
+                    Areas[StretchableImageDirection.Horizontal].Add(new Area(StartedAt, EndAt, true, IsDynamicArea));
+
+                    StartedAt = x;
+
+                    IsDynamicArea = (Source.GetPixel(x, 0).ToArgb() == Color.Black.ToArgb());
                 }
             }
+            Areas[StretchableImageDirection.Horizontal].Add(new Area(StartedAt, Source.Width - 2, true, IsDynamicArea));
+            #endregion
 
-            if (StartedAt != -1)
-            {
-                Areas[StretchableImageDirection.Horizontal].Add(new Area(StartedAt, (Source.Width - 1) - StartedAt, false, true));
-                StartedAt = -1;
-            }
+            #region Vertical
+            IsDynamicArea = (Source.GetPixel(1, 0).ToArgb() == Color.Black.ToArgb());
 
+            // We store pixels based on the CutSource (-1)
+            StartedAt = 1;
+            EndAt = -1;
             // Get vertical patch pixels
-            StartedAt = -1;
-            for (int y = 0; y < Source.Height - 1; y++)
+            for (int y = 2; y < Source.Height - 1; y++)
             {
-                if (Source.GetPixel(0, y).ToArgb() == Color.Black.ToArgb())
+                if (IsDynamicArea != (Source.GetPixel(0, y).ToArgb() == Color.Black.ToArgb()))
                 {
-                    if (StartedAt == -1)
-                    {
-                        StartedAt = y;
-                    }
-                }
-                else
-                {
-                    if (StartedAt != -1)
-                    {
-                        Areas[StretchableImageDirection.Vertical].Add(new Area(StartedAt, y - StartedAt, false, true));
-                        StartedAt = -1;
-                    }
-                }
-            }
 
-            if (StartedAt != -1)
-            {
-                Areas[StretchableImageDirection.Vertical].Add(new Area(StartedAt, (Source.Height - 1) - StartedAt, false, true));
-                StartedAt = -1;
+                    EndAt = y - 1;
+
+                    Areas[StretchableImageDirection.Vertical].Add(new Area(StartedAt, EndAt, false, IsDynamicArea));
+
+                    StartedAt = y;
+
+                    IsDynamicArea = (Source.GetPixel(0, y).ToArgb() == Color.Black.ToArgb());
+                }
             }
+            Areas[StretchableImageDirection.Vertical].Add(new Area(StartedAt, Source.Height - 2, false, IsDynamicArea));
+            #endregion
         }
         private void GenerateAreas()
         {
