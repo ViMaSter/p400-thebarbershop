@@ -9,16 +9,16 @@ namespace ninepatch_generator
     class Area
     {
         /// <summary>
-        /// Beginning pixel of this area
+        /// Beginning pixel of this area in StretchableImage::CutSource-coordinates
         /// </summary>
         protected int start = 0;
         /// <summary>
-        /// Ending pixel of this area
+        /// Ending pixel of this area in StretchableImage::CutSource-coordinates
         /// </summary>
         protected int end = 0;
 
         /// <summary>
-        /// Public property to access the beginning pixel of this area
+        /// Public property to access the beginning pixel of this area in StretchableImage::CutSource-coordinates
         /// </summary>
         public int Start
         {
@@ -28,7 +28,7 @@ namespace ninepatch_generator
             }
         }
         /// <summary>
-        /// Public property to access the ending pixel of this area
+        /// Public property to access the ending pixel of this area in StretchableImage::CutSource-coordinates
         /// </summary>
         public int End
         {
@@ -70,10 +70,19 @@ namespace ninepatch_generator
         }
         #endregion
 
+        /// <summary>
+        /// Creates a new area
+        /// 
+        /// Important: The constructor takes the absolute values from the StretchableImage::Source, but converts them to StretchableImage::CutSource-coordinates! ([-1, -1])
+        /// </summary>
+        /// <param name="start">Start pixel of this area in StretchableImage::Source-coordinates</param>
+        /// <param name="end">Start pixel of this area in StretchableImage::Source-coordinates</param>
+        /// <param name="isHorizontal">Whether or not this area is horizontally aligned</param>
+        /// <param name="isDynamic">Whether or not this area is stretchable (black pixel)</param>
         public Area(int start, int end, bool isHorizontal, bool isDynamic)
         {
-            this.start = start;
-            this.end = end;
+            this.start = start - 1;
+            this.end = end - 1;
             IsHorizontal = isHorizontal;
             IsDynamic = isDynamic;
         }
