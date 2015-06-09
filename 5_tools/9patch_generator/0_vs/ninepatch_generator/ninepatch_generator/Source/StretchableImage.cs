@@ -77,9 +77,24 @@ namespace ninepatch_generator
             result += "\n";
 
             result += string.Format(
+                "Dynamic-area total: {0}",
+                DynamicAreaTotal
+            );
+            result += "\n";
+
+            result += string.Format(
+                "Static-area total: {0}",
+                StaticAreaTotal
+            );
+            result += "\n";
+            result += "\n";
+
+
+            result += string.Format(
                 "Valid 9patch: {0}",
                 IsValid().ToString()
             );
+            result += "\n";
             result += "\n";
 
 
