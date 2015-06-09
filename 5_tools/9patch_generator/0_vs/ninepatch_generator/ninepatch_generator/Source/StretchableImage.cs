@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -251,23 +252,33 @@ namespace ninepatch_generator
         {
             CreatePatches();
 
-            // Calculate area sizes
-            foreach (Area area in AreaContainer.Areas[StretchableImageDirection.Horizontal])
+            // Calculate area totals
+            IEnumerable<Area> allAreas = AreaContainer.Areas.SelectMany(x => x.Value);
+            foreach (Area area in allAreas)
             {
                 if (area.IsDynamic)
                 {
-                    dynamicAreaTotal.Width += area.Length;
-                }
-            }
-
-            foreach (Area area in AreaContainer.Areas[StretchableImageDirection.Vertical])
-            {
-                if (area.IsDynamic)
-                {
-                    dynamicAreaTotal.Height += area.Length;
+                    if (area.IsHorizontal)
+                    {
+                        dynamicAreaTotal.Width += area.Length;
+                    }
+                    else
+                    {
+                        dynamicAreaTotal.Height += area.Length;
+                    }
                 }
             }
             staticAreaTotal = CutSource.Size - dynamicAreaTotal;
+
+            // Calculate weight based on totals
+            foreach (Area area in allAreas)
+            {
+                area.Weight = (float)area.Length /
+                              (area.IsDynamic ?
+                                    (area.IsHorizontal ? (float)dynamicAreaTotal.Width : (float)dynamicAreaTotal.Height) :
+                                    (area.IsHorizontal ? (float)staticAreaTotal.Width :  (float)staticAreaTotal.Height)
+                              );
+            }
         }
         #endregion
 
