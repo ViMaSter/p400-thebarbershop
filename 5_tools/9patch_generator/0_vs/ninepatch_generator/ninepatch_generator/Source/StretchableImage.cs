@@ -110,29 +110,29 @@ namespace ninepatch_generator
         /// <summary>
         /// Sum of all pixels noted as "static" (no black pixel) in ::Source
         /// </summary>
-        private Size staticArea;
+        private Size staticAreaTotal;
         /// <summary>
         /// Sum of all pixels noted as "dynamic" (no black pixel) in ::Source
         /// </summary>
-        private Size dynamicArea;
+        private Size dynamicAreaTotal;
         /// <summary>
         /// Public property to access the sum of all pixels noted as "static" (no black pixel) in ::Source
         /// </summary>
-        public Size StaticArea
+        public Size StaticAreaTotal
         {
             get
             {
-                return staticArea;
+                return staticAreaTotal;
             }
         }
         /// <summary>
         /// Public property to access the sum of all pixels noted as "dynamic" (no black pixel) in ::Source
         /// </summary>
-        public Size DynamicArea
+        public Size DynamicAreaTotal
         {
             get
             {
-                return dynamicArea;
+                return dynamicAreaTotal;
             }
         }
         /// <summary>
@@ -230,8 +230,8 @@ namespace ninepatch_generator
         /// <summary>
         /// Creates all patches and recalculates the total area size
         /// </summary>
-        /// <seealso cref="DynamicArea">
-        /// <seealso cref="StaticArea">
+        /// <seealso cref="dynamicAreaTotal">
+        /// <seealso cref="staticAreaTotal">
         private void GenerateAreas()
         {
             CreatePatches();
@@ -239,14 +239,20 @@ namespace ninepatch_generator
             // Calculate area sizes
             foreach (Area area in AreaContainer.Areas[StretchableImageDirection.Horizontal])
             {
-                dynamicArea.Width += area.Length;
+                if (area.IsDynamic)
+                {
+                    dynamicAreaTotal.Width += area.Length;
+                }
             }
 
             foreach (Area area in AreaContainer.Areas[StretchableImageDirection.Vertical])
             {
-                dynamicArea.Height += area.Length;
+                if (area.IsDynamic)
+                {
+                    dynamicAreaTotal.Height += area.Length;
+                }
             }
-            staticArea = Source.Size - DynamicArea;
+            staticAreaTotal = CutSource.Size - dynamicAreaTotal;
         }
         #endregion
 
@@ -258,13 +264,13 @@ namespace ninepatch_generator
         /// <returns>A bitmap correctly stretched using the areas extracted from the image supplied in the constructor</returns>
         public Bitmap GenerateImage(Size newSize)
         {
-            if (newSize.Width < StaticArea.Width && newSize.Height < StaticArea.Height)
+            if (newSize.Width < staticAreaTotal.Width && newSize.Height < staticAreaTotal.Height)
             {
                 throw new Exceptions.StretchableImage_TooSmallException();
             }
 
             Bitmap result = new Bitmap(newSize.Width, newSize.Height);
-            Size NewDynamicSize = newSize - StaticArea;
+            Size NewDynamicSize = newSize - staticAreaTotal;
 
             // @TODO: Calculate new dynamic-area sizes
 
