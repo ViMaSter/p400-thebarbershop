@@ -86,7 +86,7 @@ namespace ninepatch_generator
         /// <returns>String containing all variables of this object</returns>
         public override string ToString()
         {
-            return string.Format("{0} {1} [{2}, {3}]", IsHorizontal ? "H" : "V", IsDynamic ? "dyn" : "sta", Start, Length);
+            return string.Format("{0} {1} [{2}, {3}, W: {4}]", IsHorizontal ? "H" : "V", IsDynamic ? "dyn" : "sta", Start, Length, Weight);
         }
         #endregion
 
