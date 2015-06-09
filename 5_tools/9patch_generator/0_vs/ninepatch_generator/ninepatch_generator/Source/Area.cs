@@ -16,6 +16,12 @@ namespace ninepatch_generator
         /// Ending pixel of this area in StretchableImage::CutSource-coordinates
         /// </summary>
         protected int end = 0;
+        /// <summary>
+        /// Proportion of the image (from 0.0f up to 1.0f) this area covers
+        /// 
+        /// -1.0f if still unset
+        /// </summary>
+        public float weight = -1.0f;
 
         /// <summary>
         /// Public property to access the beginning pixel of this area in StretchableImage::CutSource-coordinates
@@ -35,6 +41,20 @@ namespace ninepatch_generator
             get
             {
                 return end;
+            }
+        }
+        /// <summary>
+        /// Public property to access the proportion of the image (from 0.0 up to 1.0) this area covers
+        /// </summary>
+        public float Weight
+        {
+            get
+            {
+                return weight;
+            }
+            set
+            {
+                weight = value;
             }
         }
         /// <summary>
