@@ -298,12 +298,16 @@ namespace ninepatch_generator
                 throw new Exceptions.StretchableImage_TooSmallException(staticAreaTotal);
             }
 
-            Bitmap result = new Bitmap(newSize.Width, newSize.Height);
-            Graphics g = Graphics.FromImage(result);
+            /// Determine canvas size
+            // Needs to be at least CutSource-Size, since we first draw the x-stretched
+            // CutSource and remove unwanted y-stretched areas afterwards 
+            Bitmap temporaryCanvas = new Bitmap(newSize.Width > CutSource.Width ? newSize.Width : CutSource.Width, newSize.Height > CutSource.Height ? newSize.Height : CutSource.Height);
+            Graphics temporaryCanvasGraphics = Graphics.FromImage(temporaryCanvas);
 
             Size DynamicSize = newSize - staticAreaTotal;       // Total size of possible dynamic area with new size
-            Size DynamicSizeRemainder = DynamicSize;            // Remainder to split up between areas (2x0.5 areas splitting 3px would leave 1px here)
 
+            // Determine Remainder
+            Size DynamicSizeRemainder = DynamicSize;            // Remainder to split up between areas (2x0.5 areas splitting 3px would leave 1px here)
             foreach (Area area in AreaContainer.GetAreas(StretchableImageDirection.Both, true))
             {
                 int PixelsOccupied = (int)Math.Floor( (float)(area.IsHorizontal ? DynamicSize.Width : DynamicSize.Height) * area.Weight );
@@ -317,10 +321,65 @@ namespace ninepatch_generator
                 }
             }
 
-            // @TODO: Create bitmaps based on dynamic areas
+            // Stretch image
+            Size RemainingDynamicSize = DynamicSize;            // Total size of dynamic areas to fill
+            Point CurrentPosition = new Point(0, 0);
+            // X stretching
+            foreach (Area area in AreaContainer.Areas[StretchableImageDirection.Horizontal])
+            {
+                if (area.IsDynamic)
+                {
+                    int PixelsOccupied = (int)Math.Floor((float)DynamicSize.Width * area.Weight);
 
-            // @TODO: Stretch available dynamic areas to fit new size
-            
+                    // Slowly use up all Remainder pixels
+                    if (DynamicSizeRemainder.Width > 0)
+                    {
+                        PixelsOccupied++;
+                        DynamicSizeRemainder.Width--;
+                    }
+
+                    temporaryCanvasGraphics.DrawImage(CutSource, new Rectangle(CurrentPosition.X, 0, PixelsOccupied, CutSource.Height), new Rectangle(area.Start, 0, area.Length, CutSource.Height), GraphicsUnit.Pixel);
+
+                    CurrentPosition.X += PixelsOccupied;
+                    RemainingDynamicSize.Width -= PixelsOccupied;
+                }
+                else
+                {
+                    temporaryCanvasGraphics.DrawImage(CutSource, new Rectangle(CurrentPosition.X, 0, area.Length, CutSource.Height), new Rectangle(area.Start, 0, area.Length, CutSource.Height), GraphicsUnit.Pixel);
+
+                    CurrentPosition.X += area.Length;
+                }
+            }
+
+            // Y stretching
+            Bitmap result = new Bitmap(newSize.Width, newSize.Height);
+            Graphics resultGraphics = Graphics.FromImage(result);
+            foreach (Area area in AreaContainer.Areas[StretchableImageDirection.Vertical])
+            {
+                if (area.IsDynamic)
+                {
+                    int PixelsOccupied = (int)Math.Floor((float)DynamicSize.Height * area.Weight);
+
+                    // Slowly use up all Remainder pixels
+                    if (DynamicSizeRemainder.Height > 0)
+                    {
+                        PixelsOccupied++;
+                        DynamicSizeRemainder.Height--;
+                    }
+
+                    resultGraphics.DrawImage(temporaryCanvas, new Rectangle(0, CurrentPosition.Y, temporaryCanvas.Width, PixelsOccupied), new Rectangle(0, area.Start, temporaryCanvas.Width, area.Length), GraphicsUnit.Pixel);
+
+                    CurrentPosition.Y += PixelsOccupied;
+                    RemainingDynamicSize.Height -= PixelsOccupied;
+                }
+                else
+                {
+                    resultGraphics.DrawImage(temporaryCanvas, new Rectangle(0, CurrentPosition.Y, temporaryCanvas.Width, area.Length), new Rectangle(0, area.Start, temporaryCanvas.Width, area.Length), GraphicsUnit.Pixel);
+
+                    CurrentPosition.Y += area.Length;
+                }
+            }
+
             return result;
         }
         #endregion
