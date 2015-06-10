@@ -299,9 +299,23 @@ namespace ninepatch_generator
             }
 
             Bitmap result = new Bitmap(newSize.Width, newSize.Height);
-            Size NewDynamicSize = newSize - staticAreaTotal;
+            Graphics g = Graphics.FromImage(result);
 
-            // @TODO: Calculate new dynamic-area sizes
+            Size DynamicSize = newSize - staticAreaTotal;       // Total size of possible dynamic area with new size
+            Size DynamicSizeRemainder = DynamicSize;            // Remainder to split up between areas (2x0.5 areas splitting 3px would leave 1px here)
+
+            foreach (Area area in AreaContainer.GetAreas(StretchableImageDirection.Both, true))
+            {
+                int PixelsOccupied = (int)Math.Floor( (float)(area.IsHorizontal ? DynamicSize.Width : DynamicSize.Height) * area.Weight );
+                if (area.IsHorizontal)
+                {
+                    DynamicSizeRemainder.Width -= PixelsOccupied;
+                }
+                else
+                {
+                    DynamicSizeRemainder.Height -= PixelsOccupied;
+                }
+            }
 
             // @TODO: Create bitmaps based on dynamic areas
 
