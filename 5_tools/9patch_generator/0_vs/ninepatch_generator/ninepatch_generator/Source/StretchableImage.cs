@@ -160,7 +160,7 @@ namespace ninepatch_generator
         /// <returns>Is this instance using a valid image?</returns>
         public bool IsValid()
         {
-            return (AreaContainer.Areas[StretchableImageDirection.Horizontal].Count + AreaContainer.Areas[StretchableImageDirection.Vertical].Count) > 0;
+            return (AreaContainer.Areas[StretchableImageDirection.Horizontal].Count + AreaContainer.Areas[StretchableImageDirection.Vertical].Count) > 2;
         }
 
         #region Constructor
