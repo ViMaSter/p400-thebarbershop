@@ -12,7 +12,6 @@ namespace ninepatch_generator
 {
     public partial class ninepatch_generator : Form
     {
-        StretchableImage img;
         public ninepatch_generator()
         {
             InitializeComponent();
@@ -27,8 +26,14 @@ namespace ninepatch_generator
                 {
                     if (File.Exists(fileLoc))
                     {
+                        StretchableImage img;
                         img = new StretchableImage(new System.Drawing.Bitmap(fileLoc));
                         MessageBox.Show(img);
+                        if (img.IsValid())
+                        {
+                            Image image = img.GenerateImage(new Size(423+400, 414+200));
+                            pictureBox1.Image = image;
+                        }
                     }
                 }
             }
