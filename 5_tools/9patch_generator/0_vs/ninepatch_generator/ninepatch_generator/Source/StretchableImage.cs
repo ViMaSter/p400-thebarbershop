@@ -9,7 +9,8 @@ namespace ninepatch_generator
     enum StretchableImageDirection
     {
         Vertical = 0,
-        Horizontal = 1
+        Horizontal = 1,
+        Both = 2
     }
     /// <summary>
     /// Container for helper functions and easier accessability of areas associated to an image
@@ -33,14 +34,16 @@ namespace ninepatch_generator
         /// <summary>
         /// Allows for easy access of areas using simple filters
         /// </summary>
-        /// <param name="direction">Which areas to get (horizontal/vertical)</param>
+        /// <param name="direction">Which areas to get (horizontal/vertical/both)</param>
         /// <param name="isDynamic">Whether or not to get dynamic (true) or static (false) areas</param>
         /// <returns>List of all Areas matching the supplied criteria</returns>
         public List<Area> GetAreas(StretchableImageDirection direction, bool isDynamic)
         {
             List<Area> result = new List<Area>();
 
-            foreach (Area area in Areas[direction]) {
+            IEnumerable<Area> eligibleAreas = (direction == StretchableImageDirection.Both) ? Areas.SelectMany(x => x.Value) : Areas[direction];
+            foreach (Area area in eligibleAreas)
+            {
                 if (area.IsDynamic == isDynamic)
                 {
                     result.Add(area);
@@ -292,7 +295,7 @@ namespace ninepatch_generator
         {
             if (newSize.Width < staticAreaTotal.Width && newSize.Height < staticAreaTotal.Height)
             {
-                throw new Exceptions.StretchableImage_TooSmallException();
+                throw new Exceptions.StretchableImage_TooSmallException(staticAreaTotal);
             }
 
             Bitmap result = new Bitmap(newSize.Width, newSize.Height);
