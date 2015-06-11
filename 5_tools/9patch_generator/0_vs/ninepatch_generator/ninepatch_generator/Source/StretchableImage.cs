@@ -293,7 +293,11 @@ namespace ninepatch_generator
         /// <returns>A bitmap correctly stretched using the areas extracted from the image supplied in the constructor</returns>
         public Bitmap GenerateImage(Size newSize)
         {
-            if (newSize.Width < staticAreaTotal.Width && newSize.Height < staticAreaTotal.Height)
+            if (newSize.Width <= 0 || newSize.Height <= 0)
+            {
+                throw new Exceptions.StretchableImage_NullException(newSize.Width <= 0);
+            }
+            if (newSize.Width < staticAreaTotal.Width || newSize.Height < staticAreaTotal.Height)
             {
                 throw new Exceptions.StretchableImage_TooSmallException(staticAreaTotal);
             }
