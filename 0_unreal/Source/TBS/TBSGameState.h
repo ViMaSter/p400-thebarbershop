@@ -3,7 +3,7 @@
 #pragma once
 
 #include "GameFramework/GameState.h"
-#include "TBSSessionState.h"
+#include "TBSSaveGame.h"
 #include "TBSGameState.generated.h"
 
 /**
@@ -18,6 +18,7 @@ class TBS_API ATBSGameState : public AGameState
 {
 	GENERATED_BODY()
 
+	ATBSGameState(const FObjectInitializer& ObjectInitializer);
 private:
 	 bool IsIngame = false;
 	 bool IsEditorMode = false;
@@ -34,17 +35,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Game State") void SetIsPaused(bool NewState);
 	UFUNCTION(BlueprintCallable, Category = "Game State") bool GetIsPaused();
 #pragma endregion
+#pragma region SaveState
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Save State") UTBSSaveGame* CurrentSaveGame;
 
-#pragma region SessionState
-	// @TODO: Perhabs rethink exposing this variable directly.
-	// Removing and adding elements seems unnecessarily complicated at this point in time
-	int32 AddSessionState(FTBSSessionState SessionState);
-	int32 RemoveSessionState(FTBSSessionState SessionState);
-	TArray<FTBSSessionState> GetSessionState(FTBSSessionState SessionState);
-	bool EmptySessionState();
-
-private:
-	TArray<FTBSSessionState> SessionList;
-
+	UFUNCTION(BlueprintCallable, Category = "Save State") bool SaveGame(FString SlotName, int32 UserIndex, bool OverwriteIfExists);
+	UFUNCTION(BlueprintCallable, Category = "Save State") bool LoadGame(FString SlotName, int32 UserIndex);
 #pragma endregion
 };

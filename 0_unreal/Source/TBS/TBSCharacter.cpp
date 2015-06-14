@@ -300,7 +300,7 @@ void ATBSCharacter::SaveSessionData() {
 		sessionState.BeardResult = BeardResult;
 		sessionState.TimeRequired = GetTimeElapsed();
 
-		gameState->AddSessionState(sessionState);
+		gameState->CurrentSaveGame->AddSessionState(sessionState);
 		return;
 	}
 }

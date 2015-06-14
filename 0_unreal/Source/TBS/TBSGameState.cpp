@@ -3,6 +3,11 @@
 #include "TBS.h"
 #include "TBSGameState.h"
 
+ATBSGameState::ATBSGameState(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer) {
+	CurrentSaveGame = Cast<UTBSSaveGame>(UGameplayStatics::CreateSaveGameObject(UTBSSaveGame::StaticClass()));
+}
+
 #pragma region GameState
 void ATBSGameState::SetIsIngame(bool NewState) {
 	IsIngame = NewState;
@@ -27,27 +32,32 @@ void ATBSGameState::SetIsPaused(bool NewState) {
 bool ATBSGameState::GetIsPaused() {
 	return IsPaused;
 }
-
 #pragma endregion
 
-#pragma region SessionState
-
-int32 ATBSGameState::AddSessionState(FTBSSessionState SessionState) {
-	return SessionList.Add(SessionState);
+#pragma region SaveState
+bool ATBSGameState::SaveGame(FString SlotName, int32 UserIndex, bool OverwriteIfExists = false) {
+	UTBSSaveGame* TempSaveGame = Cast<UTBSSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, UserIndex));
+	if (OverwriteIfExists || TempSaveGame == nullptr) {
+		CurrentSaveGame->MoneyAvailable = 1337;
+		CurrentSaveGame->ShaveperiencePoints = 7331;
+		// Current game info is automatically updated by methods that handle values that should be stored in a savefile
+		// All we do here, is redirect the call and prevent accidental overwriting of savefiles
+		return UGameplayStatics::SaveGameToSlot(CurrentSaveGame, SlotName, UserIndex);
+	}
+	else {
+		return false;
+	}
 }
+bool ATBSGameState::LoadGame(FString SlotName, int32 UserIndex) {
+	UTBSSaveGame* TempSaveGame = Cast<UTBSSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, UserIndex));
 
-int32 ATBSGameState::RemoveSessionState(FTBSSessionState SessionState) {
-	return SessionList.Remove(SessionState);
+	if (TempSaveGame != nullptr) {
+		CurrentSaveGame = TempSaveGame;
+	}
+
+	// TODO: Redirect all changes that happen to the correct objects (update Cash in TBSPlayerController, etc.)
+
+	return TempSaveGame != nullptr;
+
 }
-
-TArray<FTBSSessionState> ATBSGameState::GetSessionState(FTBSSessionState SessionState) {
-
-	return TArray<FTBSSessionState>();
-}
-
-bool ATBSGameState::EmptySessionState() {
-	SessionList.Empty();
-	return SessionList.Num() == 0;
-}
-
 #pragma endregion
