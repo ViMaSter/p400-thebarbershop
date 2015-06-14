@@ -38,8 +38,6 @@ bool ATBSGameState::GetIsPaused() {
 bool ATBSGameState::SaveGame(FString SlotName, int32 UserIndex, bool OverwriteIfExists = false) {
 	UTBSSaveGame* TempSaveGame = Cast<UTBSSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, UserIndex));
 	if (OverwriteIfExists || TempSaveGame == nullptr) {
-		CurrentSaveGame->MoneyAvailable = 1337;
-		CurrentSaveGame->ShaveperiencePoints = 7331;
 		// Current game info is automatically updated by methods that handle values that should be stored in a savefile
 		// All we do here, is redirect the call and prevent accidental overwriting of savefiles
 		return UGameplayStatics::SaveGameToSlot(CurrentSaveGame, SlotName, UserIndex);

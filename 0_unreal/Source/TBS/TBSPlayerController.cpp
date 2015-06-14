@@ -1,6 +1,7 @@
 // Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
 
 #include "TBS.h"
+#include "TBSCharacter.h"
 #include "TBSCustomer.h"
 #include "TBSRazor.h"
 #include "TBSPlayerController.h"
@@ -245,13 +246,14 @@ void ATBSPlayerController::FinishCurrentCustomer() {
 		return;
 	}
 
-	if (GetWorld()->GetGameState<ATBSGameState>()) {
-		GetWorld()->GetGameState<ATBSGameState>()->SetIsPaused(true);
-	}
-
 	FinishedCurrentCustomer();
 	if (PlayerCharacter) {
 		PlayerCharacter->FinishCurrentCustomer();
+	}
+
+	if (GetWorld()->GetGameState<ATBSGameState>()) {
+		GetWorld()->GetGameState<ATBSGameState>()->SetIsPaused(true);
+		UpdateCurrentSaveGame();
 	}
 }
 #pragma endregion
@@ -758,4 +760,12 @@ void ATBSPlayerController::SetIsIngame(bool IsIngame) {
 	}
 }
 #pragma endregion
+#pragma endregion
+#pragma region SaveGame Wrapper
+void ATBSPlayerController::UpdateCurrentSaveGame() {
+	ATBSCharacter* controlledPawn = Cast<ATBSCharacter>(GetControlledPawn());
+
+	GetWorld()->GetGameState<ATBSGameState>()->CurrentSaveGame->ShaveperiencePoints = controlledPawn->CurrentExperience;
+	GetWorld()->GetGameState<ATBSGameState>()->CurrentSaveGame->MoneyAvailable = controlledPawn->CurrentCash;
+}
 #pragma endregion

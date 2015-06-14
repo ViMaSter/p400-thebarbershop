@@ -57,6 +57,10 @@ public:
 	UFUNCTION(BlueprintCallable, exec, Category = "GameState Wrapper") void SetIsIngame(bool IsIngame);
 #pragma endregion
 
+#pragma region SaveGame Wrapper
+	UFUNCTION(BlueprintCallable, exec, Category = "SaveGame Wrapper") void UpdateCurrentSaveGame();
+#pragma endregion
+
 	//BeginPlay
 	virtual void BeginPlay () override;
 
