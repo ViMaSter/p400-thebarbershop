@@ -18,8 +18,11 @@ class TBS_API UTBSSaveGame : public USaveGame
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Core") FString SaveSlotName;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Core") uint32 UserIndex;
-											
+									
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "TBS") float MoneyAvailable;
+	
+	// We only store the absolute experience points - we can calculate the resulting level from that
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "TBS") float ShaveperiencePoints;
 
 #pragma region SessionState
