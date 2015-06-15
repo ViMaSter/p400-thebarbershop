@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "TBS.h"
+#include "TBSPlayerController.h"
+#include "TBSCharacter.h"
 #include "TBSGameState.h"
 
 ATBSGameState::ATBSGameState(const FObjectInitializer& ObjectInitializer)
@@ -51,9 +53,20 @@ bool ATBSGameState::LoadGame(FString SlotName, int32 UserIndex) {
 
 	if (TempSaveGame != nullptr) {
 		CurrentSaveGame = TempSaveGame;
-	}
 
-	// TODO: Redirect all changes that happen to the correct objects (update Cash in TBSPlayerController, etc.)
+		ATBSCharacter* PlayerPawn = ((ATBSCharacter*)(GetWorld()->GetFirstPlayerController()->GetControlledPawn()));
+
+		// Reset values if there were previous states
+		PlayerPawn->CurrentCash = 0;
+		PlayerPawn->CurrentLevel = 0;
+		PlayerPawn->CurrentExperience = 0;
+
+		// Apply values from savefile
+		PlayerPawn->CurrentCash += CurrentSaveGame->MoneyAvailable;
+		PlayerPawn->IncreaseEXP(CurrentSaveGame->ShaveperiencePoints);
+
+		PlayerPawn->ObtainedEquipment = CurrentSaveGame->ObtainedEquipment;
+	}
 
 	return TempSaveGame != nullptr;
 

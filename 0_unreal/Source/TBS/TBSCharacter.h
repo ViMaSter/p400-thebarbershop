@@ -227,7 +227,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Equipment")	FTBSEquipmentData GetEquipmentByID(int32 ID);
 	UFUNCTION(BlueprintCallable, Category = "Equipment")	TArray<FTBSEquipmentData> GetEquipmentListAsArray();
 
-private:
 	TArray<int32> ObtainedEquipment;
 	
 
