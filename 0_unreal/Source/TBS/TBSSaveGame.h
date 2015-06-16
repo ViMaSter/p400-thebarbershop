@@ -24,16 +24,18 @@ public:
 	// We only store the absolute experience points - we can calculate the resulting level from that
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "TBS") float ShaveperiencePoints;
 
-	TArray<int32> ObtainedEquipment;
+	// Lenghts
+	int32 ObtainedEquipmentNum;
+	int32 SessionListNum;
 
+	TArray<int32> ObtainedEquipment;
 #pragma region SessionState
+	TArray<FTBSSessionState> SessionList;
+
 	int32 AddSessionState(FTBSSessionState SessionState);
 	int32 RemoveSessionState(FTBSSessionState SessionState);
 	TArray<FTBSSessionState> GetSessionState(FTBSSessionState SessionState);
 	bool ClearSessionStates();
-
-private:
-	TArray<FTBSSessionState> SessionList;
 #pragma endregion
 	
 };
