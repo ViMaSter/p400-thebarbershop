@@ -38,7 +38,7 @@ public:
 #pragma region SaveState
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Save State") UTBSSaveGame* CurrentSaveGame;
 
-	UFUNCTION(BlueprintCallable, Category = "Save State") bool SaveGame(FString SlotName, int32 UserIndex, bool OverwriteIfExists);
-	UFUNCTION(BlueprintCallable, Category = "Save State") bool LoadGame(FString SlotName, int32 UserIndex);
+	UFUNCTION(BlueprintCallable, Category = "Save State") bool SaveGame(int32 UserIndex);
+	UFUNCTION(BlueprintCallable, Category = "Save State") bool LoadGame(int32 UserIndex);
 #pragma endregion
 };

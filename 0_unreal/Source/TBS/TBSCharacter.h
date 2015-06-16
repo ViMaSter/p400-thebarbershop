@@ -218,18 +218,14 @@ public:
 	// EquipmentData
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CSV Data")	UDataTable* EquipmentData;
 
+	UFUNCTION(BlueprintCallable, Category = "Equipment")	TArray<int32> GetObtainedEquipment();
 	UFUNCTION(BlueprintCallable, Category = "Equipment")	bool EquipItem(int32 ID);
 	UFUNCTION(BlueprintCallable, Category = "Equipment")	bool BuyEquipment(int32 ID);
-	UFUNCTION(BlueprintCallable, Category = "Equipment")	TArray<int32> GetObtainedEquipment();
 
 	TMap<int32, FTBSEquipmentData> GetEquipmentList();
 	// Wrapper function, since TMap is not supported by the reflection system
 	UFUNCTION(BlueprintCallable, Category = "Equipment")	FTBSEquipmentData GetEquipmentByID(int32 ID);
 	UFUNCTION(BlueprintCallable, Category = "Equipment")	TArray<FTBSEquipmentData> GetEquipmentListAsArray();
-
-	TArray<int32> ObtainedEquipment;
-	
-
 #pragma endregion Equipment
 
 };

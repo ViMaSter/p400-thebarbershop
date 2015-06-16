@@ -6,9 +6,6 @@
 #include "TBSSessionState.h"
 #include "TBSSaveGame.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class TBS_API UTBSSaveGame : public USaveGame
 {
@@ -25,8 +22,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "TBS") float ShaveperiencePoints;
 
 	// Lenghts
-	int32 ObtainedEquipmentNum;
-	int32 SessionListNum;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Lengths") int32 ObtainedEquipmentNum;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Lengths") int32 SessionListNum;
 
 	TArray<int32> ObtainedEquipment;
 #pragma region SessionState

@@ -767,6 +767,5 @@ void ATBSPlayerController::UpdateCurrentSaveGame() {
 
 	GetWorld()->GetGameState<ATBSGameState>()->CurrentSaveGame->ShaveperiencePoints = controlledPawn->CurrentExperience;
 	GetWorld()->GetGameState<ATBSGameState>()->CurrentSaveGame->MoneyAvailable = controlledPawn->CurrentCash;
-	GetWorld()->GetGameState<ATBSGameState>()->CurrentSaveGame->ObtainedEquipment = controlledPawn->ObtainedEquipment;
 }
 #pragma endregion

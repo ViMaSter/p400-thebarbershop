@@ -306,6 +306,9 @@ void ATBSCharacter::SaveSessionData() {
 }
 
 #pragma region Equipment
+TArray<int32> ATBSCharacter::GetObtainedEquipment() {
+	return ((ATBSGameState*)(GetWorld()->GetGameState()))->CurrentSaveGame->ObtainedEquipment;
+}
 
 bool ATBSCharacter::BuyEquipment(int32 ID) {
 	FTBSEquipmentData* CurrentData;
@@ -316,15 +319,11 @@ bool ATBSCharacter::BuyEquipment(int32 ID) {
 		CurrentData = EquipmentData->FindRow<FTBSEquipmentData>(Row, Context, false);
 		if (CurrentData && CurrentData->Cost <= CurrentCash) {
 			CurrentCash -= CurrentData->Cost;
-			ObtainedEquipment.Add(ID);
+			((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Add(ID);
 			return true;
 		}
 	}
 	return false;
-}
-
-TArray<int32> ATBSCharacter::GetObtainedEquipment() {
-	return ObtainedEquipment;
 }
 
 FTBSEquipmentData ATBSCharacter::GetEquipmentByID(int32 ID) {
@@ -359,7 +358,7 @@ TArray<FTBSEquipmentData> ATBSCharacter::GetEquipmentListAsArray() {
 }
 
 bool ATBSCharacter::EquipItem(int32 ID) {
-	if (ObtainedEquipment.Find(ID) == INDEX_NONE) {
+	if (((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Find(ID) == INDEX_NONE) {
 		UE_LOG(LogClass, Warning, TEXT("*** Wrong ID or Equipment not obtained! ***"));
 		return false;
 	}
