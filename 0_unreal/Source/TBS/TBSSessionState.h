@@ -14,7 +14,7 @@ public:
 		, TimeRequired(0.0f) {
 	}
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Session Information")	uint32 SessionID;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Session Information")	int32 SessionID;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Session Information")	FName BeardName;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Session Information")	float BeardResult;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Session Information")	float TimeRequired;

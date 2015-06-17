@@ -14,7 +14,7 @@ class TBS_API UTBSSaveGame : public USaveGame
 	UTBSSaveGame(const FObjectInitializer& ObjectInitializer);
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Core") FString SaveSlotName;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Core") uint32 UserIndex;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Core") int32 UserIndex;
 									
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "TBS") float MoneyAvailable;
 	
