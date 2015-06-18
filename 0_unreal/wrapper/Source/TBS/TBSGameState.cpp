@@ -10,6 +10,7 @@
 
 ATBSGameState::ATBSGameState(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {
+	// @Notice: For some reason, this variable gets set, but when ::LoadGame() is called is pointing to null again...
 	CurrentSaveGame = Cast<UTBSSaveGame>(UGameplayStatics::CreateSaveGameObject(UTBSSaveGame::StaticClass()));
 }
 
@@ -125,6 +126,11 @@ bool ATBSGameState::LoadGame(int32 UserIndex) {
 		}
 
 		return true;
+	}
+
+	if (CurrentSaveGame == nullptr)
+	{
+		CurrentSaveGame = Cast<UTBSSaveGame>(UGameplayStatics::CreateSaveGameObject(UTBSSaveGame::StaticClass()));
 	}
 
 	return TempSaveGame != nullptr;
