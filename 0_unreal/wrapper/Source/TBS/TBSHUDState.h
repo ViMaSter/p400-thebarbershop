@@ -17,7 +17,8 @@ enum class ETBSHUDState : uint8 {
 	BeardOverview	= 10	UMETA (DisplayName = "Beard Overview"),
 	MainMenu		= 11	UMETA (DisplayName = "Main Menu"),
 	Radio			= 12	UMETA (DisplayName = "Radio"),
-	EditorDialogue	= 13	UMETA (DisplayName = "Editor Dialogue")
+	EditorDialogue	= 13	UMETA (DisplayName = "Editor Dialogue"),
+	MainMenuConfirm = 14	UMETA (DisplayName = "Main Menu Confirm")
 };
 
 
