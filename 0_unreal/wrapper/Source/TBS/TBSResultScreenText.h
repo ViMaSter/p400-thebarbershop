@@ -45,4 +45,11 @@ public:
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Text")
 		FName Content;
+
+	/*
+		Likelihood of a message being thrown.
+		Setting this to -1 on a message, guarantees that this message is thrown, if the selected condition is met.
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Text")
+		float Weight;
 };
