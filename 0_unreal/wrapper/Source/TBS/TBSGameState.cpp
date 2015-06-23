@@ -135,4 +135,28 @@ bool ATBSGameState::LoadGame(int32 UserIndex) {
 
 	return TempSaveGame != nullptr;
 }
+
+float ATBSGameState::GetBestScore() {
+	float BestScore = -1.0f;
+
+	for (auto SaveGameIterator(CurrentSaveGame->SessionList.CreateIterator()); SaveGameIterator; SaveGameIterator++) {
+		if (SaveGameIterator->BeardResult > BestScore || BestScore == -1.0f) {
+			BestScore = SaveGameIterator->BeardResult;
+		}
+	}
+
+	return BestScore;
+}
+
+float ATBSGameState::GetBestTime() {
+	float BestTime = -1.0f;
+
+	for (auto SaveGameIterator(CurrentSaveGame->SessionList.CreateIterator()); SaveGameIterator; SaveGameIterator++) {
+		if (SaveGameIterator->TimeRequired < BestTime || BestTime == -1.0f) {
+			BestTime = SaveGameIterator->TimeRequired;
+		}
+	}
+	return BestTime;
+}
+
 #pragma endregion

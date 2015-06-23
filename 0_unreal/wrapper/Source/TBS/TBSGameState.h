@@ -40,5 +40,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Save State") bool SaveGame(int32 UserIndex);
 	UFUNCTION(BlueprintCallable, Category = "Save State") bool LoadGame(int32 UserIndex);
+
+	UFUNCTION(BlueprintCallable, Category = "Save State") float GetBestScore();
+	UFUNCTION(BlueprintCallable, Category = "Save State") float GetBestTime();
 #pragma endregion
 };
