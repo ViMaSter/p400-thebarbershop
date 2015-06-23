@@ -184,7 +184,8 @@ void ATBSCustomer::LiftPositionReleased() {
 void ATBSCustomer::LiftPositionApply() {
 	SetActorLocation(CustomerStartPosition + FVector(0, 0, LiftPositionCurrent));
 	
-	// @TODO: Enabling the line below does move the beard, but causes huge performance issues
+	// @Notice: Feature is only "nice to have"
+	// Enabling the line below does move the beard, but causes huge performance issues
 	// Beard->SetActorLocation(BeardStartPosition + FVector(0, 0, LiftPositionCurrent));
 }
 
