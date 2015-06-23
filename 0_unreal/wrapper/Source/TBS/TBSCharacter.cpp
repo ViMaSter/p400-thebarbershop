@@ -196,6 +196,8 @@ void ATBSCharacter::TransitionToNewCustomer() {
 		NextCustomer = SecondCustomer;
 	}
 	FirstCustomerActive = !FirstCustomerActive;
+	GetWorldTimerManager().SetTimer(NextCustomer->SpawnTimerHandle, NextCustomer, &ATBSCustomer::SpawnBeardPart, 0.05f, true);
+	CurrentCustomer->FinisheBeardSpawning();
 }
 
 

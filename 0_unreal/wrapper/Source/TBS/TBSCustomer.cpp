@@ -50,15 +50,7 @@ void ATBSCustomer::Tick(float DeltaTime) {
 
 void ATBSCustomer::CreateNewCustomer (int32 CharacterLevel) {
 	// Reset the beard to Trimmed 0 and visibile.
-	if (Beard != NULL) {
-		for (int32 i = 0; i < HairsCutted.Num(); i++) {
-			UStaticMeshComponent* Mesh = (UStaticMeshComponent*)HairsCutted[i];
-			Mesh->SetVisibility(true);
-			Mesh->SetCollisionResponseToAllChannels(ECR_Overlap);
-			((ATBSCharacter*)GetOwner())->Tool->Trimmed(0, HairsCutted[i]);
-		}
-		HairsCutted.Empty();
-	}
+
 	// Deprecated!
 	// CreateRandomDesiredBeard(CharacterLevel);
 
@@ -66,6 +58,40 @@ void ATBSCustomer::CreateNewCustomer (int32 CharacterLevel) {
 
 	CreatedCustomer();
 	UE_LOG(LogClass, Log, TEXT("*** Customer Customer created ***"))
+}
+
+void ATBSCustomer::SpawnBeardPart(){
+	if (Beard != NULL) {
+		if (HairIndex < HairsCutted.Num()-1 && HairsCutted[HairIndex]){
+			UStaticMeshComponent* Mesh = (UStaticMeshComponent*)HairsCutted[HairIndex];
+			Mesh->SetVisibility(true);
+			Mesh->SetCollisionResponseToAllChannels(ECR_Overlap);
+			((ATBSCharacter*)GetOwner())->Tool->Trimmed(0, HairsCutted[HairIndex]);
+			HairIndex++;
+		}
+		else{
+			if (GetWorldTimerManager().TimerExists(SpawnTimerHandle)) {
+				GetWorldTimerManager().ClearTimer(SpawnTimerHandle);
+			}
+			HairsCutted.Empty();
+			HairIndex = 0;
+		}
+	}
+}
+
+void ATBSCustomer::FinisheBeardSpawning(){
+	if (Beard != NULL) {
+		if (HairIndex <= HairsCutted.Num() - 1 && HairsCutted[HairIndex]) {
+			for (int i = HairIndex; i < HairsCutted.Num(); i++) {
+				UStaticMeshComponent* Mesh = (UStaticMeshComponent*)HairsCutted[i];
+				Mesh->SetVisibility(true);
+				Mesh->SetCollisionResponseToAllChannels(ECR_Overlap);
+				((ATBSCharacter*)GetOwner())->Tool->Trimmed(0, HairsCutted[i]);
+			}
+		}
+		HairsCutted.Empty();
+		HairIndex = 0;
+	}
 }
 
 // THIS IS DEPRECATED!

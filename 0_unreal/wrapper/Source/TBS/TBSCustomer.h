@@ -74,6 +74,11 @@ public:
 	void CreateRandomDesiredBeard(int32 MaxLevelBeard);
 	void FindDesiredBeardFromPool(int32 Playerlevel);
 
+	FTimerHandle SpawnTimerHandle;
+	int32 HairIndex = 0;
+	void SpawnBeardPart();
+	void FinisheBeardSpawning();
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
