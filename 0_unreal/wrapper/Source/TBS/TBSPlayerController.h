@@ -1,8 +1,9 @@
 // Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
 #pragma once
 #include "GameFramework/PlayerController.h"
-#include "TBSCharacter.h"
 #include "Engine/LocalPlayer.h"
+
+#include "TBSCharacter.h"
 #include "TBSPlayerController.generated.h"
 
 
@@ -37,6 +38,9 @@ public:
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool ClearBeardID (FName BeardName);
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool SaveBeardID(FName BeardName, int32 BeardLevel = 1, int32 UniqueId = 0);
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool LoadBeardID (FName BeardName);
+
+	UFUNCTION(BlueprintCallable, exec, Category = "Beard Control") void LoadBeardID_MT(FName BeardName);
+
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") void SpawnNextCustomer();
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") void FinishCurrentCustomer();
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") UDataTable* FindDataTableToName(FName BeardName);
@@ -80,10 +84,14 @@ protected:
 
 
 #pragma region References
+public:
 	ATBSCharacter* PlayerCharacter;
+
 #pragma endregion
 
 #pragma region Camera
+
+protected:
 	FRotator CameraRotationTarget;
 #pragma endregion
 
@@ -154,6 +162,10 @@ protected:
 	int32 TotalSteps = 0;
 	int32 TotalUndoedSteps = 0;
 
+	bool LoadingStarted_MT = false;
+	TArray<FBeardComparisonData*> BeardData_MT;
+	FTimerHandle LoadingTimeHandle_MT;
+
+	void LoadBeardToCustomer(TArray<FBeardComparisonData*> Data);
+
 };
-
-

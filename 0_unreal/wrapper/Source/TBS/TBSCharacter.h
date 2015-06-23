@@ -173,6 +173,13 @@ public:
 
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus")
 	ATBSCustomer* CurrentCustomer;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus")
+	ATBSCustomer* NextCustomer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus")
+	ATBSCustomer* FirstCustomer;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus")
+	ATBSCustomer* SecondCustomer;
 
 	UFUNCTION(BlueprintCallable, Category = "PlayerStatus") FName GetDesiredCustomerBeard();
 
@@ -182,6 +189,7 @@ public:
 
 	// UE4-Execution Events
 	virtual void BeginPlay () override;
+	virtual void Tick(float DeltaTime) override;
 
 	// (BP-)Helper functions
 	UFUNCTION (BlueprintCallable, Category = "Timer") float GetTimeElapsed();
@@ -193,6 +201,7 @@ public:
 	UFUNCTION (BlueprintCallable, Category = "EXP") void IncreaseEXP(int32 Value);
 	UFUNCTION (BlueprintCallable, Category = "Cash") void IncreaseCash(float ComparisionResult);
 	UFUNCTION (BlueprintCallable, Category = "Customer") void LoadNewCustomer();
+	UFUNCTION (exec, BlueprintCallable, Category = "Customer") void TransitionToNewCustomer();
 	UFUNCTION (BlueprintCallable, Category = "Customer") void FinishCurrentCustomer();
 	
 	void SwitchTool (bool IsNextTool);
@@ -228,6 +237,24 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Equipment")	TArray<FTBSEquipmentData> GetEquipmentListAsArray();
 #pragma endregion Equipment
 
+#pragma region Multi-Threading
+	bool CompLoadingStarted_MT = false;
+	bool BonusLoadingStarted_MT = false;
+	bool EquipmentLodingStarted_MT = false;
+	bool LevelLodingStarted_MT = false;
+
+	TArray<FBeardComparisonData*> BeardData_MT;
+	TArray<FTimeBonusData*> TimeBonusData_MT;
+	TArray<FTBSEquipmentData*> EquipmentData_MT;
+	TArray<FLevelUpData*> LevelData_MT;
+
+	FTimerHandle  CompLoadingTimeHandle_MT;
+	FTimerHandle BonusLoadingTimeHandle_MT;
+	FTimerHandle EquipmentLoadingTimeHandle_MT;
+	FTimerHandle LevelLoadingTimeHandle_MT;
+#pragma endregion Multi-Threading
+
+	bool FirstCustomerActive = true;
 };
 
 

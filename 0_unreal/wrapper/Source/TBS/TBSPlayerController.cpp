@@ -6,6 +6,7 @@
 #include "TBSRazor.h"
 #include "TBSPlayerController.h"
 #include "TBSGameState.h"
+#include "TBSDataLoadWorker.h"
 
 ATBSPlayerController::ATBSPlayerController (const FObjectInitializer& ObjectInitializer)
 	: Super (ObjectInitializer) {
@@ -46,6 +47,15 @@ void ATBSPlayerController::PlayerTick (float DeltaTime) {
 		ApplyCamera (DeltaTime);
 
 		bShowMouseCursor = !PointingAtCustomer;
+	}
+
+	if (LoadingStarted_MT && GetWorldTimerManager().TimerExists(LoadingTimeHandle_MT)) {
+		if (FTBSDataLoadWorker::IsThreadFinished()) {
+			FTBSDataLoadWorker::Shutdown();
+			LoadingStarted_MT = false;
+			LoadBeardToCustomer(BeardData_MT);
+			GetWorldTimerManager().ClearTimer(LoadingTimeHandle_MT);
+		}
 	}
 }
 
@@ -232,7 +242,7 @@ void ATBSPlayerController::SpawnNextCustomer () {
 
 	SpawnedNextCustomer();
 	if (PlayerCharacter) {
-		PlayerCharacter->LoadNewCustomer ();
+		PlayerCharacter->TransitionToNewCustomer();
 	}
 }
 
@@ -421,6 +431,22 @@ bool ATBSPlayerController::LoadBeardID(FName BeardName) {
 	return false;
 }
 
+void ATBSPlayerController::LoadBeardID_MT(FName BeardName) {
+	if (!GetIsEditorMode()) {
+		UE_LOG(LogClass, Log, TEXT("*** No editor mode active ***"));
+		return;
+	}
+	if (PlayerCharacter) {
+		UDataTable* DataTable;
+		DataTable = FindDataTableToName(BeardName);
+		if (DataTable) {
+			FTBSDataLoadWorker::JoyInitBeardComp(BeardData_MT, DataTable);
+			GetWorldTimerManager().SetTimer(LoadingTimeHandle_MT, 0.1f, true, -1.f);
+			LoadingStarted_MT = true;
+		}
+	}
+}
+
 bool ATBSPlayerController::SetCurrentBeardDataToCSV(UDataTable* DataTable) {
 	if (PlayerCharacter == NULL) {
 		return false;
@@ -504,6 +530,40 @@ bool ATBSPlayerController::LoadBeardDataToCurrentCustomer (UDataTable* DataTable
 		}
 	}
 	return success;
+}
+
+void ATBSPlayerController::LoadBeardToCustomer(TArray<FBeardComparisonData*> Data) {
+	if (PlayerCharacter == NULL) {
+		return;
+	}
+	TArray<UActorComponent*> Components;
+	Components = PlayerCharacter->CurrentCustomer->Beard->GetComponentsByClass(UStaticMeshComponent::StaticClass());
+	for (int32 i = 0; i < Components.Num(); i++) {
+		if (Data[i]) {
+			UStaticMeshComponent* Mesh = (UStaticMeshComponent*)Components[i];
+			switch (Data[i]->HairState) {
+			case(0) :
+				Mesh->SetVisibility(false);
+				Mesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+				PlayerCharacter->Tool->Trimmed(1, Components[i]);
+				break;
+			case(1) :
+				Mesh->SetVisibility(true);
+				Mesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+				PlayerCharacter->Tool->Trimmed(0.8, Components[i]);
+
+				break;
+			case(2) :
+				Mesh->SetVisibility(true);
+				Mesh->SetCollisionResponseToAllChannels(ECR_Overlap);
+				PlayerCharacter->Tool->Trimmed(0, Components[i]);
+				break;
+			}
+		}
+		else {
+			UE_LOG(LogClass, Warning, TEXT("*** Possible missmatch of meshcount! Array of FBeardComparisonData from thread has not enough rows! ***"));
+		}
+	}
 }
 
 UDataTable* ATBSPlayerController::FindDataTableToName (FName BeardName) {

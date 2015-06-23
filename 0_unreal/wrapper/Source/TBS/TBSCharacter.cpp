@@ -4,6 +4,7 @@
 #include "TBSCharacter.h"
 #include "TBSPlayerController.h"
 #include "TBSGameState.h"
+#include "TBSDataLoadWorker.h"
 
 ATBSCharacter::ATBSCharacter (const FObjectInitializer& ObjectInitializer)
 	: Super (ObjectInitializer) {
@@ -26,17 +27,6 @@ ATBSCharacter::ATBSCharacter (const FObjectInitializer& ObjectInitializer)
 	ToolResetPosition->RelativeRotation = FRotator (-59.6, 156.8, -168.0);
 	ToolResetPosition->RelativeLocation = FVector (33.1f, 16.6f, 12.0f);
 	
-	/*
-	static ConstructorHelpers::FClassFinder<ATBSRazor> ToolBP (TEXT ("Blueprint'/Game/TheBarberShop/Assets/Tool_BP.Tool_BP'"));
-	if (ToolBP.Class != NULL) {
-		ToolClass = ToolBP.Class;
-	}
-
-	static ConstructorHelpers::FClassFinder<ATBSCustomer> CustomerBP (TEXT ("/Game/TheBarberShop/Assets/Customer_BP"));
-	if (CustomerBP.Class != NULL) {
-		CustomerClass = CustomerBP.Class;
-	}*/
-
 	CameraRotationLerpIntensity = 1.0f;
 	HorizontalCameraRotationBorder = 75;
 	VerticalUpperCameraRotationBorder = -35;
@@ -48,21 +38,71 @@ ATBSCharacter::ATBSCharacter (const FObjectInitializer& ObjectInitializer)
 	CurrentCash = 0;
 
 	TimeLimit = 99999.f;		// Hack until final Bonustimerdecision is made ~ 27.7h per customer until the Clock in UI is broken :D
+
+	PrimaryActorTick.bCanEverTick = true;
 }
 
+void ATBSCharacter::Tick(float DeltaTime){
+	// Handel Loading of Comparision Data
+	if (CompLoadingStarted_MT && GetWorldTimerManager().TimerExists(CompLoadingTimeHandle_MT)) {
+		if (FTBSDataLoadWorker::IsThreadFinished()) {
+			FTBSDataLoadWorker::Shutdown();
+			CompLoadingStarted_MT = false;
+			GetWorldTimerManager().ClearTimer(CompLoadingTimeHandle_MT);
+		}
+	}
+
+	// Handel Loading of BonusCash Data
+	if (BonusLoadingStarted_MT && GetWorldTimerManager().TimerExists(BonusLoadingTimeHandle_MT)) {
+		if (FTBSDataLoadWorker::IsThreadFinished()) {
+			FTBSDataLoadWorker::Shutdown();
+			BonusLoadingStarted_MT = false;
+			GetWorldTimerManager().ClearTimer(BonusLoadingTimeHandle_MT);
+		}
+	}
+
+	// Handel Loading of Equipment Data
+	if (EquipmentLodingStarted_MT && GetWorldTimerManager().TimerExists(EquipmentLoadingTimeHandle_MT)) {
+		if (FTBSDataLoadWorker::IsThreadFinished()) {
+			FTBSDataLoadWorker::Shutdown();
+			CompLoadingStarted_MT = false;
+			GetWorldTimerManager().ClearTimer(EquipmentLoadingTimeHandle_MT);
+		}
+	}
+
+	// Handel Loading of Level Data
+	if (LevelLodingStarted_MT && GetWorldTimerManager().TimerExists(LevelLoadingTimeHandle_MT)) {
+		if (FTBSDataLoadWorker::IsThreadFinished()) {
+			FTBSDataLoadWorker::Shutdown();
+			LevelLodingStarted_MT = false;
+			GetWorldTimerManager().ClearTimer(LevelLoadingTimeHandle_MT);
+		}
+	}
+}
 
 void ATBSCharacter::BeginPlay () {
 	Super::BeginPlay ();
 	UWorld *World = GetWorld ();
-	if (World && CurrentCustomer == NULL) {
+	if (World && FirstCustomer == NULL) {
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Instigator = Instigator;
 		SpawnParams.Owner = this;
-		CurrentCustomer = World->SpawnActor<ATBSCustomer> (CustomerClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
-		if (CurrentCustomer) {
-			CurrentCustomer->CreateNewCustomer(CurrentLevel);
-		}
+		FirstCustomer = World->SpawnActor<ATBSCustomer>(CustomerClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
 	}
+	if (World && SecondCustomer == NULL) {
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Instigator = Instigator;
+		SpawnParams.Owner = this;
+		SecondCustomer = World->SpawnActor<ATBSCustomer>(CustomerClass, FVector(0, -810, 0), FRotator::ZeroRotator, SpawnParams);
+	}
+	if (FirstCustomer) {
+		CurrentCustomer = FirstCustomer;
+		CurrentCustomer->CreateNewCustomer(CurrentLevel);
+	}
+	if (SecondCustomer){
+		NextCustomer = SecondCustomer;
+	}
+
 
 	// Spawn Tool
 	if (World) {
@@ -88,6 +128,36 @@ void ATBSCharacter::BeginPlay () {
 	}
 	GetWorldTimerManager().ClearTimer(TimerHandle);
 	GetWorldTimerManager().SetTimer(TimerHandle, TimeLimit, false, -1.f);
+
+	// Load Data with another thread
+	if (CurrentCustomer) {
+		FName DesiredCustomerBeard = CurrentCustomer->DesiredBeard;
+		UDataTable* BeardDataTable = ((ATBSPlayerController*)GetController())->FindDataTableToName(DesiredCustomerBeard);	
+		if (BeardDataTable) {
+			FTBSDataLoadWorker::JoyInitBeardComp(BeardData_MT, BeardDataTable);
+			GetWorldTimerManager().SetTimer(CompLoadingTimeHandle_MT, 0.1f, true, -1.f);
+			CompLoadingStarted_MT = true;
+		}
+	}
+
+	if (EquipmentData) {
+		FTBSDataLoadWorker::JoyInitEquipment(EquipmentData_MT, EquipmentData);
+		GetWorldTimerManager().SetTimer(EquipmentLoadingTimeHandle_MT, 0.1f, true, -1.f);
+		EquipmentLodingStarted_MT = true;
+	}
+
+	if (LevelData) {
+		FTBSDataLoadWorker::JoyInitLevel(LevelData_MT, LevelData);
+		GetWorldTimerManager().SetTimer(LevelLoadingTimeHandle_MT, 0.1f, true, -1.f);
+		LevelLodingStarted_MT = true;
+	}
+
+	if (BonusCashData) {
+		FTBSDataLoadWorker::JoyInitBonus(TimeBonusData_MT, BonusCashData);
+		GetWorldTimerManager().SetTimer(BonusLoadingTimeHandle_MT, 0.1f, true, -1.f);
+		LevelLodingStarted_MT = true;
+	}
+
 }
 
 void ATBSCharacter::FinishCurrentCustomer () {
@@ -100,16 +170,49 @@ void ATBSCharacter::FinishCurrentCustomer () {
 	SaveSessionData();
 
 	GetWorldTimerManager().PauseTimer(TimerHandle);
+
+	CurrentCustomer->HairsCutted = Tool->CuttedHairs;
+	Tool->CuttedHairs.Empty();
+
+	// Background Load New Customer
+	LoadNewCustomer();
 }
+
+void ATBSCharacter::TransitionToNewCustomer() {
+	// Set Timer
+	if (GetWorldTimerManager().TimerExists(TimerHandle)){
+		GetWorldTimerManager().ClearTimer(TimerHandle);
+	}
+	GetWorldTimerManager().SetTimer(TimerHandle, TimeLimit, false, -1.f);
+
+	if (FirstCustomerActive && SecondCustomer) {
+		SetActorLocation(FVector(0, -810, 340));
+		CurrentCustomer = SecondCustomer;
+		NextCustomer = FirstCustomer;
+	}
+	else if (!FirstCustomerActive && FirstCustomer) {
+		SetActorLocation(FVector(0, 0, 340));
+		CurrentCustomer = FirstCustomer;
+		NextCustomer = SecondCustomer;
+	}
+	FirstCustomerActive = !FirstCustomerActive;
+}
+
 
 void ATBSCharacter::LoadNewCustomer () {
 	// Create New Customer
-	if (CurrentCustomer) {
-		// Set Timer
-		GetWorldTimerManager().ClearTimer(TimerHandle);
-		GetWorldTimerManager().SetTimer(TimerHandle, TimeLimit, false, -1.f);
-
-		((ATBSCustomer*) CurrentCustomer)->CreateNewCustomer(CurrentLevel);
+	if (NextCustomer) {
+		NextCustomer->CreateNewCustomer(CurrentLevel);
+		// Load Data with another thread
+		if (NextCustomer) {
+			FName DesiredCustomerBeard = CurrentCustomer->DesiredBeard;
+			UDataTable* BeardDataTable = ((ATBSPlayerController*)GetController())->FindDataTableToName(DesiredCustomerBeard);
+			if (BeardDataTable) {
+				FTBSDataLoadWorker::JoyInitBeardComp(BeardData_MT, BeardDataTable);
+				GetWorldTimerManager().SetTimer(CompLoadingTimeHandle_MT, 0.1f, true, -1.f);
+				CompLoadingStarted_MT = true;
+			}
+		}
 
 		// Setup for next Customer
 		SessionID++;
@@ -217,62 +320,46 @@ void ATBSCharacter::SwitchTool (bool IsNextTool) {
 }
 
 void ATBSCharacter::CalculateBonusCash(){
-	if (BonusCashData) {
-		FTimeBonusData* CurrentData;
-		const FString Context;
-		for (int32 i = 0; i < BonusCashData->GetRowNames().Num(); i++) {
-			FName Row = BonusCashData->GetRowNames()[i];
-			CurrentData = BonusCashData->FindRow<FTimeBonusData>(Row, Context, false);
-			if (CurrentData && IsInTimeRange(GetTimeElapsed(),CurrentData->TimeMin, CurrentData->TimeMax)) {
-				CurrentCash += CurrentData->BonusCash;
-				UE_LOG(LogClass, Log, TEXT("*** Player earned %d $ as a bonus! ***"), CurrentData->BonusCash);
-				return;
-			}
+	for (int32 i = 0; i < TimeBonusData_MT.Num(); i++) {
+		if (TimeBonusData_MT[i] && IsInTimeRange(GetTimeElapsed(), TimeBonusData_MT[i]->TimeMin, TimeBonusData_MT[i]->TimeMax)) {
+			CurrentCash += TimeBonusData_MT[i]->BonusCash;
+			UE_LOG(LogClass, Log, TEXT("*** Player earned %d $ as a bonus! ***"), TimeBonusData_MT[i]->BonusCash);
+			return;
 		}
-	}
-	else {
-		UE_LOG(LogClass, Warning, TEXT("*** Could not load BonusCashData! ***"));
 	}
 }
 
 // Returns the comparison Result from the shaved beard of the customer and the CSV data
-// Returns -99 as a errorcode in case of file loading issues
 float ATBSCharacter::CalculateResult () {
-	FBeardComparisonData* CurrentData;
-	FName DesiredCustomerBeard = CurrentCustomer->DesiredBeard;
-	UDataTable* BeardDataTable = ((ATBSPlayerController*)GetController())->FindDataTableToName(DesiredCustomerBeard);
 	const FString Context;
-	if (BeardDataTable) {
-		if (CurrentCustomer && CurrentCustomer->Beard) {
-			TArray<UActorComponent*> Components;
-			int32 Total = 0;
-			int32 Correct = 0;
-			Components = CurrentCustomer->Beard->GetComponentsByClass (UStaticMeshComponent::StaticClass ());
-			for (int32 i = 0; i < Components.Num (); i++) {
-				int32 ComponentStatus;
-				UStaticMeshComponent* Mesh = (UStaticMeshComponent*) Components[i];
-				if (!Mesh->IsVisible ()) {
-					ComponentStatus = 0;
-				}
-				else if (Mesh->GetCollisionResponseToChannel (ECC_Vehicle) == ECR_Ignore) {
-					ComponentStatus = 1;
-				}
-				else {
-					ComponentStatus = 2;
-				}
-				FString String = FString::FromInt (i);
-				FName Row = FName (*String);
-				CurrentData = BeardDataTable->FindRow<FBeardComparisonData>(Row, Context, false);
-
-				if (CurrentData && CurrentData->HairState == ComponentStatus) Correct++;
-				Total++;
+	if (CurrentCustomer && CurrentCustomer->Beard) {
+		TArray<UActorComponent*> Components;
+		int32 Total = 0;
+		int32 Correct = 0;
+		Components = CurrentCustomer->Beard->GetComponentsByClass (UStaticMeshComponent::StaticClass ());
+		for (int32 i = 0; i < Components.Num (); i++) {
+			int32 ComponentStatus;
+			UStaticMeshComponent* Mesh = (UStaticMeshComponent*) Components[i];
+			if (!Mesh->IsVisible ()) {
+				ComponentStatus = 0;
+			}
+			else if (Mesh->GetCollisionResponseToChannel (ECC_Vehicle) == ECR_Ignore) {
+				ComponentStatus = 1;
+			}
+			else {
+				ComponentStatus = 2;
 			}
 
-			float Result = ((float) Correct / (float) Total) * 100;
-			UE_LOG (LogClass, Log, TEXT ("*** Customer Finished with %.1f %% accuracy ***"), Result);
-			return Result;
+			if (BeardData_MT[i] && BeardData_MT[i]->HairState == ComponentStatus) Correct++;
+			Total++;
 		}
-		else UE_LOG (LogClass, Warning, TEXT ("*** Could not load Beard Comparison Data! ***"));
+
+		float Result = ((float) Correct / (float) Total) * 100;
+		UE_LOG (LogClass, Log, TEXT ("*** Customer Finished with %.1f %% accuracy ***"), Result);
+		return Result;
+	}
+	else {
+		UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard Comparison Data! ***"));
 	}
 	return -99;
 }
@@ -332,20 +419,13 @@ FTBSEquipmentData ATBSCharacter::GetEquipmentByID(int32 ID) {
 
 TMap<int32, FTBSEquipmentData> ATBSCharacter::GetEquipmentList() {
 	TMap<int32, FTBSEquipmentData> EquipmentList;
-	if (EquipmentData) {
-		FTBSEquipmentData* CurrentData;
-		const FString Context;
-		for (int32 i = 0; i < EquipmentData->GetRowNames().Num(); i++) {
-			FName Row = EquipmentData->GetRowNames()[i];
-			CurrentData = EquipmentData->FindRow<FTBSEquipmentData>(Row, Context, false);
-
-			if (CurrentData) {
-				FTBSEquipmentData Data;
-				Data.Cost = CurrentData->Cost;
-				Data.Name = CurrentData->Name;
-				Data.EquipmentID = CurrentData->EquipmentID;
-				EquipmentList.Add(Data.EquipmentID, Data);
-			}
+	if (EquipmentData_MT.Num() > 0) {
+		for (int32 i = 0; i < EquipmentData_MT.Num(); i++) {
+			FTBSEquipmentData Data;
+			Data.Cost = EquipmentData_MT[i]->Cost;
+			Data.Name = EquipmentData_MT[i]->Name;
+			Data.EquipmentID = EquipmentData_MT[i]->EquipmentID;
+			EquipmentList.Add(Data.EquipmentID, Data);
 		}
 	}
 	return EquipmentList;

@@ -14,13 +14,6 @@ ATBSCustomer::ATBSCustomer (const FObjectInitializer& ObjectInitializer)
 
 	DesiredBeard = "DEFAULT";
 
-	//FClassfinder does not find the Blueprint for some reason. So it resets for some reason the Bearclass with Null.
-	//   This is a short fix, so the autobuilt will work properly.
-	/*static ConstructorHelpers::FClassFinder<AActor> BeardBP(TEXT("/Game/TheBarberShop/Assets/Characters/BeardStyles/BeardStyle_00_BP"));
-	if (BeardBP.Class != NULL){
-		BeardClass = BeardBP.Class;
-	}*/
-
 	// Lifting of seat
 #pragma region Lift
 	LiftPositionTarget = 0.0f;
@@ -41,7 +34,7 @@ void ATBSCustomer::BeginPlay () {
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Instigator = Instigator;
 		SpawnParams.Owner = this;
-		Beard = GetWorld()->SpawnActor<AActor>(BeardClass, FVector(0, 0, 340), FRotator::ZeroRotator, SpawnParams);
+		Beard = GetWorld()->SpawnActor<AActor>(BeardClass, GetActorLocation()+FVector(0,0,340), FRotator::ZeroRotator, SpawnParams);
 		BeardStartPosition = Beard->GetActorLocation();
 	}
 
@@ -58,14 +51,13 @@ void ATBSCustomer::Tick(float DeltaTime) {
 void ATBSCustomer::CreateNewCustomer (int32 CharacterLevel) {
 	// Reset the beard to Trimmed 0 and visibile.
 	if (Beard != NULL) {
-		TArray<UActorComponent*> Components;
-		Components = Beard->GetComponentsByClass(UStaticMeshComponent::StaticClass());
-		for (int32 i = 0; i < Components.Num(); i++) {
-			UStaticMeshComponent* Mesh = (UStaticMeshComponent*)Components[i];
+		for (int32 i = 0; i < HairsCutted.Num(); i++) {
+			UStaticMeshComponent* Mesh = (UStaticMeshComponent*)HairsCutted[i];
 			Mesh->SetVisibility(true);
 			Mesh->SetCollisionResponseToAllChannels(ECR_Overlap);
-			((ATBSCharacter*)GetOwner())->Tool->Trimmed(0, Components[i]);
+			((ATBSCharacter*)GetOwner())->Tool->Trimmed(0, HairsCutted[i]);
 		}
+		HairsCutted.Empty();
 	}
 	// Deprecated!
 	// CreateRandomDesiredBeard(CharacterLevel);
