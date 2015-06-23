@@ -146,13 +146,26 @@ void ATBSPlayerController::SwitchToNextTool () {
 		return;
 	}
 
-	PlayerCharacter->SwitchTool (true);
+	// Save the fact, that the user "discovered" the other tools
+	ATBSGameState* GameState = GetWorld()->GetGameState<ATBSGameState>();
+
+	if ( !(GameState->CurrentSaveGame->UsedOtherTools) )
+		GameState->CurrentSaveGame->UsedOtherTools = true;
+
+	// Actually switch tools
+	PlayerCharacter->SwitchTool(true);
 }
 
 void ATBSPlayerController::SwitchToPrevTool () {
 	if (!GetWorld()->GetGameState<ATBSGameState>() || !GetWorld()->GetGameState<ATBSGameState>()->GetIsIngame()) {
 		return;
 	}
+
+	// Save the fact, that the user "discovered" the other tools
+	ATBSGameState* GameState = GetWorld()->GetGameState<ATBSGameState>();
+
+	if ( !(GameState->CurrentSaveGame->UsedOtherTools) )
+		GameState->CurrentSaveGame->UsedOtherTools = true;
 
 	PlayerCharacter->SwitchTool (false);
 }

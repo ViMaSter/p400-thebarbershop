@@ -18,12 +18,11 @@ int32 UTBSSaveGame::RemoveSessionState(FTBSSessionState SessionState) {
 	return SessionList.Remove(SessionState);
 }
 
-TArray<FTBSSessionState> UTBSSaveGame::GetSessionState(FTBSSessionState SessionState) {
-	return TArray<FTBSSessionState>();
-}
-
 bool UTBSSaveGame::ClearSessionStates() {
 	SessionList.Empty();
 	return SessionList.Num() == 0;
+}
+bool UTBSSaveGame::ShouldTutorialTextBeShown() {
+	return (!SessionList.Num() == 0) && !UsedOtherTools;
 }
 #pragma endregion

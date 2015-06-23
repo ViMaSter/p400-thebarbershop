@@ -15,7 +15,10 @@ class TBS_API UTBSSaveGame : public USaveGame
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Core") FString SaveSlotName;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Core") int32 UserIndex;
-									
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "TBS") bool UsedOtherTools;
+	UFUNCTION(BlueprintCallable, Category = "TBS") bool ShouldTutorialTextBeShown();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "TBS") float MoneyAvailable;
 	
 	// We only store the absolute experience points - we can calculate the resulting level from that
@@ -31,7 +34,6 @@ public:
 
 	int32 AddSessionState(FTBSSessionState SessionState);
 	int32 RemoveSessionState(FTBSSessionState SessionState);
-	TArray<FTBSSessionState> GetSessionState(FTBSSessionState SessionState);
 	bool ClearSessionStates();
 #pragma endregion
 	
