@@ -3,6 +3,7 @@
 #include "TBS.h"
 #include "TBSCustomer.h"
 #include "TBSCharacter.h"
+#include "TBSGameState.h"
 #include "TBSPlayerController.h"
 
 
@@ -130,37 +131,56 @@ void ATBSCustomer::FindDesiredBeardFromPool(int32 Playerlevel){
 	if (Character && Character->BeardPoolData) {
 		PlayerController = (ATBSPlayerController*)Character->GetController();
 		if (PlayerController) {
+
+			// Catch beard data
 			TArray<FBeardNameLevelData> Data = PlayerController->GetBeardNameLevelData();
 
-			const FString Context;
-			FBeardPoolData* CurrentData;
+			// Check which playthrough this is
+			int32 NumberOfPlaythrough = GetWorld()->GetGameState<ATBSGameState>()->CurrentSaveGame->SessionList.Num();
 
-			int32 MinBeardID = -99;
-			int32 MaxBeardID = -99;
-			for (int32 i = 0; i < Character->BeardCollection->GetRowNames().Num(); i++) {
-				FName Row = Character->BeardCollection->GetRowNames()[i];
-				CurrentData = Character->BeardPoolData->FindRow<FBeardPoolData>(Row, Context, false);
-				if (CurrentData) {
-					if (CurrentData->PlayerLevel == Playerlevel) {
-						MinBeardID = CurrentData->BeardMinNumber;
-						MaxBeardID = CurrentData->BeardMaxNumber;
+			// Force a certain beard if we're still in the "tutorial phase"
+			if (!GetWorld()->GetGameState<ATBSGameState>()->CurrentSaveGame->UsedOtherTools && (ForcedSessionBeards.Num() > 1)) {
+				for (int32 i = 0; i < Data.Num(); i++) {
+					if (Data[i].UniqueID == ForcedSessionBeards[FMath::Min(NumberOfPlaythrough, ForcedSessionBeards.Num()-1)]) {
+						DesiredBeard = Data[i].BeardName;
 						break;
 					}
 				}
-				else {
-					UE_LOG(LogClass, Warning, TEXT("*** Could not find Playerlevel in BeardPoolData! ***"));
-					DesiredBeard = "DEFAULT";
-					return;
-				}
+				// Fallback, if no valid ID was set in ForcedSessionBeards 
+				DesiredBeard = Data[0].BeardName;
+				UE_LOG(LogClass, Warning, TEXT("*** No beard in BeardPoolData using UniqueIdentifier %d! Falling back to the first one available! ***"), ForcedSessionBeards[FMath::Min(NumberOfPlaythrough, ForcedSessionBeards.Num() - 1)]);
 			}
+			// Or randomly choose from our pool
+			else {
+				const FString Context;
+				FBeardPoolData* CurrentData;
 
+				int32 MinBeardID = -99;
+				int32 MaxBeardID = -99;
+				for (int32 i = 0; i < Character->BeardCollection->GetRowNames().Num(); i++) {
+					FName Row = Character->BeardCollection->GetRowNames()[i];
+					CurrentData = Character->BeardPoolData->FindRow<FBeardPoolData>(Row, Context, false);
+					if (CurrentData) {
+						if (CurrentData->PlayerLevel == Playerlevel) {
+							MinBeardID = CurrentData->BeardMinNumber;
+							MaxBeardID = CurrentData->BeardMaxNumber;
+							break;
+						}
+					}
+					else {
+						UE_LOG(LogClass, Warning, TEXT("*** Could not find Playerlevel in BeardPoolData! ***"));
+						DesiredBeard = "DEFAULT";
+						return;
+					}
+				}
 
-			int32 randID = FMath::RandRange(MinBeardID, MaxBeardID);
+				int32 randID = FMath::RandRange(MinBeardID, MaxBeardID);
 
-			// Random stuff
-			for (int32 i = 0; i < Data.Num(); i++) {
-				if (Data[i].UniqueID == randID) {
-					DesiredBeard = Data[i].BeardName;
+				// Random stuff
+				for (int32 i = 0; i < Data.Num(); i++) {
+					if (Data[i].UniqueID == randID) {
+						DesiredBeard = Data[i].BeardName;
+					}
 				}
 			}
 		}

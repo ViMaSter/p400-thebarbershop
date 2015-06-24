@@ -68,6 +68,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cutted Hairs")
 	TArray<UActorComponent*> HairsCutted;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tutorial helper")
+	TArray<int32> ForcedSessionBeards;
+
 	UFUNCTION (BlueprintImplementableEvent, Category = "Beard")
 	void CreatedCustomer ();
 	void CreateNewCustomer(int32 CharacterLevel = 1);
