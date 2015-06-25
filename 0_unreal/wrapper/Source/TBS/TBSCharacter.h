@@ -254,7 +254,7 @@ public:
 	FTimerHandle LevelLoadingTimeHandle_MT;
 #pragma endregion Multi-Threading
 
-	bool FirstCustomerActive = true;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer management") bool FirstCustomerActive = true;
 };
 
 
