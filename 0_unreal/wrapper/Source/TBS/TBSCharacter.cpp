@@ -97,7 +97,6 @@ void ATBSCharacter::BeginPlay () {
 	}
 	if (FirstCustomer) {
 		CurrentCustomer = FirstCustomer;
-		CurrentCustomer->CreateNewCustomer(CurrentLevel);
 	}
 	if (SecondCustomer){
 		NextCustomer = SecondCustomer;
@@ -115,24 +114,29 @@ void ATBSCharacter::BeginPlay () {
 		FRotator SpawnRotation = {180, 0, 0};
 		Tool = World->SpawnActor<ATBSRazor> (ToolClass, SpawnLocation, SpawnRotation, SpawnParams);
 	}
+}
+
+void ATBSCharacter::StartGame() {
+	CurrentCustomer->CreateNewCustomer(CurrentLevel);
 
 	// Load Level Up Data
 	const FLevelUpData *CurrentData;
 	const FString String;
 	if (LevelData) {
-		FName NameCurrentLevel = FName (*(FString::FromInt (CurrentLevel)));
-		CurrentData = LevelData->FindRow<FLevelUpData> (NameCurrentLevel, String);
+		FName NameCurrentLevel = FName(*(FString::FromInt(CurrentLevel)));
+		CurrentData = LevelData->FindRow<FLevelUpData>(NameCurrentLevel, String);
 		if (CurrentData) {
 			CurrentExperienceToLvl = CurrentData->XPtoLvl;
 		}
 	}
+
 	GetWorldTimerManager().ClearTimer(TimerHandle);
 	GetWorldTimerManager().SetTimer(TimerHandle, TimeLimit, false, -1.f);
 
 	// Load Data with another thread
 	if (CurrentCustomer) {
 		FName DesiredCustomerBeard = CurrentCustomer->DesiredBeard;
-		UDataTable* BeardDataTable = ((ATBSPlayerController*)GetController())->FindDataTableToName(DesiredCustomerBeard);	
+		UDataTable* BeardDataTable = ((ATBSPlayerController*)GetController())->FindDataTableToName(DesiredCustomerBeard);
 		if (BeardDataTable) {
 			FTBSDataLoadWorker::JoyInitBeardComp(BeardData_MT, BeardDataTable);
 			GetWorldTimerManager().SetTimer(CompLoadingTimeHandle_MT, 0.1f, true, -1.f);
@@ -158,9 +162,6 @@ void ATBSCharacter::BeginPlay () {
 		LevelLodingStarted_MT = true;
 	}
 
-}
-
-void ATBSCharacter::StartGame() {
 	CurrentCustomer->IsCurrentCustomer = true;
 	CurrentCustomer->SetActorHiddenInGame(false);
 	CurrentCustomer->Beard->SetActorHiddenInGame(false);

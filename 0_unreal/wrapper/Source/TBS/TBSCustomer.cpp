@@ -136,11 +136,14 @@ void ATBSCustomer::FindDesiredBeardFromPool(int32 Playerlevel){
 			// Catch beard data
 			TArray<FBeardNameLevelData> Data = PlayerController->GetBeardNameLevelData();
 
+			int32 NumberOfPlaythrough = 0;
 			// Check which playthrough this is
-			int32 NumberOfPlaythrough = GetWorld()->GetGameState<ATBSGameState>()->CurrentSaveGame->SessionList.Num();
+			if (GetWorld()->GetGameState<ATBSGameState>()->CurrentSaveGame)	{
+				NumberOfPlaythrough = GetWorld()->GetGameState<ATBSGameState>()->CurrentSaveGame->SessionList.Num();
+			}			
 
 			// Force a certain beard if we're still in the "tutorial phase"
-			if (!GetWorld()->GetGameState<ATBSGameState>()->CurrentSaveGame->UsedOtherTools && (ForcedSessionBeards.Num() > 1)) {
+			if (GetWorld()->GetGameState<ATBSGameState>()->CurrentSaveGame && !GetWorld()->GetGameState<ATBSGameState>()->CurrentSaveGame->UsedOtherTools && ForcedSessionBeards.Num() > 1) {
 				DesiredBeard = "DEFAULT";
 				for (int32 i = 0; i < Data.Num(); i++) {
 					if (Data[i].UniqueID == ForcedSessionBeards[FMath::Min(NumberOfPlaythrough, ForcedSessionBeards.Num()-1)]) {
