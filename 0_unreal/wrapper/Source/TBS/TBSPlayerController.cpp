@@ -230,7 +230,7 @@ void ATBSPlayerController::ApplyRazor (float DeltaTime) {
 
 	// Could handle special PointingAtCustomer-case here
 	PlayerCharacter->Tool->SetActorLocation(
-		FMath::Lerp(ToolLocationCurrent, ToolLocationTarget, (1.0f / DeltaTime / 60.0f) * RazorPositionLerpIntensity)
+		FMath::Lerp(ToolLocationCurrent, ToolLocationTarget, (1.0f / DeltaTime / 60.0f) * RazorPositionLerpIntensity), IsSweapMovement
 		);
 
 	PlayerCharacter->Tool->SetActorRotation(

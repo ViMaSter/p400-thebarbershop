@@ -112,7 +112,7 @@ public:
 	UPROPERTY (EditAnywhere, noclear, BlueprintReadWrite, Category = "Razor Class", meta = (DisplayName = "Tool Class"))
 	TSubclassOf<ATBSRazor> ToolClass;
 
-	UPROPERTY (EditAnywhere, noclear, BlueprintReadWrite, Category = "Razor Class", meta = (DisplayName = "Customer Class"))
+	UPROPERTY (EditAnywhere, noclear, BlueprintReadWrite, Category = "Customer Class", meta = (DisplayName = "Customer Class"))
 	TSubclassOf<ATBSCustomer> CustomerClass;
 
 	UPROPERTY (VisibleAnywhere, BlueprintReadOnly, Category = "Tool")
@@ -203,6 +203,7 @@ public:
 	UFUNCTION (BlueprintCallable, Category = "Customer") void LoadNewCustomer();
 	UFUNCTION (exec, BlueprintCallable, Category = "Customer") void TransitionToNewCustomer();
 	UFUNCTION (BlueprintCallable, Category = "Customer") void FinishCurrentCustomer();
+	UFUNCTION (BlueprintCallable, Category = "Customer") void StartGame();
 	
 	void SwitchTool (bool IsNextTool);
 	UFUNCTION(BlueprintCallable, Category = "EXP") float CalculateResult();

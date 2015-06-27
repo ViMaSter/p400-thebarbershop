@@ -160,6 +160,16 @@ void ATBSCharacter::BeginPlay () {
 
 }
 
+void ATBSCharacter::StartGame() {
+	CurrentCustomer->IsCurrentCustomer = true;
+	CurrentCustomer->SetActorHiddenInGame(false);
+	CurrentCustomer->Beard->SetActorHiddenInGame(false);
+
+	NextCustomer->IsCurrentCustomer = false;
+	NextCustomer->SetActorHiddenInGame(true);
+	NextCustomer->Beard->SetActorHiddenInGame(true);
+}
+
 void ATBSCharacter::FinishCurrentCustomer () {
 	BeardResult = CalculateResult();
 	int32 EXP = (int32)BeardResult;
@@ -195,6 +205,14 @@ void ATBSCharacter::TransitionToNewCustomer() {
 		CurrentCustomer = FirstCustomer;
 		NextCustomer = SecondCustomer;
 	}
+	CurrentCustomer->SetActorHiddenInGame(false);
+	CurrentCustomer->Beard->SetActorHiddenInGame(false);
+	CurrentCustomer->IsCurrentCustomer = true;
+
+	NextCustomer->SetActorHiddenInGame(true);
+	NextCustomer->Beard->SetActorHiddenInGame(true);
+	NextCustomer->IsCurrentCustomer = false;
+
 	FirstCustomerActive = !FirstCustomerActive;
 	GetWorldTimerManager().SetTimer(NextCustomer->SpawnTimerHandle, NextCustomer, &ATBSCustomer::SpawnBeardPart, 0.05f, true);
 	CurrentCustomer->FinisheBeardSpawning();

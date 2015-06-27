@@ -104,9 +104,15 @@ protected:
 
 	FVector ToolHeightOffsetCurrent;
 	FVector ToolHeightOffsetTarget;
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	bool IsSweapMovement = false;
+
 #pragma endregion
 
 #pragma region MouseInfo
+protected:
 	// Currently not used for anything but could provide usefull
 	FVector LastValidMouseCursorImpactNormal;
 	FVector LastValidMouseCursorImpactPoint;
