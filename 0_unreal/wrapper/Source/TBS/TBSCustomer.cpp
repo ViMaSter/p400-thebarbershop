@@ -37,6 +37,7 @@ void ATBSCustomer::BeginPlay () {
 		SpawnParams.Owner = this;
 		Beard = GetWorld()->SpawnActor<AActor>(BeardClass, GetActorLocation()+FVector(0,0,340), FRotator::ZeroRotator, SpawnParams);
 		BeardStartPosition = Beard->GetActorLocation();
+		Beard->SetActorHiddenInGame(true);
 	}
 
 	CustomerStartPosition = GetActorLocation();

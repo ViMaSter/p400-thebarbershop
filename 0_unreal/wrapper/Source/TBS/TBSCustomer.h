@@ -101,6 +101,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lift")
 	float LiftPositionLerpSpeed;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current Customer")
+	bool IsCurrentCustomer = false;
+
 	FVector BeardStartPosition;
 	FVector CustomerStartPosition;
 	float LiftLastPressed;
