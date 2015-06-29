@@ -130,7 +130,6 @@ void ATBSCharacter::StartGame() {
 		}
 	}
 
-	GetWorldTimerManager().ClearTimer(TimerHandle);
 	GetWorldTimerManager().SetTimer(TimerHandle, TimeLimit, false, -1.f);
 
 	// Load Data with another thread
