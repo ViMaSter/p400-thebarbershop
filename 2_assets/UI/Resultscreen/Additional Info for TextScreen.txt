@@ -1,0 +1,1 @@
+TextScreen.9.png is not related to anything else in it's file format, TextScreen01 is as scaled, as if there's the ResultBar on top of it
