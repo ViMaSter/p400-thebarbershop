@@ -117,6 +117,7 @@ void ATBSCharacter::BeginPlay () {
 }
 
 void ATBSCharacter::StartGame() {
+	GameIsRunning = true;
 	CurrentCustomer->CreateNewCustomer(CurrentLevel);
 
 	// Load Level Up Data
@@ -266,8 +267,9 @@ float ATBSCharacter::GetTimeElapsed() {
 }
 
 void ATBSCharacter::PauseGameTimer() {
-	if (!GetWorldTimerManager().IsTimerPaused(TimerHandle)) {
+	if (GetWorldTimerManager().TimerExists(TimerHandle) && !GetWorldTimerManager().IsTimerPaused(TimerHandle)) {
 		GetWorldTimerManager().PauseTimer(TimerHandle);
+		GameIsRunning = false;
 	}
 	else {
 		UE_LOG(LogClass, Warning, TEXT("*** No game timer active or already paused! ***"));
@@ -275,11 +277,12 @@ void ATBSCharacter::PauseGameTimer() {
 }
 
 void ATBSCharacter::UnpauseGameTimer() {
-	if (GetWorldTimerManager().IsTimerPaused(TimerHandle)) {
+	if (GetWorldTimerManager().TimerExists(TimerHandle) && GetWorldTimerManager().IsTimerPaused(TimerHandle)) {
 		GetWorldTimerManager().UnPauseTimer(TimerHandle);
+		GameIsRunning = true;
 	}
 	else {
-		UE_LOG(LogClass, Warning, TEXT("*** No game timer active or already not paused! ***"));
+		UE_LOG(LogClass, Warning, TEXT("*** No game timer active or not paused! ***"));
 	}
 }
 
@@ -332,9 +335,9 @@ void ATBSCharacter::IncreaseCash(float ComparisionResult) {
 
 void ATBSCharacter::SwitchTool (bool IsNextTool) {
 	if (Tool) {
-		uint8 CurrentTool = Tool->ToolType;
+		int32 CurrentTool = Tool->ToolType;
 		CurrentTool += IsNextTool ? 1 : -1;
-		CurrentTool = (4 + CurrentTool) % 4;
+		CurrentTool = (3 + CurrentTool) % 3;
 		Tool->SwitchRazorTypeTo ((ETBSRazor::Type)CurrentTool);
 	}
 }

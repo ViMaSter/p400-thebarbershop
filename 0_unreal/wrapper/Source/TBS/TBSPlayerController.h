@@ -174,4 +174,8 @@ protected:
 
 	void LoadBeardToCustomer(TArray<FBeardComparisonData*> Data);
 
+	void SwitchToShortRazor();
+	void SwitchToNormalRazor();
+	void SwitchToClipper();
+
 };

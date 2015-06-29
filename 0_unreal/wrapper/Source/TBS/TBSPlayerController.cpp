@@ -69,6 +69,10 @@ void ATBSPlayerController::SetupInputComponent () {
 
 	InputComponent->BindAction("SwitchToNextTool", IE_Pressed, this, &ATBSPlayerController::SwitchToNextTool);
 	InputComponent->BindAction("SwitchToPrevTool", IE_Pressed, this, &ATBSPlayerController::SwitchToPrevTool);
+	InputComponent->BindAction("SwitchToShortRazor", IE_Pressed, this, &ATBSPlayerController::SwitchToShortRazor);
+	InputComponent->BindAction("SwitchToNormalRazor", IE_Pressed, this, &ATBSPlayerController::SwitchToNormalRazor);
+	InputComponent->BindAction("SwitchToClipper", IE_Pressed, this, &ATBSPlayerController::SwitchToClipper);
+
 	InputComponent->BindAction("Shave", IE_Pressed, this, &ATBSPlayerController::OnSetShavedPressed);
 	InputComponent->BindAction("Shave", IE_Released, this, &ATBSPlayerController::OnSetShavedReleased);
 	InputComponent->BindAction("Rotate", IE_Pressed, this, &ATBSPlayerController::OnSetRotationPressed);
@@ -169,6 +173,25 @@ void ATBSPlayerController::SwitchToPrevTool () {
 
 	PlayerCharacter->SwitchTool (false);
 }
+
+void ATBSPlayerController::SwitchToShortRazor(){
+	if (PlayerCharacter && PlayerCharacter->Tool && PlayerCharacter->GameIsRunning) {
+		PlayerCharacter->Tool->SwitchRazorTypeTo(ETBSRazor::TBSRazorSmall);
+	}
+}
+
+void ATBSPlayerController::SwitchToNormalRazor(){
+	if (PlayerCharacter && PlayerCharacter->Tool && PlayerCharacter->GameIsRunning) {
+		PlayerCharacter->Tool->SwitchRazorTypeTo(ETBSRazor::TBSRazorBig);
+	}
+}
+
+void ATBSPlayerController::SwitchToClipper(){
+	if (PlayerCharacter && PlayerCharacter->Tool && PlayerCharacter->GameIsRunning) {
+		PlayerCharacter->Tool->SwitchRazorTypeTo(ETBSRazor::TBSClipper);
+	}
+}
+
 #pragma endregion
 
 #pragma region Tick

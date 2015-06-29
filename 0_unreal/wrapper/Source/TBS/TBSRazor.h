@@ -8,10 +8,9 @@
 UENUM (BlueprintType)
 namespace ETBSRazor {
 	enum Type {
-		TBSHand			= 0		UMETA (DisplayName = "Hand"),
-		TBSClipper		= 1 	UMETA (DisplayName = "Clipper"),
-		TBSRazorSmall	= 2		UMETA (DisplayName = "RazorSmall"),
-		TBSRazorBig		= 3		UMETA (DisplayName = "RazorBig"),
+		TBSClipper		= 0 	UMETA (DisplayName = "Clipper"),
+		TBSRazorSmall	= 1		UMETA (DisplayName = "RazorSmall"),
+		TBSRazorBig		= 2		UMETA (DisplayName = "RazorBig"),
 	};
 }
 
