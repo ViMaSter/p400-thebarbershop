@@ -156,6 +156,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CSV Data")
 	UDataTable* BonusCashData;
 
+	// Game Status
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Status")
+	bool GameIsRunning = false;
+
 	// Timer
 	FTimerHandle TimerHandle;
 	float TimeLimit;
