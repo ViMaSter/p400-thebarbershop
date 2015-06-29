@@ -102,7 +102,6 @@ void ATBSCharacter::BeginPlay () {
 		NextCustomer = SecondCustomer;
 	}
 
-
 	// Spawn Tool
 	if (World) {
 		FActorSpawnParameters SpawnParams;
@@ -114,6 +113,10 @@ void ATBSCharacter::BeginPlay () {
 		FRotator SpawnRotation = {180, 0, 0};
 		Tool = World->SpawnActor<ATBSRazor> (ToolClass, SpawnLocation, SpawnRotation, SpawnParams);
 	}
+	if (Controller) {
+		((ATBSPlayerController*)Controller)->PlayerCharacter = this;
+	}
+
 }
 
 void ATBSCharacter::StartGame() {

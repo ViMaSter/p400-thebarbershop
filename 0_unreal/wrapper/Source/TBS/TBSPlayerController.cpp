@@ -29,7 +29,7 @@ ATBSPlayerController::ATBSPlayerController (const FObjectInitializer& ObjectInit
 
 void ATBSPlayerController::BeginPlay () {
 	Super::BeginPlay ();
-	PlayerCharacter = (ATBSCharacter*) GetPawn ();
+	//PlayerCharacter = (ATBSCharacter*) GetPawn ();
 }
 
 void ATBSPlayerController::PlayerTick (float DeltaTime) {
