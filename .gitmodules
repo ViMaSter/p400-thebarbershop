@@ -1,6 +1,9 @@
 [submodule "3_githooks/automated-build-uploader"]
 	path = 3_githooks/automated-build-uploader
 	url = https://github.com/ViMaSter/automated-build-uploader.git
-[submodule "5_tools/9patch_trimmer"]
-	path = 5_tools/9patch_trimmer
-	url = https://github.com/ViMaSter/9patch_trimmer.git
+[submodule "5_tools/ninepatch_trimmer"]
+	path = 5_tools/ninepatch_trimmer
+	url = https://github.com/ViMaSter/ninepatch_trimmer.git
+[submodule "5_tools/ninepatch_generator"]
+	path = 5_tools/ninepatch_generator
+	url = https://github.com/ViMaSter/ninepatch_generator.git
