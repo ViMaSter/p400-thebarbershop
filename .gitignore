@@ -267,6 +267,12 @@ FakesAssemblies/
 # Visual Studio 6 workspace options file
 *.opt
 
+##################
+### SUBMODULES ###
+##################
+/5_tools/ninepatch_generator
+/5_tools/ninepatch_trimmer
+
 ###############
 ### GENERAL ###
 ###############
