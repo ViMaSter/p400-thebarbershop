@@ -9,7 +9,11 @@
 
 // Sets default values
 ATBSCustomer::ATBSCustomer (const FObjectInitializer& ObjectInitializer)
-	: Super (ObjectInitializer) {
+	: Super(ObjectInitializer) {
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	SceneCapture = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("Screenshot Helper"));
+	SceneCapture->AttachTo(RootComponent);
+
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 

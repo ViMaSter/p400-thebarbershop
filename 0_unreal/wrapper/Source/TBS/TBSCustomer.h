@@ -4,6 +4,7 @@
 
 #include "GameFramework/Actor.h"
 #include "Engine/DataTable.h"
+#include "Components/SceneCaptureComponent2D.h"
 
 #include "TBSCustomer.generated.h"
 
@@ -54,10 +55,13 @@ class TBS_API ATBSCustomer : public AActor {
 
 public:
 	// Sets default values for this actor's properties
-	ATBSCustomer (const FObjectInitializer& ObjectInitializer);
+	ATBSCustomer(const FObjectInitializer& ObjectInitializer);
 
-	UPROPERTY (EditAnywhere, noclear, BlueprintReadWrite, Category = "Beard", meta = (DisplayName = "Beard Class"))
+	UPROPERTY(EditAnywhere, noclear, BlueprintReadWrite, Category = "Beard", meta = (DisplayName = "Beard Class"))
 	TSubclassOf<class AActor> BeardClass;
+
+	UPROPERTY(EditAnywhere, noclear, BlueprintReadWrite, Category = "Screenshot Helper")
+	USceneCaptureComponent2D* SceneCapture;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Beard")
 	FName DesiredBeard;
