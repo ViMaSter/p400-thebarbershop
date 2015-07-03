@@ -182,6 +182,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CSV Data")
 	TArray<UDataTable*> RedoUndoData;
 
+	// Current beard rows
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CSV Data")
+	FBeardCollectionData CurrentBeardRow;
+
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus")
 	ATBSCustomer* CurrentCustomer;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus")

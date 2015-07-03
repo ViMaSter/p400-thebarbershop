@@ -122,6 +122,7 @@ void ATBSCharacter::BeginPlay () {
 void ATBSCharacter::StartGame() {
 	GameIsRunning = true;
 	CurrentCustomer->CreateNewCustomer(CurrentLevel);
+	CurrentBeardRow = ((ATBSPlayerController*)GetController())->FindDataRowToName(CurrentCustomer->DesiredBeard);
 
 	// Load Level Up Data
 	const FLevelUpData *CurrentData;
@@ -227,6 +228,7 @@ void ATBSCharacter::LoadNewCustomer () {
 	// Create New Customer
 	if (NextCustomer) {
 		NextCustomer->CreateNewCustomer(CurrentLevel);
+		CurrentBeardRow = ((ATBSPlayerController*)GetController())->FindDataRowToName(CurrentCustomer->DesiredBeard);
 		// Load Data with another thread
 		if (NextCustomer) {
 			FName DesiredCustomerBeard = CurrentCustomer->DesiredBeard;
