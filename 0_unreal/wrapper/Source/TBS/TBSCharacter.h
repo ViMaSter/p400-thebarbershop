@@ -3,6 +3,7 @@
 
 #include "GameFramework/Pawn.h"
 #include "Engine/DataTable.h"
+#include "Engine/TextureRenderTarget.h"
 
 #include "TBSEquipment.h"
 #include "TBSRazor.h"
@@ -84,6 +85,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeardCollection")
 	int32 UniqueIdentifier;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeardCollection")
+	UTextureRenderTarget* ComparisionScreenshot;
 };
 
 UCLASS(Blueprintable)
@@ -166,8 +170,11 @@ public:
 
 
 	// Customer
-	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "CSV Data")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CSV Data")
 	TArray<UDataTable*> BeardData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CSV Data")
+	TArray<UTextureRenderTarget*> BeardIcons;
 
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "CSV Data")
 	UDataTable* BeardCollection;
