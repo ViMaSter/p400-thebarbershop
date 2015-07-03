@@ -43,7 +43,8 @@ public:
 
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") void SpawnNextCustomer();
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") void FinishCurrentCustomer();
-	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") UDataTable* FindDataTableToName(FName BeardName);
+	UFUNCTION(BlueprintCallable, exec, Category = "Beard Control") FBeardCollectionData FindDataRowToName(FName BeardName);
+	UFUNCTION(BlueprintCallable, exec, Category = "Beard Control") UDataTable* FindDataTableToName(FName BeardName);
 	UFUNCTION(BlueprintCallable, exec, Category = "Beard Control") TArray<FBeardNameLevelData> GetBeardNameLevelData();
 	UFUNCTION(BlueprintCallable, exec, Category = "Beard Control") bool RedoBeardChanges();
 	UFUNCTION(BlueprintCallable, exec, Category = "Beard Control") bool UndoBeardChanges();

@@ -602,7 +602,26 @@ void ATBSPlayerController::LoadBeardToCustomer(TArray<FBeardComparisonData*> Dat
 	}
 }
 
-UDataTable* ATBSPlayerController::FindDataTableToName (FName BeardName) {
+FBeardCollectionData ATBSPlayerController::FindDataRowToName(FName BeardName) {
+	if (PlayerCharacter) {
+		FBeardCollectionData CurrentData;
+		FName DataTableName;
+		if (PlayerCharacter->BeardCollection) {
+			const FString Context;
+			for (int32 i = 0; i < PlayerCharacter->BeardCollection->GetRowNames().Num(); i++) {
+				FName Row = PlayerCharacter->BeardCollection->GetRowNames()[i];
+				CurrentData = *(PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData>(Row, Context, false));
+				if (CurrentData.BeardName == BeardName) {
+					return CurrentData;
+				}
+			}
+			UE_LOG(LogClass, Warning, TEXT("*** Could not find Beard in CollectionData! ***"));
+		}
+	}
+	return FBeardCollectionData();
+}
+
+UDataTable* ATBSPlayerController::FindDataTableToName(FName BeardName) {
 	if (PlayerCharacter) {
 		FBeardCollectionData* CurrentData;
 		FName DataTableName;
@@ -610,11 +629,11 @@ UDataTable* ATBSPlayerController::FindDataTableToName (FName BeardName) {
 			const FString Context;
 			for (int32 i = 0; i < PlayerCharacter->BeardCollection->GetRowNames().Num(); i++) {
 				FName Row = PlayerCharacter->BeardCollection->GetRowNames()[i];
-				CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData> (Row, Context, false);
+				CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData>(Row, Context, false);
 				if (CurrentData) {
 					if (CurrentData->BeardName == BeardName) {
 						DataTableName = CurrentData->BeardSlotName;
-						for (int32 i = 0; i < PlayerCharacter->BeardData.Num (); i++) {
+						for (int32 i = 0; i < PlayerCharacter->BeardData.Num(); i++) {
 							if (PlayerCharacter->BeardData[i]->GetName() == DataTableName.ToString()) {
 								return PlayerCharacter->BeardData[i];
 								break;
@@ -624,7 +643,7 @@ UDataTable* ATBSPlayerController::FindDataTableToName (FName BeardName) {
 					}
 				}
 				else {
-					UE_LOG (LogClass, Warning, TEXT ("*** Could not find Beard in CollectionData! ***"));
+					UE_LOG(LogClass, Warning, TEXT("*** Could not find Beard in CollectionData! ***"));
 					break;
 				}
 			}
@@ -721,6 +740,7 @@ bool ATBSPlayerController::SetBeardToCollectionData(FName BeardName, int32 Beard
 				CurrentData->BeardSlotName = NewSlotName;
 				CurrentData->BeardLevel = BeardLevel;
 				CurrentData->UniqueIdentifier = UniqueId;
+				CurrentData->ComparisionScreenshot = PlayerCharacter->BeardIcons[RowID];
 				return true;
 			}
 		}
