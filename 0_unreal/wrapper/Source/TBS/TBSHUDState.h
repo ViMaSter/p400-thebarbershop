@@ -19,7 +19,9 @@ enum class ETBSHUDState : uint8 {
 	Radio				= 12	UMETA (DisplayName = "Radio"),
 	EditorDialogue		= 13	UMETA (DisplayName = "Editor Dialogue"),
 	MainMenuConfirm		= 14	UMETA (DisplayName = "Main Menu Confirm"),
-	PauseMenuConfirm	= 15	UMETA (DisplayName = "Pause Menu Confirm")
+	PauseMenuConfirm	= 15	UMETA (DisplayName = "Pause Menu Confirm"),
+	AudioConfirm		= 16	UMETA (DisplayName = "Audio Confirm"),
+	VideoConfirm		= 17	UMETA (DisplayName = "Video Confirm")
 };
 
 
