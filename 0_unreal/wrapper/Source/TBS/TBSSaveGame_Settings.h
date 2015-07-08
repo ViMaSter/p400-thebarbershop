@@ -19,6 +19,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TBS") int32 ResolutionX = 1280;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TBS") int32 ResolutionY = 720;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TBS") bool IsWindowed = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TBS") bool IsWindowed = true;
 	
 };
