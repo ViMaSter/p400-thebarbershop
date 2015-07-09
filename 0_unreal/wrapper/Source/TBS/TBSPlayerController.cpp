@@ -158,6 +158,10 @@ void ATBSPlayerController::SwitchToNextTool () {
 		return;
 	}
 
+	if (GetIsPaused()) {
+		return;
+	}
+
 	// Save the fact, that the user "discovered" the other tools
 	ATBSGameState* GameState = GetWorld()->GetGameState<ATBSGameState>();
 
@@ -170,6 +174,10 @@ void ATBSPlayerController::SwitchToNextTool () {
 
 void ATBSPlayerController::SwitchToPrevTool () {
 	if (!GetWorld()->GetGameState<ATBSGameState>() || !GetWorld()->GetGameState<ATBSGameState>()->GetIsIngame()) {
+		return;
+	}
+
+	if (GetIsPaused()) {
 		return;
 	}
 
@@ -284,6 +292,7 @@ void ATBSPlayerController::SpawnNextCustomer () {
 		GetWorld()->GetGameState<ATBSGameState>()->SetIsPaused(false);
 	}
 
+	SpawnedNextCustomer();
 	if (PlayerCharacter) {
 		PlayerCharacter->TransitionToNewCustomer();
 	}
@@ -305,7 +314,6 @@ void ATBSPlayerController::FinishCurrentCustomer() {
 
 	if (GetWorld()->GetGameState<ATBSGameState>()) {
 		GetWorld()->GetGameState<ATBSGameState>()->SetIsPaused(true);
-
 		UpdateCurrentSaveGame();
 	}
 }
@@ -805,11 +813,9 @@ void ATBSPlayerController::SetIsPaused(bool IsPaused) {
 			gameState->SetIsPaused(IsPaused);
 			if (PlayerCharacter) {
 				if (IsPaused) {
-					PlayerCharacter->Tool->SetActorHiddenInGame(true);
 					PlayerCharacter->PauseGameTimer();
 				}
 				else {
-					PlayerCharacter->Tool->SetActorHiddenInGame(false);
 					PlayerCharacter->UnpauseGameTimer();
 				}
 			}
