@@ -276,7 +276,6 @@ void ATBSPlayerController::SpawnNextCustomer () {
 		GetWorld()->GetGameState<ATBSGameState>()->SetIsPaused(false);
 	}
 
-	SpawnedNextCustomer();
 	if (PlayerCharacter) {
 		PlayerCharacter->TransitionToNewCustomer();
 	}
@@ -298,6 +297,7 @@ void ATBSPlayerController::FinishCurrentCustomer() {
 
 	if (GetWorld()->GetGameState<ATBSGameState>()) {
 		GetWorld()->GetGameState<ATBSGameState>()->SetIsPaused(true);
+
 		UpdateCurrentSaveGame();
 	}
 }
@@ -797,9 +797,11 @@ void ATBSPlayerController::SetIsPaused(bool IsPaused) {
 			gameState->SetIsPaused(IsPaused);
 			if (PlayerCharacter) {
 				if (IsPaused) {
+					PlayerCharacter->Tool->SetActorHiddenInGame(true);
 					PlayerCharacter->PauseGameTimer();
 				}
 				else {
+					PlayerCharacter->Tool->SetActorHiddenInGame(false);
 					PlayerCharacter->UnpauseGameTimer();
 				}
 			}

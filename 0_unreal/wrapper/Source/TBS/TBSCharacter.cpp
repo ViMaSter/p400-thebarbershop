@@ -165,14 +165,35 @@ void ATBSCharacter::StartGame() {
 		GetWorldTimerManager().SetTimer(BonusLoadingTimeHandle_MT, 0.1f, true, -1.f);
 		LevelLodingStarted_MT = true;
 	}
+	
+	if (GetController()) {
+		// @TODO Vincent Call Camera Reset in PC
+		if (!FirstCustomerActive) {
+			((ATBSPlayerController*)GetController())->SpawnedNextCustomer();
+		}
+	}
+
+	FirstCustomerActive = true;
+
+	CurrentCustomer = FirstCustomer;
+	CurrentCustomer->CreateNewCustomer(CurrentLevel);
+	CurrentCustomer->HairsCutted = Tool->CuttedHairs;
+	CurrentCustomer->SpawnBeardPart();
+	CurrentCustomer->FinisheBeardSpawning();
 
 	CurrentCustomer->IsCurrentCustomer = true;
 	CurrentCustomer->SetActorHiddenInGame(false);
 	CurrentCustomer->Beard->SetActorHiddenInGame(false);
-
+	
+	NextCustomer = SecondCustomer;
 	NextCustomer->IsCurrentCustomer = false;
 	NextCustomer->SetActorHiddenInGame(true);
 	NextCustomer->Beard->SetActorHiddenInGame(true);
+
+	Tool->SwitchRazorTypeTo(ETBSRazor::TBSRazorBig);
+	Tool->CuttedHairs.Empty();
+
+	SetActorLocation(FVector(0, 0, 340));
 }
 
 void ATBSCharacter::FinishCurrentCustomer () {
@@ -217,11 +238,14 @@ void ATBSCharacter::TransitionToNewCustomer() {
 	}
 
 	if (GetController()) {
+		// @TODO Vincent Call Camera Reset in PC remove below
 		float yaw = 180 - CameraBoom->RelativeRotation.Yaw;
 		float pitch = -CameraBoom->RelativeRotation.Pitch;
 		((ATBSPlayerController*)GetController())->RotateCamera(pitch, yaw);
-	}
+		// remove above
 
+		((ATBSPlayerController*)GetController())->SpawnedNextCustomer();
+	}
 	CurrentCustomer->SetActorHiddenInGame(false);
 	CurrentCustomer->Beard->SetActorHiddenInGame(false);
 	CurrentCustomer->IsCurrentCustomer = true;

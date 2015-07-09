@@ -42,8 +42,6 @@ public:
 
 	void SwitchRazorTypeTo (TEnumAsByte<ETBSRazor::Type> NewType);
 
-	virtual void Tick (float DeltaSeconds) override;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hairs Cut")
 	TArray<UActorComponent*> CuttedHairs;
 

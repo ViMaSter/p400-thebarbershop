@@ -5,15 +5,11 @@
 
 
 ATBSRazor::ATBSRazor () {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	ToolInactiveHight = 10;
 	IsActive = false;
 	ToolType = ETBSRazor::TBSRazorBig;
-}
-
-void ATBSRazor::Tick (float DeltaTime) {
-	Super::Tick (DeltaTime);
 }
 
 void ATBSRazor::SwitchRazorTypeTo (TEnumAsByte<ETBSRazor::Type> NewType) {
