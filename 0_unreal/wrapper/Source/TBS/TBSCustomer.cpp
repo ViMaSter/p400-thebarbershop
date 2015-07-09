@@ -67,6 +67,16 @@ void ATBSCustomer::CreateNewCustomer (int32 CharacterLevel) {
 }
 
 void ATBSCustomer::SpawnBeardPart(){
+	// @TODO: remove workaround
+	if (Beard != NULL){
+		if (GetOwner()){
+			((ATBSCharacter*)GetOwner())->Tool->ResetHairs();
+		}
+		if (GetWorldTimerManager().TimerExists(SpawnTimerHandle)) {
+			GetWorldTimerManager().ClearTimer(SpawnTimerHandle);
+		}
+	}
+	/*
 	if (Beard != NULL) {
 		if (HairIndex < HairsCutted.Num()-1 && HairsCutted[HairIndex]){
 			UStaticMeshComponent* Mesh = (UStaticMeshComponent*)HairsCutted[HairIndex];
@@ -82,10 +92,11 @@ void ATBSCustomer::SpawnBeardPart(){
 			HairsCutted.Empty();
 			HairIndex = 0;
 		}
-	}
+	}*/
 }
 
 void ATBSCustomer::FinisheBeardSpawning(){
+	/*
 	if (Beard != NULL) {
 		if (HairIndex <= HairsCutted.Num() - 1 && HairsCutted[HairIndex]) {
 			for (int i = HairIndex; i < HairsCutted.Num(); i++) {
@@ -95,9 +106,13 @@ void ATBSCustomer::FinisheBeardSpawning(){
 				((ATBSCharacter*)GetOwner())->Tool->Trimmed(0, HairsCutted[i]);
 			}
 		}
+		if (GetWorldTimerManager().TimerExists(SpawnTimerHandle)) {
+			GetWorldTimerManager().ClearTimer(SpawnTimerHandle);
+		}
+
 		HairsCutted.Empty();
 		HairIndex = 0;
-	}
+	}*/
 }
 
 // THIS IS DEPRECATED!

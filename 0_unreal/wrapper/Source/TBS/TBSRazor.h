@@ -41,6 +41,9 @@ public:
 	UFUNCTION (BlueprintImplementableEvent, Category = "Beard")
 	void Trimmed (float TrimmValue, UActorComponent* Mesh);
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Beard")
+	void ResetHairs();
+
 	void SwitchRazorTypeTo (TEnumAsByte<ETBSRazor::Type> NewType);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hairs Cut")
