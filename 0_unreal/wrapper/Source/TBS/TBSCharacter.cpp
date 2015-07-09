@@ -191,9 +191,10 @@ void ATBSCharacter::StartGame() {
 	NextCustomer->Beard->SetActorHiddenInGame(true);
 
 	Tool->SwitchRazorTypeTo(ETBSRazor::TBSRazorBig);
-	Tool->CuttedHairs.Empty();
+	//Tool->CuttedHairs.Empty();
 
 	SetActorLocation(FVector(0, 0, 340));
+	LastBeardResult = 0;
 }
 
 void ATBSCharacter::FinishCurrentCustomer () {
@@ -210,6 +211,8 @@ void ATBSCharacter::FinishCurrentCustomer () {
 
 	CurrentCustomer->HairsCutted = Tool->CuttedHairs;
 	Tool->CuttedHairs.Empty();
+	Tool->InstancedSMComponent->ClearInstances();
+	Tool->TrimmedBeardInstances->ClearInstances();
 
 	if (Controller){
 		((ATBSPlayerController*)Controller)->FinishedCurrentCustomer();
@@ -275,6 +278,7 @@ void ATBSCharacter::LoadNewCustomer () {
 		// Setup for next Customer
 		SessionID++;
 		BeardResult = 0;
+		LastBeardResult = 0;
 	}
 	else {
 		UE_LOG(LogClass, Warning, TEXT("*** No Customer Reference! ***"));
