@@ -195,8 +195,12 @@ void ATBSCharacter::FinishCurrentCustomer () {
 
 	CurrentCustomer->HairsCutted = Tool->CuttedHairs;
 	Tool->CuttedHairs.Empty();
-//	Tool->InstancedSMComponent->ClearInstances();
-//	Tool->TrimmedBeardInstances->ClearInstances();
+	if (Tool && Tool->InstancedSMComponent) {
+		Tool->InstancedSMComponent->ClearInstances();
+	}
+	if (Tool && Tool->TrimmedBeardInstances){
+		Tool->TrimmedBeardInstances->ClearInstances();
+	}
 
 	if (Controller){
 		((ATBSPlayerController*)Controller)->FinishedCurrentCustomer();
