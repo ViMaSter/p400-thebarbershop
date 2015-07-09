@@ -12,6 +12,10 @@ ATBSRazor::ATBSRazor () {
 	ToolType = ETBSRazor::TBSRazorBig;
 }
 
+void ATBSRazor::Tick (float DeltaTime) {
+	Super::Tick (DeltaTime);
+}
+
 void ATBSRazor::SwitchRazorTypeTo (TEnumAsByte<ETBSRazor::Type> NewType) {
 	if (NewType == ToolType) {
 		return;

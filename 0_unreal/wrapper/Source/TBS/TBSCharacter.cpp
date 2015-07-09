@@ -165,27 +165,11 @@ void ATBSCharacter::StartGame() {
 		GetWorldTimerManager().SetTimer(BonusLoadingTimeHandle_MT, 0.1f, true, -1.f);
 		LevelLodingStarted_MT = true;
 	}
-	
-	if (GetController()) {
-		if (!FirstCustomerActive) {
-			((ATBSPlayerController*)GetController())->SpawnedNextCustomer();
-		}
-		((ATBSPlayerController*)GetController())->ResetCamera();
-	}
-
-	FirstCustomerActive = true;
-
-	CurrentCustomer = FirstCustomer;
-	CurrentCustomer->CreateNewCustomer(CurrentLevel);
-	CurrentCustomer->HairsCutted = Tool->CuttedHairs;
-	CurrentCustomer->SpawnBeardPart();
-	CurrentCustomer->FinisheBeardSpawning();
 
 	CurrentCustomer->IsCurrentCustomer = true;
 	CurrentCustomer->SetActorHiddenInGame(false);
 	CurrentCustomer->Beard->SetActorHiddenInGame(false);
-	
-	NextCustomer = SecondCustomer;
+
 	NextCustomer->IsCurrentCustomer = false;
 	NextCustomer->SetActorHiddenInGame(true);
 	NextCustomer->Beard->SetActorHiddenInGame(true);
@@ -242,7 +226,6 @@ void ATBSCharacter::TransitionToNewCustomer() {
 
 	if (GetController()) {
 		((ATBSPlayerController*)GetController())->ResetCamera();
-		((ATBSPlayerController*)GetController())->SpawnedNextCustomer();
 	}
 
 	CurrentCustomer->SetActorHiddenInGame(false);
@@ -482,7 +465,13 @@ bool ATBSCharacter::BuyEquipment(int32 ID) {
 }
 
 FTBSEquipmentData ATBSCharacter::GetEquipmentByID(int32 ID) {
-	return (GetEquipmentList()[ID]);
+#pragma region MS2
+	const FString ContextString(TEXT("FTBSEquipmentData"));
+	return *EquipmentData->FindRow<FTBSEquipmentData>(FName(*FString::FromInt(ID)), ContextString);
+#pragma endregion
+#pragma region Final
+	//return (GetEquipmentList()[ID]);
+#pragma endregion
 }
 
 TMap<int32, FTBSEquipmentData> ATBSCharacter::GetEquipmentList() {

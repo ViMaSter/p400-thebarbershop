@@ -30,7 +30,7 @@ FTBSDataLoadWorker::FTBSDataLoadWorker(TArray<FTBSEquipmentData*>& TheArray, UDa
 {
 	EquipmentDataData = &TheArray;
 	LoadingFinished = false;
-	Task = ETBSMultiThreadingTask::BeardComparison;
+	Task = ETBSMultiThreadingTask::Equipment;
 
 	Thread = FRunnableThread::Create(this, TEXT("FTBSDataLoadWorker"), 0, TPri_BelowNormal); //windows default = 8mb for thread, could specify more
 }
@@ -42,7 +42,7 @@ FTBSDataLoadWorker::FTBSDataLoadWorker(TArray<FLevelUpData*>& TheArray, UDataTab
 {
 	LevelData = &TheArray;
 	LoadingFinished = false;
-	Task = ETBSMultiThreadingTask::BeardComparison;
+	Task = ETBSMultiThreadingTask::Level;
 
 	Thread = FRunnableThread::Create(this, TEXT("FTBSDataLoadWorker"), 0, TPri_BelowNormal); //windows default = 8mb for thread, could specify more
 }
@@ -53,7 +53,7 @@ FTBSDataLoadWorker::FTBSDataLoadWorker(TArray<FTimeBonusData*>& TheArray, UDataT
 {
 	BonusData = &TheArray;
 	LoadingFinished = false;
-	Task = ETBSMultiThreadingTask::BeardComparison;
+	Task = ETBSMultiThreadingTask::Bonus;
 
 	Thread = FRunnableThread::Create(this, TEXT("FTBSDataLoadWorker"), 0, TPri_BelowNormal); //windows default = 8mb for thread, could specify more
 }

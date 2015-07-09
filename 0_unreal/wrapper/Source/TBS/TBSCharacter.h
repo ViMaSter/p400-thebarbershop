@@ -278,6 +278,10 @@ public:
 #pragma endregion Multi-Threading
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer management") bool FirstCustomerActive = true;
+
+#pragma region MS2
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shop") UDataTable* MSWorkaround;
+#pragma endregion
 };
 
 
