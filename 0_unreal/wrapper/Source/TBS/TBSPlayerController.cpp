@@ -158,6 +158,10 @@ void ATBSPlayerController::SwitchToNextTool () {
 		return;
 	}
 
+	if (GetIsPaused()) {
+		return;
+	}
+
 	// Save the fact, that the user "discovered" the other tools
 	ATBSGameState* GameState = GetWorld()->GetGameState<ATBSGameState>();
 
@@ -170,6 +174,10 @@ void ATBSPlayerController::SwitchToNextTool () {
 
 void ATBSPlayerController::SwitchToPrevTool () {
 	if (!GetWorld()->GetGameState<ATBSGameState>() || !GetWorld()->GetGameState<ATBSGameState>()->GetIsIngame()) {
+		return;
+	}
+
+	if (GetIsPaused()) {
 		return;
 	}
 
