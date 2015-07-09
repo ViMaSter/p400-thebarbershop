@@ -228,6 +228,10 @@ public:
 
 
 #pragma region SessionData
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Result")
+	float LastBeardResult = 0;
+
+
 private:
 	uint32 SessionID = 0;
 	float BeardResult = 0;

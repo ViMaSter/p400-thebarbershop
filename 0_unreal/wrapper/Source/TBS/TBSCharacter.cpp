@@ -178,16 +178,21 @@ void ATBSCharacter::StartGame() {
 void ATBSCharacter::FinishCurrentCustomer () {
 	BeardResult = CalculateResult();
 	int32 EXP = (int32)BeardResult;
+	LastBeardResult = BeardResult;
+
 	IncreaseEXP(EXP);
 	IncreaseCash(BeardResult);
 	CalculateBonusCash();
-
 	SaveSessionData();
 
 	GetWorldTimerManager().PauseTimer(TimerHandle);
 
 	CurrentCustomer->HairsCutted = Tool->CuttedHairs;
 	Tool->CuttedHairs.Empty();
+
+	if (Controller){
+		((ATBSPlayerController*)Controller)->FinishedCurrentCustomer();
+	}
 
 	// Background Load New Customer
 	LoadNewCustomer();
@@ -391,6 +396,8 @@ float ATBSCharacter::CalculateResult () {
 	}
 	return -99;
 }
+
+
 
 FName ATBSCharacter::GetDesiredCustomerBeard(){
 	if (CurrentCustomer) {

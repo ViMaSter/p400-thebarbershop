@@ -292,7 +292,6 @@ void ATBSPlayerController::FinishCurrentCustomer() {
 		return;
 	}
 
-	FinishedCurrentCustomer();
 	if (PlayerCharacter) {
 		PlayerCharacter->FinishCurrentCustomer();
 	}
