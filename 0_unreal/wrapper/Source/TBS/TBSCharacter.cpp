@@ -454,7 +454,13 @@ bool ATBSCharacter::BuyEquipment(int32 ID) {
 }
 
 FTBSEquipmentData ATBSCharacter::GetEquipmentByID(int32 ID) {
-	return (GetEquipmentList()[ID]);
+#pragma region MS2
+	const FString ContextString(TEXT("FTBSEquipmentData"));
+	return *EquipmentData->FindRow<FTBSEquipmentData>(FName(*FString::FromInt(ID)), ContextString);
+#pragma endregion
+#pragma region Final
+	//return (GetEquipmentList()[ID]);
+#pragma endregion
 }
 
 TMap<int32, FTBSEquipmentData> ATBSCharacter::GetEquipmentList() {
