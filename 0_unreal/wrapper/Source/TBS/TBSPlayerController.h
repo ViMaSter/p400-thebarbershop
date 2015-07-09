@@ -147,18 +147,19 @@ protected:
 	void OnSetRotationReleased ();
 
 public:
+	void ResetCamera();	
 	void RotateCamera(float Pitch, float Yaw);
-	void ApplyCamera(float DeltaTime);
 
-protected:
 	// Methods used in tick
 	// Update: Prepares the target values
 	// Apply: Checks whether or not these values should be used and applies them
-	void UpdateRazor (float DeltaTime);
-	void ApplyRazor (float DeltaTime);
+	void UpdateRazor(float DeltaTime);
+	void ApplyRazor(float DeltaTime);
 
-	void UpdateCamera (float DeltaTime);
-	
+	void UpdateCamera(float DeltaTime);
+	void ApplyCamera(float DeltaTime);
+
+protected:
 	bool RemoveBeardFromCollection (FName BeardName);
 	bool LoadBeardDataToCurrentCustomer(UDataTable* Datatable);
 	bool SetCurrentBeardDataToCSV (UDataTable* DataTable);
