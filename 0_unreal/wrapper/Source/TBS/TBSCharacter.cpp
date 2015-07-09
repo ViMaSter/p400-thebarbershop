@@ -167,10 +167,10 @@ void ATBSCharacter::StartGame() {
 	}
 	
 	if (GetController()) {
-		// @TODO Vincent Call Camera Reset in PC
 		if (!FirstCustomerActive) {
 			((ATBSPlayerController*)GetController())->SpawnedNextCustomer();
 		}
+		((ATBSPlayerController*)GetController())->ResetCamera();
 	}
 
 	FirstCustomerActive = true;
@@ -238,19 +238,10 @@ void ATBSCharacter::TransitionToNewCustomer() {
 	}
 
 	if (GetController()) {
-<<<<<<< HEAD
-		// @TODO Vincent Call Camera Reset in PC remove below
-		float yaw = 180 - CameraBoom->RelativeRotation.Yaw;
-		float pitch = -CameraBoom->RelativeRotation.Pitch;
-		((ATBSPlayerController*)GetController())->RotateCamera(pitch, yaw);
-		// remove above
-=======
 		((ATBSPlayerController*)GetController())->ResetCamera();
-	}
->>>>>>> 35bffb54fb893f6051bae4251eec3bab15ef4357
-
 		((ATBSPlayerController*)GetController())->SpawnedNextCustomer();
 	}
+
 	CurrentCustomer->SetActorHiddenInGame(false);
 	CurrentCustomer->Beard->SetActorHiddenInGame(false);
 	CurrentCustomer->IsCurrentCustomer = true;
