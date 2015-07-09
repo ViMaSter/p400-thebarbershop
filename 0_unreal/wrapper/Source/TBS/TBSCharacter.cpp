@@ -217,9 +217,7 @@ void ATBSCharacter::TransitionToNewCustomer() {
 	}
 
 	if (GetController()) {
-		float yaw = 180 - CameraBoom->RelativeRotation.Yaw;
-		float pitch = -CameraBoom->RelativeRotation.Pitch;
-		((ATBSPlayerController*)GetController())->RotateCamera(pitch, yaw);
+		((ATBSPlayerController*)GetController())->ResetCamera();
 	}
 
 	CurrentCustomer->SetActorHiddenInGame(false);

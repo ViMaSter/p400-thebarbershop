@@ -87,6 +87,12 @@ void ATBSPlayerController::SetupInputComponent () {
 }
 
 #pragma region Camera Control
+void ATBSPlayerController::ResetCamera() {
+	float yaw = 180 - ((ATBSCharacter*)GetPawn())->CameraBoom->RelativeRotation.Yaw;
+	float pitch = -(((ATBSCharacter*)GetPawn())->CameraBoom->RelativeRotation.Pitch);
+	CameraRotationTarget.Add(pitch, yaw, 0);
+}
+
 void ATBSPlayerController::RotateCamera (float Pitch, float Yaw) {
 	if (PlayerCharacter) {
 		CameraRotationTarget.Add (Pitch, Yaw, 0);
