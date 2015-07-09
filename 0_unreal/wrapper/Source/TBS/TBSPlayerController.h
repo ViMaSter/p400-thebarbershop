@@ -146,8 +146,11 @@ protected:
 	void OnSetRotationPressed ();
 	void OnSetRotationReleased ();
 
-	void RotateCamera (float Pitch, float Yaw);
+public:
+	void RotateCamera(float Pitch, float Yaw);
+	void ApplyCamera(float DeltaTime);
 
+protected:
 	// Methods used in tick
 	// Update: Prepares the target values
 	// Apply: Checks whether or not these values should be used and applies them
@@ -155,7 +158,6 @@ protected:
 	void ApplyRazor (float DeltaTime);
 
 	void UpdateCamera (float DeltaTime);
-	void ApplyCamera (float DeltaTime);
 	
 	bool RemoveBeardFromCollection (FName BeardName);
 	bool LoadBeardDataToCurrentCustomer(UDataTable* Datatable);

@@ -13,7 +13,7 @@ ATBSCharacter::ATBSCharacter (const FObjectInitializer& ObjectInitializer)
 	// Create a camera boom...
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent> (TEXT ("PlayerCamera"));
 	CameraBoom->AttachTo (RootComponent);
-	CameraBoom->bAbsoluteRotation = true;
+	CameraBoom->bAbsoluteRotation = false;
 	CameraBoom->TargetArmLength = 100.f;
 	CameraBoom->RelativeRotation = FRotator (0.f, 180.f, 0.f);
 	CameraBoom->bDoCollisionTest = false;
@@ -215,6 +215,13 @@ void ATBSCharacter::TransitionToNewCustomer() {
 		CurrentCustomer = FirstCustomer;
 		NextCustomer = SecondCustomer;
 	}
+
+	if (GetController()) {
+		float yaw = 180 - CameraBoom->RelativeRotation.Yaw;
+		float pitch = -CameraBoom->RelativeRotation.Pitch;
+		((ATBSPlayerController*)GetController())->RotateCamera(pitch, yaw);
+	}
+
 	CurrentCustomer->SetActorHiddenInGame(false);
 	CurrentCustomer->Beard->SetActorHiddenInGame(false);
 	CurrentCustomer->IsCurrentCustomer = true;
