@@ -391,31 +391,33 @@ void ATBSCharacter::CalculateBonusCash(){
 
 // Returns the comparison Result from the shaved beard of the customer and the CSV data
 float ATBSCharacter::CalculateResult () {
-	const FString Context;
-	if (CurrentCustomer && CurrentCustomer->Beard) {
+	if (Tool && Tool->TrimmedBeardInstances && Tool->InstancedSMComponent) {
 		TArray<UActorComponent*> Components;
-		int32 Total = 0;
-		int32 Correct = 0;
-		Components = CurrentCustomer->Beard->GetComponentsByClass (UStaticMeshComponent::StaticClass ());
-		for (int32 i = 0; i < Components.Num (); i++) {
-			int32 ComponentStatus;
-			UStaticMeshComponent* Mesh = (UStaticMeshComponent*) Components[i];
-			if (!Mesh->IsVisible ()) {
-				ComponentStatus = 0;
-			}
-			else if (Mesh->GetCollisionResponseToChannel (ECC_Vehicle) == ECR_Ignore) {
-				ComponentStatus = 1;
-			}
-			else {
-				ComponentStatus = 2;
-			}
+		int32 Total = Tool->InstancedSMComponent->GetInstanceCount();
+		int32 Incorrect = 0;
+		int32 NumTrimmed = Tool->TrimmedBeardInstances->GetInstanceCount();
+		int32 NumShaved = Tool->CuttedHairs.Num() - NumTrimmed;
+		int32 TotalTarget = 0;
+		int32 NumTargetTrimmed = 0;
+		int32 NumTargetShaved = 0;
 
-			if (BeardData_MT[i] && BeardData_MT[i]->HairState == ComponentStatus) Correct++;
-			Total++;
+		for (int32 i = 0; i < BeardData_MT.Num(); i++){
+			switch (BeardData_MT[i]->HairState)
+			{
+			case(0) : // Shaved
+				NumTargetShaved++;
+				break;
+			case(1) : // Trimmed
+				NumTargetTrimmed++;
+				break;
+			case(2) : // Unshaved
+				break;
+			}
+			TotalTarget++;
 		}
-
-		float Result = ((float) Correct / (float) Total) * 100;
-		UE_LOG (LogClass, Log, TEXT ("*** Customer Finished with %.1f %% accuracy ***"), Result);
+		Incorrect = NumTargetTrimmed - NumTrimmed + NumTargetShaved - NumShaved;
+		float Result = ((float)(Total - Incorrect) / (float)Total) * 100;
+		UE_LOG(LogClass, Log, TEXT("*** Customer Finished with %.1f %% accuracy ***"), Result);
 		return Result;
 	}
 	else {

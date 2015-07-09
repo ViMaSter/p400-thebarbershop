@@ -5,7 +5,7 @@
 
 
 ATBSRazor::ATBSRazor () {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	ToolInactiveHight = 10;
 	IsActive = false;

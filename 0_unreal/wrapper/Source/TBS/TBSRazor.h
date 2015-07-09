@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
+#include "Components/InstancedStaticMeshComponent.h"
 #include "TBSRazor.generated.h"
 
 UENUM (BlueprintType)
@@ -43,6 +44,11 @@ public:
 	void SwitchRazorTypeTo (TEnumAsByte<ETBSRazor::Type> NewType);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hairs Cut")
-	TArray<UActorComponent*> CuttedHairs;
+	UInstancedStaticMeshComponent* TrimmedBeardInstances;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hairs Cut")
+	UInstancedStaticMeshComponent* InstancedSMComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hairs Cut")
+	TArray<UActorComponent*> CuttedHairs;
 };
