@@ -111,7 +111,7 @@ void ATBSCharacter::BeginPlay () {
 
 		FVector SpawnLocation = {0, 0, 0};
 		FRotator SpawnRotation = {180, 0, 0};
-		Tool = World->SpawnActor<ATBSRazor> (ToolClass, SpawnLocation, SpawnRotation, SpawnParams);
+		Tool = World->SpawnActor<ATBSRazor>(ToolClass, SpawnLocation, SpawnRotation, SpawnParams);
 	}
 	if (Controller) {
 		((ATBSPlayerController*)Controller)->PlayerCharacter = this;
