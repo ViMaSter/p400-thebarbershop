@@ -91,10 +91,12 @@ void ATBSPlayerController::ResetCamera() {
 	float yaw = 180 - ((ATBSCharacter*)GetPawn())->CameraBoom->RelativeRotation.Yaw;
 	float pitch = -(((ATBSCharacter*)GetPawn())->CameraBoom->RelativeRotation.Pitch);
 	CameraRotationTarget.Add(pitch, yaw, 0);
+	PlayerCharacter->CameraBoom->SetRelativeRotation(CameraRotationTarget);
+	PlayerCharacter->CameraBoom->AddRelativeRotation(FRotator(0, 180, 0));
 }
 
 void ATBSPlayerController::RotateCamera (float Pitch, float Yaw) {
-	if (PlayerCharacter) {
+	if (PlayerCharacter && !bCinematicMode) {
 		CameraRotationTarget.Add (Pitch, Yaw, 0);
 
 		CameraRotationTarget.Pitch = FMath::ClampAngle (CameraRotationTarget.Pitch, PlayerCharacter->VerticalUpperCameraRotationBorder, PlayerCharacter->VerticalLowerCameraRotationBorder);
