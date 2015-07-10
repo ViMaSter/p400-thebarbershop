@@ -91,6 +91,7 @@ void ATBSCharacter::BeginPlay () {
 	}
 	if (World && SecondCustomer == NULL) {
 		FActorSpawnParameters SpawnParams;
+		SpawnParams.bNoCollisionFail = true;
 		SpawnParams.Instigator = Instigator;
 		SpawnParams.Owner = this;
 		SecondCustomer = World->SpawnActor<ATBSCustomer>(CustomerClass, FVector(0, -810, 0), FRotator::ZeroRotator, SpawnParams);
@@ -166,6 +167,10 @@ void ATBSCharacter::StartGame() {
 		LevelLodingStarted_MT = true;
 	}
 
+	CurrentCustomer = FirstCustomer;
+	NextCustomer = SecondCustomer;
+	FirstCustomerActive = true;
+
 	CurrentCustomer->IsCurrentCustomer = true;
 	CurrentCustomer->SetActorHiddenInGame(false);
 	CurrentCustomer->Beard->SetActorHiddenInGame(false);
@@ -174,10 +179,16 @@ void ATBSCharacter::StartGame() {
 	NextCustomer->SetActorHiddenInGame(true);
 	NextCustomer->Beard->SetActorHiddenInGame(true);
 
+	if (GetController()) {
+		((ATBSPlayerController*)GetController())->ResetCamera();
+	}
+
 	Tool->SwitchRazorTypeTo(ETBSRazor::TBSRazorBig);
-	//Tool->CuttedHairs.Empty();
+	Tool->CutHairsIndices.Empty();
 
 	SetActorLocation(FVector(0, 0, 340));
+
+	BeardResult = 0;
 	LastBeardResult = 0;
 }
 
@@ -194,7 +205,7 @@ void ATBSCharacter::FinishCurrentCustomer () {
 	GetWorldTimerManager().PauseTimer(TimerHandle);
 
 	CurrentCustomer->HairsCutted = Tool->CuttedHairs;
-	Tool->CuttedHairs.Empty();
+	Tool->CutHairsIndices.Empty();
 	if (Tool && Tool->InstancedSMComponent) {
 		Tool->InstancedSMComponent->ClearInstances();
 	}
@@ -241,7 +252,7 @@ void ATBSCharacter::TransitionToNewCustomer() {
 	NextCustomer->IsCurrentCustomer = false;
 
 	FirstCustomerActive = !FirstCustomerActive;
-	GetWorldTimerManager().SetTimer(NextCustomer->SpawnTimerHandle, NextCustomer, &ATBSCustomer::SpawnBeardPart, 0.05f, true);
+	//GetWorldTimerManager().SetTimer(NextCustomer->SpawnTimerHandle, NextCustomer, &ATBSCustomer::SpawnBeardPart, 0.05f, true);
 	CurrentCustomer->FinisheBeardSpawning();
 }
 
@@ -265,7 +276,6 @@ void ATBSCharacter::LoadNewCustomer () {
 		// Setup for next Customer
 		SessionID++;
 		BeardResult = 0;
-		LastBeardResult = 0;
 	}
 	else {
 		UE_LOG(LogClass, Warning, TEXT("*** No Customer Reference! ***"));
@@ -387,7 +397,7 @@ float ATBSCharacter::CalculateResult () {
 		int32 Total = Tool->InstancedSMComponent->GetInstanceCount();
 		int32 Incorrect = 0;
 		int32 NumTrimmed = Tool->TrimmedBeardInstances->GetInstanceCount();
-		int32 NumShaved = Tool->CuttedHairs.Num() - NumTrimmed;
+		int32 NumShaved = Tool->CutHairsIndices.Num() - NumTrimmed;
 		int32 TotalTarget = 0;
 		int32 NumTargetTrimmed = 0;
 		int32 NumTargetShaved = 0;

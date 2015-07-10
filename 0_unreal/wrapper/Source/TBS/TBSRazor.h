@@ -56,4 +56,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hairs Cut")
 	TArray<UActorComponent*> CuttedHairs;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hairs Cut")
+	TArray<int32> CutHairsIndices;
 };

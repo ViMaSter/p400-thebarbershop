@@ -10,12 +10,12 @@
 // Sets default values
 ATBSCustomer::ATBSCustomer (const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {
-	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	SceneCapture = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("Screenshot Helper"));
-	SceneCapture->AttachTo(RootComponent);
+	//RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	//SceneCapture = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("Screenshot Helper"));
+	//SceneCapture->AttachTo(RootComponent);
 
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	DesiredBeard = "DEFAULT";
 
@@ -45,6 +45,7 @@ void ATBSCustomer::BeginPlay () {
 	}
 
 	CustomerStartPosition = GetActorLocation();
+	UE_LOG(LogClass, Log, TEXT("*** %f,%f,%f  ***"), CustomerStartPosition.X, CustomerStartPosition.Y, CustomerStartPosition.Z);
 }
 
 void ATBSCustomer::Tick(float DeltaTime) {
@@ -68,14 +69,7 @@ void ATBSCustomer::CreateNewCustomer (int32 CharacterLevel) {
 
 void ATBSCustomer::SpawnBeardPart(){
 	// @TODO: remove workaround
-	if (Beard != NULL){
-		if (GetOwner()){
-			((ATBSCharacter*)GetOwner())->Tool->ResetHairs();
-		}
-		if (GetWorldTimerManager().TimerExists(SpawnTimerHandle)) {
-			GetWorldTimerManager().ClearTimer(SpawnTimerHandle);
-		}
-	}
+
 	/*
 	if (Beard != NULL) {
 		if (HairIndex < HairsCutted.Num()-1 && HairsCutted[HairIndex]){
@@ -96,6 +90,14 @@ void ATBSCustomer::SpawnBeardPart(){
 }
 
 void ATBSCustomer::FinisheBeardSpawning(){
+	if (Beard != NULL){
+		if (GetOwner()){
+			((ATBSCharacter*)GetOwner())->Tool->ResetHairs();
+		}
+		if (GetWorldTimerManager().TimerExists(SpawnTimerHandle)) {
+			GetWorldTimerManager().ClearTimer(SpawnTimerHandle);
+		}
+	}
 	/*
 	if (Beard != NULL) {
 		if (HairIndex <= HairsCutted.Num() - 1 && HairsCutted[HairIndex]) {
