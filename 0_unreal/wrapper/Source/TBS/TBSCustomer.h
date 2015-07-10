@@ -61,6 +61,9 @@ public:
 	TSubclassOf<class AActor> BeardClass;
 
 	UPROPERTY(EditAnywhere, noclear, BlueprintReadWrite, Category = "Screenshot Helper")
+	USceneComponent* SceneComponent;
+
+	UPROPERTY(EditAnywhere, noclear, BlueprintReadWrite, Category = "Screenshot Helper")
 	USceneCaptureComponent2D* SceneCapture;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Beard")
