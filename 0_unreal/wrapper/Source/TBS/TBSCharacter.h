@@ -282,6 +282,9 @@ public:
 #pragma region MS2
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shop") UDataTable* MSWorkaround;
 #pragma endregion
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Transition")	void SwapedScreenCap();
+
 };
 
 

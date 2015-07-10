@@ -98,7 +98,6 @@ void ATBSCharacter::BeginPlay () {
 	}
 	if (FirstCustomer) {
 		CurrentCustomer = FirstCustomer;
-		CurrentCustomer->CustomerBecameActive();
 	}
 	if (SecondCustomer){
 		NextCustomer = SecondCustomer;
@@ -170,7 +169,6 @@ void ATBSCharacter::StartGame() {
 
 	CurrentCustomer = FirstCustomer;
 	NextCustomer = SecondCustomer;
-	CurrentCustomer->CustomerBecameActive();
 	FirstCustomerActive = true;
 
 	CurrentCustomer->IsCurrentCustomer = true;
@@ -229,6 +227,7 @@ void ATBSCharacter::TransitionToNewCustomer() {
 		CurrentCustomer = FirstCustomer;
 		NextCustomer = SecondCustomer;
 	}
+	SwapedScreenCap();
 
 	if (GetController()) {
 		((ATBSPlayerController*)GetController())->ResetCamera();
@@ -237,7 +236,6 @@ void ATBSCharacter::TransitionToNewCustomer() {
 	CurrentCustomer->SetActorHiddenInGame(false);
 	CurrentCustomer->Beard->SetActorHiddenInGame(false);
 	CurrentCustomer->IsCurrentCustomer = true;
-	CurrentCustomer->CustomerBecameActive();
 
 	NextCustomer->SetActorHiddenInGame(true);
 	NextCustomer->Beard->SetActorHiddenInGame(true);
