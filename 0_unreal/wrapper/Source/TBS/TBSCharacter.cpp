@@ -184,7 +184,6 @@ void ATBSCharacter::StartGame() {
 	}
 
 	Tool->SwitchRazorTypeTo(ETBSRazor::TBSRazorBig);
-	Tool->CutHairsIndices.Empty();
 
 	SetActorLocation(FVector(0, 0, 340));
 
@@ -203,16 +202,6 @@ void ATBSCharacter::FinishCurrentCustomer () {
 	SaveSessionData();
 
 	GetWorldTimerManager().PauseTimer(TimerHandle);
-
-	CurrentCustomer->HairsCutted = Tool->CuttedHairs;
-	Tool->CutHairsIndices.Empty();
-	if (Tool && Tool->InstancedSMComponent) {
-		Tool->InstancedSMComponent->ClearInstances();
-	}
-	if (Tool && Tool->TrimmedBeardInstances){
-		Tool->TrimmedBeardInstances->ClearInstances();
-	}
-
 	if (Controller){
 		((ATBSPlayerController*)Controller)->FinishedCurrentCustomer();
 	}
