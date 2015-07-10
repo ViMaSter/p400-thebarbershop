@@ -98,6 +98,7 @@ void ATBSCharacter::BeginPlay () {
 	}
 	if (FirstCustomer) {
 		CurrentCustomer = FirstCustomer;
+		CurrentCustomer->CustomerBecameActive();
 	}
 	if (SecondCustomer){
 		NextCustomer = SecondCustomer;
@@ -169,6 +170,7 @@ void ATBSCharacter::StartGame() {
 
 	CurrentCustomer = FirstCustomer;
 	NextCustomer = SecondCustomer;
+	CurrentCustomer->CustomerBecameActive();
 	FirstCustomerActive = true;
 
 	CurrentCustomer->IsCurrentCustomer = true;
@@ -235,6 +237,7 @@ void ATBSCharacter::TransitionToNewCustomer() {
 	CurrentCustomer->SetActorHiddenInGame(false);
 	CurrentCustomer->Beard->SetActorHiddenInGame(false);
 	CurrentCustomer->IsCurrentCustomer = true;
+	CurrentCustomer->CustomerBecameActive();
 
 	NextCustomer->SetActorHiddenInGame(true);
 	NextCustomer->Beard->SetActorHiddenInGame(true);
@@ -461,6 +464,7 @@ bool ATBSCharacter::BuyEquipment(int32 ID) {
 		if (CurrentData && CurrentData->Cost <= CurrentCash) {
 			CurrentCash -= CurrentData->Cost;
 			((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Add(ID);
+			EquipedItem(ID);
 			return true;
 		}
 	}

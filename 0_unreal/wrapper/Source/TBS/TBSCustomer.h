@@ -128,4 +128,8 @@ public:
 	void LiftPositionUp();
 	UFUNCTION(BlueprintCallable, Category = "Lift")
 	void LiftPositionDown(float DeltaTime);
+
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Beard")
+	void CustomerBecameActive();
 };
