@@ -272,7 +272,8 @@ FakesAssemblies/
 ##################
 /5_tools/ninepatch_generator
 /5_tools/ninepatch_trimmer
-
+/5_tools/ninepatch_trimmer
+/0_unreal/wrapper/Content/TheBarberShop/Assets/Audio/Music
 ###############
 ### GENERAL ###
 ###############

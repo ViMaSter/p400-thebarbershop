@@ -7,3 +7,7 @@
 [submodule "5_tools/ninepatch_trimmer"]
 	path = 5_tools/ninepatch_trimmer
 	url = https://github.com/ViMaSter/ninepatch_trimmer.git
+
+[submodule "0_unreal/wrapper/Content/TheBarberShop/Assets/Audio/Music"]
+	path = 0_unreal/wrapper/Content/TheBarberShop/Assets/Audio/Music
+	url = https://github.com/ViMaSter/p400-thebarbershop-music.git
