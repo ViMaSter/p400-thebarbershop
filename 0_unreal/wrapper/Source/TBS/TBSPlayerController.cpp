@@ -129,22 +129,34 @@ void ATBSPlayerController::RotateToolTop (float Value) {
 	}
 }
 
-void ATBSPlayerController::OnSetShavedPressed () {
+void ATBSPlayerController::OnSetShavedPressed() {
+	if (RotationActive)
+		return;
+
 	ShaveActive = true;
 }
 
-void ATBSPlayerController::OnSetShavedReleased () {
+void ATBSPlayerController::OnSetShavedReleased() {
+	if (RotationActive)
+		return;
+
 	ShaveActive = false;
 	SaveStep();
 }
 
-void ATBSPlayerController::OnSetRotationPressed () {
+void ATBSPlayerController::OnSetRotationPressed() {
+	if (ShaveActive)
+		return;
+
 	RotationActive = true;
 
 	GetMousePosition (StoredMousePosition.X, StoredMousePosition.Y);
 }
 
-void ATBSPlayerController::OnSetRotationReleased () {
+void ATBSPlayerController::OnSetRotationReleased() {
+	if (ShaveActive)
+		return;
+
 	ToolRotationTarget = PlayerCharacter->Tool->GetActorRotation ();
 
 	RotationActive = false;
