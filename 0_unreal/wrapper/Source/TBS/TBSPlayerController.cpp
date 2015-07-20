@@ -40,6 +40,8 @@ void ATBSPlayerController::PlayerTick (float DeltaTime) {
 	}
 
 	if (PlayerCharacter && PlayerCharacter->Tool && !GetIsPaused()) {
+		UpdateMechanicChecks();
+
 		UpdateRazor (DeltaTime);
 		UpdateCamera (DeltaTime);
 
@@ -295,6 +297,19 @@ void ATBSPlayerController::UpdateCamera (float DeltaTime) {
 void ATBSPlayerController::ApplyCamera (float DeltaTime) {
 	PlayerCharacter->CameraBoom->SetRelativeRotation (FMath::Lerp (PlayerCharacter->CameraBoom->RelativeRotation - FRotator (0, 180, 0), CameraRotationTarget, PlayerCharacter->CameraRotationLerpIntensity));
 	PlayerCharacter->CameraBoom->AddRelativeRotation (FRotator (0, 180, 0));
+}
+
+void ATBSPlayerController::UpdateMechanicChecks() {
+	FVector CurrentToolDirection = PlayerCharacter->Tool->GetTransform().InverseTransformVector(ToolLocationTarget - ToolLocationCurrent);
+	
+	float value = FMath::Atan2(CurrentToolDirection.Y, CurrentToolDirection.Z);
+
+	/// IsLegalShaveAngle
+	IsLegalShaveAngle = FMath::Abs(FMath::RadiansToDegrees(FMath::Atan2(CurrentToolDirection.Y, CurrentToolDirection.Z))) <= (LegalShaveAngle / 2);
+
+	// IsMovingShave
+	IsMovingShave = FMath::Abs(CurrentToolDirection.Y + CurrentToolDirection.Z) >= MinimumShaveSpeed;
+
 }
 #pragma endregion
 

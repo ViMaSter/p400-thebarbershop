@@ -87,11 +87,9 @@ protected:
 #pragma region References
 public:
 	ATBSCharacter* PlayerCharacter;
-
 #pragma endregion
 
 #pragma region Camera
-
 protected:
 	FRotator CameraRotationTarget;
 #pragma endregion
@@ -111,7 +109,20 @@ protected:
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	bool IsSweapMovement = false;
+#pragma endregion
 
+#pragma region Mechanics
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Shave Mechanics")
+	bool IsLegalShaveAngle = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shave Mechanics")
+	float LegalShaveAngle = 45.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Shave Mechanics")
+	bool IsMovingShave = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shave Mechanics")
+	float MinimumShaveSpeed = 5.5f;
+
+	void UpdateMechanicChecks();
 #pragma endregion
 
 #pragma region MouseInfo
