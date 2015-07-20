@@ -253,7 +253,7 @@ void ATBSPlayerController::UpdateRazor (float DeltaTime) {
 					ToolHeightOffsetCurrent = FMath::Lerp (ToolHeightOffsetCurrent, ToolHeightOffsetTarget, (1.0f / DeltaTime / 60.0f) * RazorLoweringLerpIntensity);
 
 					// Whether or not the tool is active, is now dependent on the razors distance from the skin
-					PlayerCharacter->Tool->IsActive = ToolHeightOffsetCurrent.Size () < ShavingThreshold;
+					PlayerCharacter->Tool->IsActive = ToolHeightOffsetCurrent.Size() < ShavingThreshold && IsMovingShave;
 
 					// POSITION
 					ToolLocationTarget = Hitresult.ImpactPoint + ToolHeightOffsetCurrent;
