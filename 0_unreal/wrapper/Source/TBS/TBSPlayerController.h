@@ -97,7 +97,9 @@ protected:
 #pragma endregion
 
 #pragma region Tool
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FVector ToolLocationCurrent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FVector ToolLocationTarget;
 
 	FRotator ToolRotationCurrent;
@@ -164,7 +166,6 @@ protected:
 	bool LoadBeardDataToCurrentCustomer(UDataTable* Datatable);
 	bool SetCurrentBeardDataToCSV (UDataTable* DataTable);
 	bool SetBeardToCollectionData(FName BeardName, int32 BeardLevel, int32 UniqueId);
-
 
 	bool InitialSaved = false;
 	bool ChangedBeard = false;
