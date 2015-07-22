@@ -227,7 +227,8 @@ void ATBSCharacter::TransitionToNewCustomer() {
 		CurrentCustomer = FirstCustomer;
 		NextCustomer = SecondCustomer;
 	}
-	SwapedScreenCap();
+	
+	//SwapedScreenCap();
 
 	if (GetController()) {
 		((ATBSPlayerController*)GetController())->ResetCamera();
