@@ -14,6 +14,15 @@ if %errorlevel%==9009 goto GIT
 
 	:: Clear git cache of folder
 	git rm --cached 0_unreal\wrapper\Content\TheBarberShop\Assets\Audio\Music -r
+	rd /s /q ".git\modules\0_unreal"
+	rmdir /s /q ".git\modules\0_unreal"
+
+	type ".git\config" | findstr /v music | findstr /v Music > ".git\newconfig"
+	del  ".git\config"
+	cd ".git"
+	ren  newconfig config
+	cd ".."
+
 
 	mkdir 0_unreal/wrapper/Content/TheBarberShop/Assets/Audio/Music
 
