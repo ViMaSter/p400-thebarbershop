@@ -24,13 +24,11 @@ ATBSRadio::ATBSRadio () {
 	Music0->AttachTo (AudioComponentOffset);
 	Music0->bOverrideAttenuation = true;
 	Music0->bAllowSpatialization = true;
-	Music0->OnAudioFinished.AddDynamic (this, &ATBSRadio::AudioFinished0);
 
 	Music1 = CreateDefaultSubobject<UAudioComponent> (TEXT ("Music1"));
 	Music1->AttachTo (AudioComponentOffset);
 	Music1->bOverrideAttenuation = true;
 	Music1->bAllowSpatialization = true;
-	Music1->OnAudioFinished.AddDynamic(this, &ATBSRadio::AudioFinished1);
 
 	ChannelSwitchNoise = CreateDefaultSubobject<UAudioComponent>(TEXT("ChannelSwitchNoise"));
 	ChannelSwitchNoise->AttachTo(AudioComponentOffset);
@@ -57,6 +55,9 @@ ATBSRadio::ATBSRadio () {
 void ATBSRadio::BeginPlay () {
 	Super::BeginPlay ();
 
+	Music0->OnAudioFinished.AddDynamic(this, &ATBSRadio::AudioFinished0);
+	Music1->OnAudioFinished.AddDynamic(this, &ATBSRadio::AudioFinished1);
+
 	if (PlayMusic) {
 		SwitchStation(1);
 	}
@@ -71,18 +72,18 @@ void ATBSRadio::AudioFinished0 () {
 	if (ChannelToFadeIn == Music0) {
 		CurrentSong = RadioStations[CurrentStation].NextTrack();
 		OnSongChange(*CurrentSong);
-		Music0->Sound = CurrentSong->ActualClip;
-		Music0->Play (0.0f);
 	}
+	Music0->Sound = CurrentSong->ActualClip;
+	Music0->Play(0.0f);
 }
 
 void ATBSRadio::AudioFinished1 () {
 	if (ChannelToFadeIn == Music1) {
 		CurrentSong = RadioStations[CurrentStation].NextTrack();
 		OnSongChange(*CurrentSong);
-		Music1->Sound = CurrentSong->ActualClip;
-		Music1->Play (0.0f);
 	}
+	Music1->Sound = CurrentSong->ActualClip;
+	Music1->Play(0.0f);
 }
 
 void ATBSRadio::SwitchStation(int32 direction) {
