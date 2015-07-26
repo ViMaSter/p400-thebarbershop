@@ -177,7 +177,7 @@ void ATBSCustomer::FindDesiredBeardFromPool(int32 Playerlevel){
 			}
 			// Or randomly choose from our pool
 			else {
-				const FString Context;
+				const FString Context = FString("");
 				FBeardPoolData* CurrentData;
 
 				int32 MinBeardID = -99;

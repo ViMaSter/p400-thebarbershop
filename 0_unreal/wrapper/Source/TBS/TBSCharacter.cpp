@@ -127,7 +127,7 @@ void ATBSCharacter::StartGame() {
 
 	// Load Level Up Data
 	const FLevelUpData *CurrentData;
-	const FString String;
+	const FString String = "";
 	if (LevelData) {
 		FName NameCurrentLevel = FName(*(FString::FromInt(CurrentLevel)));
 		CurrentData = LevelData->FindRow<FLevelUpData>(NameCurrentLevel, String);
@@ -327,7 +327,7 @@ void ATBSCharacter::ToggleGameTimer() {
 
 void ATBSCharacter::IncreaseEXP (int32 Value) {
 	const FLevelUpData *CurrentData;
-	const FString String;
+	const FString String = "";
 	if (LevelData) {
 		FName NameCurrentLevel = FName (*(FString::FromInt (CurrentLevel)));
 		CurrentData = LevelData->FindRow<FLevelUpData> (NameCurrentLevel, String);
@@ -455,7 +455,7 @@ TArray<int32> ATBSCharacter::GetObtainedEquipment() {
 
 bool ATBSCharacter::BuyEquipment(int32 ID) {
 	FTBSEquipmentData* CurrentData;
-	const FString Context;
+	const FString Context = FString("");
 	if (EquipmentData) {
 		FString String = FString::FromInt(ID);
 		FName Row = FName(*String);

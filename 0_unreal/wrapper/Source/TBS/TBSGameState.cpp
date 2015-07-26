@@ -101,12 +101,12 @@ bool ATBSGameState::LoadGame(int32 UserIndex) {
 			FString equipmentFileName = FString("Equipment");
 			equipmentFileName.AppendInt(i);
 
-			UTBSSaveGame_Equipment* EquipmentSaveState = Cast<UTBSSaveGame_Equipment>(UGameplayStatics::LoadGameFromSlot(equipmentFileName, UserIndex));
-			if (EquipmentSaveState == nullptr) {
+			UTBSSaveGame_Equipment* equipmentSaveState = Cast<UTBSSaveGame_Equipment>(UGameplayStatics::LoadGameFromSlot(equipmentFileName, UserIndex));
+			if (equipmentSaveState == nullptr) {
 				UE_LOG(LogClass, Warning, TEXT("*** Tried to load equipment save %d/%d, which should exist, but does not! ***"), i, CurrentSaveGame->ObtainedEquipmentNum);
 			}
 			else {
-				CurrentSaveGame->ObtainedEquipment.Add(EquipmentSaveState->EquipmentID);
+				CurrentSaveGame->ObtainedEquipment.Add(equipmentSaveState->EquipmentID);
 			}
 		}
 

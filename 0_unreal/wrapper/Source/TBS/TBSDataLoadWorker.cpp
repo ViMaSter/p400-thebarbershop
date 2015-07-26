@@ -187,7 +187,7 @@ bool FTBSDataLoadWorker::IsThreadFinished() {
 
 void FTBSDataLoadWorker::LoadBeardCompData() {
 	FBeardComparisonData* CurrentData;
-	const FString Context;
+	const FString Context = FString("");
 	bool success = true;
 	FString String = FString::FromInt(RowCount);
 	FName Row = FName(*String);
@@ -202,7 +202,7 @@ void FTBSDataLoadWorker::LoadBeardCompData() {
 
 void FTBSDataLoadWorker::LoadEquipmentData() {
 	FTBSEquipmentData* CurrentData;
-	const FString Context;
+	const FString Context = FString("");
 	bool success = true;
 	FString String = FString::FromInt(RowCount);
 	FName Row = FName(*String);
@@ -217,7 +217,7 @@ void FTBSDataLoadWorker::LoadEquipmentData() {
 
 void FTBSDataLoadWorker::LoadLevelData() {
 	FLevelUpData* CurrentData;
-	const FString Context;
+	const FString Context = FString("");
 	bool success = true;
 	FString String = FString::FromInt(RowCount);
 	FName Row = FName(*String);
@@ -232,7 +232,7 @@ void FTBSDataLoadWorker::LoadLevelData() {
 
 void FTBSDataLoadWorker::LoadBonusData() {
 	FTimeBonusData* CurrentData;
-	const FString Context;
+	const FString Context = FString("");
 	bool success = true;
 	FString String = FString::FromInt(RowCount);
 	FName Row = FName(*String);

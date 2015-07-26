@@ -534,7 +534,7 @@ bool ATBSPlayerController::SetCurrentBeardDataToCSV(UDataTable* DataTable) {
 	FBeardComparisonData* CurrentData;
 	for (int32 i = 0; i < Components.Num (); i++) {
 		int32 ComponentStatus;
-		const FString Context;
+		const FString Context = FString("");
 		UStaticMeshComponent* Mesh = (UStaticMeshComponent*) Components[i];
 		if (!Mesh->IsVisible ()) {
 			ComponentStatus = 0;
@@ -575,7 +575,7 @@ bool ATBSPlayerController::LoadBeardDataToCurrentCustomer (UDataTable* DataTable
 	TArray<UActorComponent*> Components;
 	Components = PlayerCharacter->CurrentCustomer->Beard->GetComponentsByClass (UStaticMeshComponent::StaticClass ());
 	FBeardComparisonData* CurrentData;
-	const FString Context;
+	const FString Context = FString("");
 	bool success = true;
 	for (int32 i = 0; i < Components.Num (); i++) {
 		FString String = FString::FromInt (i);
@@ -649,7 +649,7 @@ FBeardCollectionData ATBSPlayerController::FindDataRowToName(FName BeardName) {
 		FBeardCollectionData CurrentData;
 		FName DataTableName;
 		if (PlayerCharacter->BeardCollection) {
-			const FString Context;
+			const FString Context = FString("");
 			for (int32 i = 0; i < PlayerCharacter->BeardCollection->GetRowNames().Num(); i++) {
 				FName Row = PlayerCharacter->BeardCollection->GetRowNames()[i];
 				CurrentData = *(PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData>(Row, Context, false));
@@ -668,16 +668,16 @@ UDataTable* ATBSPlayerController::FindDataTableToName(FName BeardName) {
 		FBeardCollectionData* CurrentData;
 		FName DataTableName;
 		if (PlayerCharacter->BeardCollection) {
-			const FString Context;
+			const FString Context = FString("");
 			for (int32 i = 0; i < PlayerCharacter->BeardCollection->GetRowNames().Num(); i++) {
 				FName Row = PlayerCharacter->BeardCollection->GetRowNames()[i];
 				CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData>(Row, Context, false);
 				if (CurrentData) {
 					if (CurrentData->BeardName == BeardName) {
 						DataTableName = CurrentData->BeardSlotName;
-						for (int32 i = 0; i < PlayerCharacter->BeardData.Num(); i++) {
+						for (int32 j = 0; j < PlayerCharacter->BeardData.Num(); j++) {
 							if (PlayerCharacter->BeardData[i]->GetName() == DataTableName.ToString()) {
-								return PlayerCharacter->BeardData[i];
+								return PlayerCharacter->BeardData[j];
 								break;
 							}
 						}
@@ -698,7 +698,7 @@ bool ATBSPlayerController::RemoveBeardFromCollection (FName BeardName) {
 	FBeardCollectionData* CurrentData;
 	bool Success = false;
 	if (PlayerCharacter->BeardCollection) {
-		const FString Context;
+		const FString Context = FString("");
 		for (int32 i = 0; i < PlayerCharacter->BeardCollection->GetRowNames ().Num (); i++) {
 			FName Row = PlayerCharacter->BeardCollection->GetRowNames ()[i];
 			CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData> (Row, Context, false);
@@ -719,7 +719,7 @@ bool ATBSPlayerController::SetBeardToCollectionData(FName BeardName, int32 Beard
 	FBeardCollectionData* CurrentData;
 	bool Success = false;
 	if (PlayerCharacter->BeardCollection) {
-		const FString Context;
+		const FString Context = FString("");
 		TArray<FName> RowNames = PlayerCharacter->BeardCollection->GetRowNames ();
 		for (int32 i = 0; i < RowNames.Num (); i++) {
 			FName Row = RowNames[i];
@@ -797,7 +797,7 @@ TArray<FBeardNameLevelData> ATBSPlayerController::GetBeardNameLevelData() {
 
 	FBeardCollectionData* CurrentData;
 	if (PlayerCharacter->BeardCollection) {
-		const FString Context;
+		const FString Context = FString("");
 		for (int32 i = 0; i < PlayerCharacter->BeardCollection->GetRowNames().Num(); i++) {
 			FName Row = PlayerCharacter->BeardCollection->GetRowNames()[i];
 			CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData>(Row, Context, false);

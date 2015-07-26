@@ -23,6 +23,6 @@ bool UTBSSaveGame::ClearSessionStates() {
 	return SessionList.Num() == 0;
 }
 bool UTBSSaveGame::ShouldTutorialTextBeShown() {
-	return (!SessionList.Num() == 0) && !UsedOtherTools;
+	return !(SessionList.Num() == 0) && !UsedOtherTools;
 }
 #pragma endregion
