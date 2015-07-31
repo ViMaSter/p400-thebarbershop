@@ -249,7 +249,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Equipment")	TArray<int32> GetObtainedEquipment();
 	UFUNCTION(BlueprintCallable, Category = "Equipment")	bool EquipItem(int32 ID);
-	UFUNCTION(BlueprintCallable, Category = "Equipment")	bool BuyEquipment(int32 ID);
+	UFUNCTION(BlueprintCallable, exec, Category = "Equipment")	bool BuyEquipment(int32 ID);
 
 	TMap<int32, FTBSEquipmentData> GetEquipmentList();
 	// Wrapper function, since TMap is not supported by the reflection system
