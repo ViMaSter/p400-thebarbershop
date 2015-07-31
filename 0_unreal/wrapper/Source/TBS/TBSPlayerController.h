@@ -120,7 +120,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Shave Mechanics")
 	bool IsMovingShave = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shave Mechanics")
-	float MinimumShaveSpeed = 5.5f;
+	float MinimumShaveSpeed = 1.0f;
 
 	void UpdateMechanicChecks();
 #pragma endregion
