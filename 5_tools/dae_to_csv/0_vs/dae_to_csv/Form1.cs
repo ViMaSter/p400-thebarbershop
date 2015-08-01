@@ -25,6 +25,9 @@ namespace dae_to_csv
         string RotateRegex = @"rotate{0}"">\d \d \d (.*?)<\/rotate";
         string TranslateRegex = @"translate"">(.*?) (.*?) (.*?)<\/translate";
 
+        bool HandinessFix = false;
+        bool Max2016Fix = false;
+
         public Form1()
         {
             InitializeComponent();
@@ -45,6 +48,11 @@ namespace dae_to_csv
             DialogResult userDialogResponse = ofd.ShowDialog();
             if (userDialogResponse == DialogResult.OK)
             {
+                label_found_instances.Text = "Working...";
+
+                HandinessFix = checkBox_handednessFix.Checked;
+                Max2016Fix = version.SelectedIndex == 1;
+
                 // Appending dialog
                 if (CSVRows.Count > 0)
                 {
@@ -66,9 +74,7 @@ namespace dae_to_csv
                     btn_save.Enabled = false;
                 }
             }
-
             // Update UI
-            label_found_instances.Text = "Working...";
         }
         
         private void btn_save_Click(object sender, EventArgs e)
@@ -126,10 +132,16 @@ namespace dae_to_csv
                 float.TryParse(rotationY.Groups[1].Value, out column.Roll);
                 float.TryParse(rotationZ.Groups[1].Value, out column.Yaw);
 
-                if (checkBox_handednessFix.Checked)
+                if (Max2016Fix)
+                {
+                    column.Max2016Fix();
+                }
+
+                if (HandinessFix)
                 {
                     column.HandednessFix();
                 }
+
                 CSVRows.Add(column);
 
                 i++;
@@ -229,7 +241,15 @@ namespace dae_to_csv
             Yaw = float.Parse(yaw);
         }
 
-        public void HandednessFix() {
+        public void Max2016Fix()
+        {
+            float tempRoll = Roll;
+            Roll = Pitch;
+            Pitch = tempRoll;
+        }
+
+        public void HandednessFix()
+        {
             TranslateY = -TranslateY;
 
             Roll = Roll;

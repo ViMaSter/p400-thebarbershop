@@ -37,11 +37,14 @@
             this.checkBox_handednessFix = new System.Windows.Forms.CheckBox();
             this.backgroundWorker_regex = new System.ComponentModel.BackgroundWorker();
             this.progressBar_regex = new System.Windows.Forms.ProgressBar();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.version = new System.Windows.Forms.ComboBox();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btn_load
             // 
-            this.btn_load.Location = new System.Drawing.Point(12, 42);
+            this.btn_load.Location = new System.Drawing.Point(12, 159);
             this.btn_load.Name = "btn_load";
             this.btn_load.Size = new System.Drawing.Size(249, 23);
             this.btn_load.TabIndex = 0;
@@ -74,7 +77,7 @@
             // 
             // textbox_seperator
             // 
-            this.textbox_seperator.Location = new System.Drawing.Point(197, 71);
+            this.textbox_seperator.Location = new System.Drawing.Point(179, 43);
             this.textbox_seperator.Name = "textbox_seperator";
             this.textbox_seperator.Size = new System.Drawing.Size(64, 20);
             this.textbox_seperator.TabIndex = 3;
@@ -82,7 +85,7 @@
             // 
             // label_seperator
             // 
-            this.label_seperator.Location = new System.Drawing.Point(12, 74);
+            this.label_seperator.Location = new System.Drawing.Point(3, 46);
             this.label_seperator.Name = "label_seperator";
             this.label_seperator.Size = new System.Drawing.Size(82, 20);
             this.label_seperator.TabIndex = 4;
@@ -90,9 +93,9 @@
             // 
             // checkBox_handednessFix
             // 
-            this.checkBox_handednessFix.Location = new System.Drawing.Point(15, 12);
+            this.checkBox_handednessFix.Location = new System.Drawing.Point(6, 19);
             this.checkBox_handednessFix.Name = "checkBox_handednessFix";
-            this.checkBox_handednessFix.Size = new System.Drawing.Size(246, 24);
+            this.checkBox_handednessFix.Size = new System.Drawing.Size(237, 24);
             this.checkBox_handednessFix.TabIndex = 5;
             this.checkBox_handednessFix.Text = "Unreal handedness fix";
             this.checkBox_handednessFix.UseVisualStyleBackColor = true;
@@ -106,27 +109,51 @@
             // 
             // progressBar_regex
             // 
-            this.progressBar_regex.Location = new System.Drawing.Point(12, 97);
+            this.progressBar_regex.Location = new System.Drawing.Point(12, 244);
             this.progressBar_regex.Name = "progressBar_regex";
             this.progressBar_regex.Size = new System.Drawing.Size(249, 23);
             this.progressBar_regex.TabIndex = 6;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.version);
+            this.groupBox1.Controls.Add(this.checkBox_handednessFix);
+            this.groupBox1.Controls.Add(this.textbox_seperator);
+            this.groupBox1.Controls.Add(this.label_seperator);
+            this.groupBox1.Location = new System.Drawing.Point(12, 12);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(249, 141);
+            this.groupBox1.TabIndex = 7;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Settings";
+            // 
+            // version
+            // 
+            this.version.FormattingEnabled = true;
+            this.version.Items.AddRange(new object[] {
+            "3DS Max 2015",
+            "3DS Max 2016"});
+            this.version.SelectedIndex = 0;
+            this.version.Location = new System.Drawing.Point(6, 69);
+            this.version.Name = "version";
+            this.version.Size = new System.Drawing.Size(237, 21);
+            this.version.TabIndex = 6;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(273, 331);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.progressBar_regex);
-            this.Controls.Add(this.checkBox_handednessFix);
-            this.Controls.Add(this.label_seperator);
-            this.Controls.Add(this.textbox_seperator);
             this.Controls.Add(this.label_found_instances);
             this.Controls.Add(this.btn_save);
             this.Controls.Add(this.btn_load);
             this.Name = "Form1";
             this.Text = "UE4 .DAE to .CSV converter";
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -141,6 +168,8 @@
         private System.Windows.Forms.CheckBox checkBox_handednessFix;
         private System.ComponentModel.BackgroundWorker backgroundWorker_regex;
         private System.Windows.Forms.ProgressBar progressBar_regex;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.ComboBox version;
 
     }
 }
