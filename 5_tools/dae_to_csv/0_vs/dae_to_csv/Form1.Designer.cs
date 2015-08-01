@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.btn_load = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.btn_save = new System.Windows.Forms.Button();
@@ -133,7 +134,6 @@
             this.version.Items.AddRange(new object[] {
             "3DS Max 2015",
             "3DS Max 2016"});
-            this.version.SelectedIndex = 0;
             this.version.Location = new System.Drawing.Point(6, 69);
             this.version.Name = "version";
             this.version.Size = new System.Drawing.Size(237, 21);
@@ -149,8 +149,10 @@
             this.Controls.Add(this.label_found_instances);
             this.Controls.Add(this.btn_save);
             this.Controls.Add(this.btn_load);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Text = "UE4 .DAE to .CSV converter";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);

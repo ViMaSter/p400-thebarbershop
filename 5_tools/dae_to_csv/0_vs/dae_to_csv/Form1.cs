@@ -161,6 +161,11 @@ namespace dae_to_csv
             btn_save.Enabled = true;
             label_found_instances.Text = string.Format("Found instances: {0}", CSVRows.Count);
         }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 
     // CSV generator
