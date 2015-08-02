@@ -4,7 +4,6 @@
 #include "TBSCharacter.h"
 #include "TBSPlayerController.h"
 #include "TBSGameState.h"
-#include "TBSDataLoadWorker.h"
 
 ATBSCharacter::ATBSCharacter (const FObjectInitializer& ObjectInitializer)
 	: Super (ObjectInitializer) {

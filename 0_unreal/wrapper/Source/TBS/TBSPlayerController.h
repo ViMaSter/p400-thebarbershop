@@ -3,25 +3,12 @@
 #include "GameFramework/PlayerController.h"
 #include "Engine/LocalPlayer.h"
 
+#include "TBSBeard.h"
 #include "TBSCharacter.h"
 #include "TBSPlayerController.generated.h"
 
 
 #define MAXREDOSTEPS 10
-
-USTRUCT(BlueprintType)
-struct FBeardNameLevelData{
-	GENERATED_USTRUCT_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeardCollection")
-		FName BeardName;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeardCollection")
-		int32 BeardLevel;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeardCollection")
-		int32 UniqueID;
-};
 
 UCLASS()
 class ATBSPlayerController : public APlayerController {

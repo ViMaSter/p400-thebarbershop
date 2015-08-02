@@ -8,6 +8,8 @@
 #include "TBSEquipment.h"
 #include "TBSRazor.h"
 #include "TBSCustomer.h"
+#include "TBSBeard.h"
+#include "TBSDataLoadWorker.h"
 #include "TBSCharacter.generated.h"
 
 
@@ -47,48 +49,7 @@ public:
 		int32 BonusCash;
 };
 
-USTRUCT (BlueprintType)
-struct FBeardComparisonData : public FTableRowBase {
-	GENERATED_USTRUCT_BODY ()
 
-public:
-
-	FBeardComparisonData ()
-		: HairState (0)
-	{}
-
-	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "HairInfo")
-	int32 HairState;
-};
-
-USTRUCT (BlueprintType)
-struct FBeardCollectionData : public FTableRowBase {
-	GENERATED_USTRUCT_BODY ()
-
-public:
-
-	FBeardCollectionData()
-		: BeardName("")
-		, BeardSlotName("")
-		, BeardLevel(0)
-		, UniqueIdentifier(0)
-	{}
-
-	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "BeardCollection")
-	FName BeardName;
-
-	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "BeardCollection")
-	FName BeardSlotName;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeardCollection")
-	int32 BeardLevel;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeardCollection")
-	int32 UniqueIdentifier;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeardCollection")
-	UTexture* ComparisionScreenshot;
-};
 
 UCLASS(Blueprintable)
 class ATBSCharacter : public APawn {

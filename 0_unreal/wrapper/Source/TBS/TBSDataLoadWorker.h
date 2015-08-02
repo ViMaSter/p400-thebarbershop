@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Engine/DataTable.h"
-#include "TBSPlayerController.h"
+#include "TBSBeard.h"
 
 UENUM()
 enum class ETBSMultiThreadingTask : uint8 {
