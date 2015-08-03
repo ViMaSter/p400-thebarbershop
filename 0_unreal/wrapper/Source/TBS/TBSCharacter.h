@@ -9,47 +9,22 @@
 #include "TBSRazor.h"
 #include "TBSCustomer.h"
 #include "TBSBeard.h"
+#include "TBSProgression.h"
 #include "TBSDataLoadWorker.h"
 #include "TBSCharacter.generated.h"
 
-
-
-USTRUCT (BlueprintType)
-struct FLevelUpData : public FTableRowBase {
-	GENERATED_USTRUCT_BODY ()
-
-public:
-	FLevelUpData ()
-		: Level (0)
-		, XPtoLvl (0)
-	{}
-
-	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "Level")
-	int32 Level;
-	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "Level")
-	int32 XPtoLvl;
-};
-
-USTRUCT(BlueprintType)
-struct FTimeBonusData : public FTableRowBase {
+USTRUCT()
+struct FMTTask {
 	GENERATED_USTRUCT_BODY()
+	
+		FTimerHandle Handle;
+		FTBSDataLoadWorker* Runnable;
+		bool TaskStarted = false;
 
-public:
-	FTimeBonusData()
-		: TimeMin(0)
-		, TimeMax(0)
-		, BonusCash(0)
-	{}
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BonusCash")
-		int32 TimeMin;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BonusCash")
-		int32 TimeMax;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BonusCash")
-		int32 BonusCash;
+		bool operator==(FMTTask RHT) {
+			return this->Runnable == RHT.Runnable;
+		}
 };
-
-
 
 UCLASS(Blueprintable)
 class ATBSCharacter : public APawn {
@@ -156,6 +131,8 @@ public:
 	ATBSCustomer* FirstCustomer;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus")
 	ATBSCustomer* SecondCustomer;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus")
+	ATBSCustomer* ScreenCaptureCustomer;
 
 	UFUNCTION(BlueprintCallable, Category = "PlayerStatus") FName GetDesiredCustomerBeard();
 
@@ -219,20 +196,16 @@ public:
 #pragma endregion Equipment
 
 #pragma region Multi-Threading
-	bool CompLoadingStarted_MT = false;
-	bool BonusLoadingStarted_MT = false;
-	bool EquipmentLodingStarted_MT = false;
-	bool LevelLodingStarted_MT = false;
+	void CheckMTTasks();
+	void StartMTTasks(TArray<TSubclassOf<FTableRowBase>*>* OUT_Data, UDataTable* DataTable);
 
+	TArray<FMTTask> MTTasks;
+	
 	TArray<FBeardComparisonData*> BeardData_MT;
 	TArray<FTimeBonusData*> TimeBonusData_MT;
 	TArray<FTBSEquipmentData*> EquipmentData_MT;
 	TArray<FLevelUpData*> LevelData_MT;
 
-	FTimerHandle  CompLoadingTimeHandle_MT;
-	FTimerHandle BonusLoadingTimeHandle_MT;
-	FTimerHandle EquipmentLoadingTimeHandle_MT;
-	FTimerHandle LevelLoadingTimeHandle_MT;
 #pragma endregion Multi-Threading
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer management") bool FirstCustomerActive = true;

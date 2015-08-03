@@ -42,41 +42,32 @@ ATBSCharacter::ATBSCharacter (const FObjectInitializer& ObjectInitializer)
 }
 
 void ATBSCharacter::Tick(float DeltaTime){
-	// Handel Loading of Comparision Data
-	if (CompLoadingStarted_MT && GetWorldTimerManager().TimerExists(CompLoadingTimeHandle_MT)) {
-		if (FTBSDataLoadWorker::IsThreadFinished()) {
-			FTBSDataLoadWorker::Shutdown();
-			CompLoadingStarted_MT = false;
-			GetWorldTimerManager().ClearTimer(CompLoadingTimeHandle_MT);
-		}
-	}
+	CheckMTTasks();
+}
 
-	// Handel Loading of BonusCash Data
-	if (BonusLoadingStarted_MT && GetWorldTimerManager().TimerExists(BonusLoadingTimeHandle_MT)) {
-		if (FTBSDataLoadWorker::IsThreadFinished()) {
-			FTBSDataLoadWorker::Shutdown();
-			BonusLoadingStarted_MT = false;
-			GetWorldTimerManager().ClearTimer(BonusLoadingTimeHandle_MT);
-		}
-	}
+void ATBSCharacter::CheckMTTasks() {
+	TArray<FMTTask> TMPTasks;
+	for (FMTTask Task : MTTasks) {
+		if (Task.TaskStarted && GetWorldTimerManager().TimerExists(Task.Handle) && Task.Runnable->IsThreadFinished()) {
+			Task.Runnable->Shutdown();
+			Task.TaskStarted = false;
+			GetWorldTimerManager().ClearTimer(Task.Handle);
+			TMPTasks.Add(Task);
 
-	// Handel Loading of Equipment Data
-	if (EquipmentLodingStarted_MT && GetWorldTimerManager().TimerExists(EquipmentLoadingTimeHandle_MT)) {
-		if (FTBSDataLoadWorker::IsThreadFinished()) {
-			FTBSDataLoadWorker::Shutdown();
-			CompLoadingStarted_MT = false;
-			GetWorldTimerManager().ClearTimer(EquipmentLoadingTimeHandle_MT);
+			UE_LOG(LogClass, Warning, TEXT("*** Thread finished ***"));
 		}
 	}
+	for (FMTTask Task : TMPTasks) {
+		MTTasks.Remove(Task);
+	}
+}
 
-	// Handel Loading of Level Data
-	if (LevelLodingStarted_MT && GetWorldTimerManager().TimerExists(LevelLoadingTimeHandle_MT)) {
-		if (FTBSDataLoadWorker::IsThreadFinished()) {
-			FTBSDataLoadWorker::Shutdown();
-			LevelLodingStarted_MT = false;
-			GetWorldTimerManager().ClearTimer(LevelLoadingTimeHandle_MT);
-		}
-	}
+void ATBSCharacter::StartMTTasks(TArray<TSubclassOf<FTableRowBase>*>* OUT_Data, UDataTable* DataTable) {
+	FMTTask Task;
+	//Task.Runnable = FTBSDataLoadWorker::JoyInitEquipment((TArrayOUT_Data, DataTable);
+	Task.TaskStarted = true;
+	GetWorldTimerManager().SetTimer(Task.Handle, 0.1f, true, -1.f);
+	MTTasks.Add(Task);
 }
 
 void ATBSCharacter::BeginPlay () {
@@ -102,6 +93,14 @@ void ATBSCharacter::BeginPlay () {
 		NextCustomer = SecondCustomer;
 	}
 
+	if (World && ScreenCaptureCustomer == NULL) {
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.bNoCollisionFail = true;
+		SpawnParams.Instigator = Instigator;
+		SpawnParams.Owner = this;
+		ScreenCaptureCustomer = World->SpawnActor<ATBSCustomer>(CustomerClass, FVector(800, -700, 0), FRotator::ZeroRotator, SpawnParams);
+	}
+
 	// Spawn Tool
 	if (World) {
 		FActorSpawnParameters SpawnParams;
@@ -124,6 +123,11 @@ void ATBSCharacter::StartGame() {
 	CurrentCustomer->CreateNewCustomer(CurrentLevel);
 	CurrentBeardRow = ((ATBSPlayerController*)GetController())->FindDataRowToName(CurrentCustomer->DesiredBeard);
 
+	ScreenCaptureCustomer->CreateNewCustomer(CurrentLevel);
+	ScreenCaptureCustomer->IsCurrentCustomer = true;
+	ScreenCaptureCustomer->SetActorHiddenInGame(false);
+	ScreenCaptureCustomer->Beard->SetActorHiddenInGame(false);
+
 	// Load Level Up Data
 	const FLevelUpData *CurrentData;
 	const FString String = "";
@@ -142,28 +146,36 @@ void ATBSCharacter::StartGame() {
 		FName DesiredCustomerBeard = CurrentCustomer->DesiredBeard;
 		UDataTable* BeardDataTable = ((ATBSPlayerController*)GetController())->FindDataTableToName(DesiredCustomerBeard);
 		if (BeardDataTable) {
-			FTBSDataLoadWorker::JoyInitBeardComp(BeardData_MT, BeardDataTable);
-			GetWorldTimerManager().SetTimer(CompLoadingTimeHandle_MT, 0.1f, true, -1.f);
-			CompLoadingStarted_MT = true;
+			FMTTask Task;
+			Task.Runnable = FTBSDataLoadWorker::JoyInitBeardComp(BeardData_MT, BeardDataTable);
+			Task.TaskStarted = true;
+			GetWorldTimerManager().SetTimer(Task.Handle, 0.1f, true, -1.f);
+			MTTasks.Add(Task);
 		}
 	}
 
 	if (EquipmentData) {
-		FTBSDataLoadWorker::JoyInitEquipment(EquipmentData_MT, EquipmentData);
-		GetWorldTimerManager().SetTimer(EquipmentLoadingTimeHandle_MT, 0.1f, true, -1.f);
-		EquipmentLodingStarted_MT = true;
+		FMTTask Task;
+		Task.Runnable = FTBSDataLoadWorker::JoyInitEquipment(EquipmentData_MT, EquipmentData);
+		Task.TaskStarted = true;
+		GetWorldTimerManager().SetTimer(Task.Handle, 0.1f, true, -1.f);
+		MTTasks.Add(Task);
 	}
 
 	if (LevelData) {
-		FTBSDataLoadWorker::JoyInitLevel(LevelData_MT, LevelData);
-		GetWorldTimerManager().SetTimer(LevelLoadingTimeHandle_MT, 0.1f, true, -1.f);
-		LevelLodingStarted_MT = true;
+		FMTTask Task;
+		Task.Runnable = FTBSDataLoadWorker::JoyInitLevel(LevelData_MT, LevelData);
+		Task.TaskStarted = true;
+		GetWorldTimerManager().SetTimer(Task.Handle, 0.1f, true, -1.f);
+		MTTasks.Add(Task);
 	}
 
 	if (BonusCashData) {
-		FTBSDataLoadWorker::JoyInitBonus(TimeBonusData_MT, BonusCashData);
-		GetWorldTimerManager().SetTimer(BonusLoadingTimeHandle_MT, 0.1f, true, -1.f);
-		LevelLodingStarted_MT = true;
+		FMTTask Task;
+		Task.Runnable = FTBSDataLoadWorker::JoyInitBonus(TimeBonusData_MT, BonusCashData);
+		Task.TaskStarted = true;
+		GetWorldTimerManager().SetTimer(Task.Handle, 0.1f, true, -1.f);
+		MTTasks.Add(Task);
 	}
 
 	CurrentCustomer = FirstCustomer;
@@ -227,8 +239,6 @@ void ATBSCharacter::TransitionToNewCustomer() {
 		NextCustomer = SecondCustomer;
 	}
 	
-	//SwapedScreenCap();
-
 	if (GetController()) {
 		((ATBSPlayerController*)GetController())->ResetCamera();
 	}
@@ -257,9 +267,11 @@ void ATBSCharacter::LoadNewCustomer () {
 			FName DesiredCustomerBeard = CurrentCustomer->DesiredBeard;
 			UDataTable* BeardDataTable = ((ATBSPlayerController*)GetController())->FindDataTableToName(DesiredCustomerBeard);
 			if (BeardDataTable) {
-				FTBSDataLoadWorker::JoyInitBeardComp(BeardData_MT, BeardDataTable);
-				GetWorldTimerManager().SetTimer(CompLoadingTimeHandle_MT, 0.1f, true, -1.f);
-				CompLoadingStarted_MT = true;
+				FMTTask Task;
+				Task.Runnable = FTBSDataLoadWorker::JoyInitBeardComp(BeardData_MT, BeardDataTable);
+				Task.TaskStarted = true;
+				GetWorldTimerManager().SetTimer(Task.Handle, 0.1f, true, -1.f);
+				MTTasks.Add(Task);
 			}
 		}
 

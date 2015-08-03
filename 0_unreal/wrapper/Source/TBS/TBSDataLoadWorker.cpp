@@ -66,7 +66,6 @@ FTBSDataLoadWorker::~FTBSDataLoadWorker() {
 //Init
 bool FTBSDataLoadWorker::Init() {
 	//Init the Data 
-	BeardCompData->Empty();
 
 	UE_LOG(LogClass, Log, TEXT("*************************************"));
 	UE_LOG(LogClass, Log, TEXT("*** Load CSV Data Thread Started! ***"));
@@ -150,6 +149,7 @@ FTBSDataLoadWorker*  FTBSDataLoadWorker::JoyInitLevel(TArray<FLevelUpData*>& The
 	}
 	return Runnable;
 }
+
 FTBSDataLoadWorker*  FTBSDataLoadWorker::JoyInitBonus(TArray<FTimeBonusData*>& TheArray, UDataTable* IN_DataTable) {
 	//Create new instance of thread if it does not exist
 	//		and the platform supports multi threading!

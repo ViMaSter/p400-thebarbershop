@@ -4,6 +4,8 @@
 
 #include "Engine/DataTable.h"
 #include "TBSBeard.h"
+#include "TBSProgression.h"
+#include "TBSEquipment.h"
 
 UENUM()
 enum class ETBSMultiThreadingTask : uint8 {
