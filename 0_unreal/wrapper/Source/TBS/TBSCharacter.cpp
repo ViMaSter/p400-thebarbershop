@@ -93,12 +93,12 @@ void ATBSCharacter::BeginPlay () {
 		NextCustomer = SecondCustomer;
 	}
 
-	if (World && ScreenCaptureCustomer == NULL) {
+	if (World && ScreenCaptureCustomer == NULL && ScreenCaptureCustomerClass != NULL) {
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.bNoCollisionFail = true;
 		SpawnParams.Instigator = Instigator;
 		SpawnParams.Owner = this;
-		ScreenCaptureCustomer = World->SpawnActor<ATBSCustomer>(CustomerClass, FVector(800, -700, 0), FRotator::ZeroRotator, SpawnParams);
+		ScreenCaptureCustomer = World->SpawnActor<ATBSCustomer>(ScreenCaptureCustomerClass, FVector(1200, -200, -1000), FRotator::ZeroRotator, SpawnParams);
 	}
 
 	// Spawn Tool
@@ -203,6 +203,7 @@ void ATBSCharacter::StartGame() {
 }
 
 void ATBSCharacter::FinishCurrentCustomer () {
+	Resultopened();
 	BeardResult = CalculateResult();
 	int32 EXP = (int32)BeardResult;
 	LastBeardResult = BeardResult;
