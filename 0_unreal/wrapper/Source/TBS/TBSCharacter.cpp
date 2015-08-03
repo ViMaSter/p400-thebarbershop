@@ -203,7 +203,7 @@ void ATBSCharacter::StartGame() {
 }
 
 void ATBSCharacter::FinishCurrentCustomer () {
-	Resultopened();
+	ResultOpened();
 	BeardResult = CalculateResult();
 	int32 EXP = (int32)BeardResult;
 	LastBeardResult = BeardResult;

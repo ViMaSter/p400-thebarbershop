@@ -54,7 +54,7 @@ public:
 
 	UPROPERTY (EditAnywhere, noclear, BlueprintReadWrite, Category = "Customer Class", meta = (DisplayName = "Customer Class"))
 	TSubclassOf<ATBSCustomer> CustomerClass;
-	UPROPERTY(EditAnywhere, noclear, BlueprintReadWrite, Category = "Customer Class", meta = (DisplayName = "Customer Class"))
+	UPROPERTY(EditAnywhere, noclear, BlueprintReadWrite, Category = "Customer Class", meta = (DisplayName = "ScreenCaptureCustomerClass"))
 	TSubclassOf<ATBSCustomer> ScreenCaptureCustomerClass;
 
 	UPROPERTY (VisibleAnywhere, BlueprintReadOnly, Category = "Tool")
@@ -217,7 +217,7 @@ public:
 #pragma endregion
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Transition")	void SwapedScreenCap();
-	UFUNCTION(BlueprintImplementableEvent, Category = "ScreenCap")	void Resultopened();
+	UFUNCTION(BlueprintImplementableEvent, Category = "ScreenCap")	void ResultOpened();
 
 };
 
