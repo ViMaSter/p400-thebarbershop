@@ -17,6 +17,10 @@ struct FBeardNameLevelData {
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeardCollection")
 		int32 UniqueID;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeardCollection")
+		UTexture2D* ComparisionScreenshot;
+
 };
 
 USTRUCT(BlueprintType)
@@ -59,7 +63,7 @@ public:
 		int32 UniqueIdentifier;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BeardCollection")
-		UTexture* ComparisionScreenshot;
+		UTexture2D* ComparisionScreenshot;
 };
 
 USTRUCT(BlueprintType)

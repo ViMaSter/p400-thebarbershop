@@ -807,6 +807,7 @@ TArray<FBeardNameLevelData> ATBSPlayerController::GetBeardNameLevelData() {
 				Data.BeardLevel = CurrentData->BeardLevel;
 				Data.BeardName = CurrentData->BeardName;
 				Data.UniqueID = CurrentData->UniqueIdentifier;
+				Data.ComparisionScreenshot = CurrentData->ComparisionScreenshot;
 				BeardNameLevelData.Add(Data);
 			}
 		}

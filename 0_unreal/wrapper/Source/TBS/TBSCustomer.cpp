@@ -165,6 +165,7 @@ void ATBSCustomer::FindDesiredBeardFromPool(int32 Playerlevel){
 				for (int32 i = 0; i < Data.Num(); i++) {
 					if (Data[i].UniqueID == ForcedSessionBeards[FMath::Min(NumberOfPlaythrough, ForcedSessionBeards.Num()-1)]) {
 						DesiredBeard = Data[i].BeardName;
+						PortraitTexture = Data[i].ComparisionScreenshot;
 						UE_LOG(LogClass, Warning, TEXT("*** Falling back to %s. ***"), *DesiredBeard.ToString());
 						break;
 					}
@@ -172,6 +173,7 @@ void ATBSCustomer::FindDesiredBeardFromPool(int32 Playerlevel){
 				// Fallback, if no valid ID was set in ForcedSessionBeards 
 				if (DesiredBeard == "DEFAULT") {
 					DesiredBeard = Data[0].BeardName;
+					PortraitTexture = Data[0].ComparisionScreenshot;
 					UE_LOG(LogClass, Warning, TEXT("*** No beard in BeardPoolData using UniqueIdentifier %d! Falling back to the first one available! ***"), ForcedSessionBeards[FMath::Min(NumberOfPlaythrough, ForcedSessionBeards.Num() - 1)]);
 				}
 			}
@@ -205,6 +207,7 @@ void ATBSCustomer::FindDesiredBeardFromPool(int32 Playerlevel){
 				for (int32 i = 0; i < Data.Num(); i++) {
 					if (Data[i].UniqueID == randID) {
 						DesiredBeard = Data[i].BeardName;
+						PortraitTexture = Data[i].ComparisionScreenshot;
 					}
 				}
 			}

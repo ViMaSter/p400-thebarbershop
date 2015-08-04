@@ -112,7 +112,7 @@ public:
 	TArray<UDataTable*> BeardData;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CSV Data")
-	TArray<UTexture*> BeardIcons;
+	TArray<UTexture2D*> BeardIcons;
 
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "CSV Data")
 	UDataTable* BeardCollection;
