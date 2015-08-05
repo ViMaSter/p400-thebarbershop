@@ -32,6 +32,9 @@ public:
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "Beard")
 	AActor* Beard;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer")
+	UTexture2D* PortraitTexture;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cutted Hairs")
 	TArray<UActorComponent*> HairsCutted;
 
