@@ -199,7 +199,6 @@ public:
 
 #pragma region Multi-Threading
 	void CheckMTTasks();
-	void StartMTTasks(TArray<TSubclassOf<FTableRowBase>*>* OUT_Data, UDataTable* DataTable);
 
 	TArray<FMTTask> MTTasks;
 	

@@ -62,14 +62,6 @@ void ATBSCharacter::CheckMTTasks() {
 	}
 }
 
-void ATBSCharacter::StartMTTasks(TArray<TSubclassOf<FTableRowBase>*>* OUT_Data, UDataTable* DataTable) {
-	FMTTask Task;
-	//Task.Runnable = FTBSDataLoadWorker::JoyInitEquipment((TArrayOUT_Data, DataTable);
-	Task.TaskStarted = true;
-	GetWorldTimerManager().SetTimer(Task.Handle, 0.1f, true, -1.f);
-	MTTasks.Add(Task);
-}
-
 void ATBSCharacter::BeginPlay () {
 	Super::BeginPlay ();
 	UWorld *World = GetWorld ();
@@ -395,11 +387,11 @@ void ATBSCharacter::CalculateBonusCash(){
 
 // Returns the comparison Result from the shaved beard of the customer and the CSV data
 float ATBSCharacter::CalculateResult () {
-	if (Tool && Tool->TrimmedBeardInstances && Tool->InstancedSMComponent) {
+	if (Tool  && Tool->InstancedSMComponent) {
 		TArray<UActorComponent*> Components;
 		int32 Total = Tool->InstancedSMComponent->GetInstanceCount();
 		int32 Incorrect = 0;
-		int32 NumTrimmed = Tool->TrimmedBeardInstances->GetInstanceCount();
+		int32 NumTrimmed = (Tool->TrimmedBeardInstances ? Tool->TrimmedBeardInstances->GetInstanceCount() : 0);
 		int32 NumShaved = Tool->CutHairsIndices.Num() - NumTrimmed;
 		int32 TotalTarget = 0;
 		int32 NumTargetTrimmed = 0;
