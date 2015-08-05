@@ -96,7 +96,7 @@ void ATBSCharacter::BeginPlay () {
 	// Spawn Tool
 	if (World) {
 		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = GetOwner ();
+		SpawnParams.Owner = this;
 		SpawnParams.Instigator = GetInstigator ();
 		SpawnParams.bNoCollisionFail = true;
 
