@@ -39,7 +39,10 @@ public:
 	void SwitchedTool (ETBSRazor::Type NewToolType);
 
 	UFUNCTION (BlueprintImplementableEvent, Category = "Beard")
-	void Trimmed (float TrimmValue, UActorComponent* Mesh);
+	void TrimmHair (int32 index);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Beard")
+	void ShaveHair(int32 index);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Beard")
 	void ResetHairs();

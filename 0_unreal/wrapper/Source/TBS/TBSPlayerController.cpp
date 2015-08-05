@@ -532,19 +532,22 @@ bool ATBSPlayerController::SetCurrentBeardDataToCSV(UDataTable* DataTable) {
 	TArray<UActorComponent*> Components;
 	Components = PlayerCharacter->CurrentCustomer->Beard->GetComponentsByClass (UStaticMeshComponent::StaticClass ());
 	FBeardComparisonData* CurrentData;
-	for (int32 i = 0; i < Components.Num (); i++) {
-		int32 ComponentStatus;
+	for (int32 i = 0; i < PlayerCharacter->Tool->InstancedSMComponent->GetInstanceCount(); i++) {
+		int32 ComponentStatus = 2;
 		const FString Context = FString("");
-		UStaticMeshComponent* Mesh = (UStaticMeshComponent*) Components[i];
-		if (!Mesh->IsVisible ()) {
-			ComponentStatus = 0;
+		FTransform Transform;
+		if (PlayerCharacter->Tool->InstancedSMComponent->GetInstanceTransform(i, Transform)) {
+			if (Transform.GetLocation().Z >= 1000) { // Shaved
+				ComponentStatus = 0;
+			}
+			else if (Transform.GetLocation().Z <= -1000) { // Trimmed
+				ComponentStatus = 1;
+			}
+			else {	// Unshaved
+				ComponentStatus = 2;
+			}
 		}
-		else if (Mesh->GetCollisionResponseToChannel (ECC_Vehicle) == ECR_Ignore) {
-			ComponentStatus = 1;
-		}
-		else {
-			ComponentStatus = 2;
-		}
+
 		FString String = FString::FromInt (i);
 		FName Row = FName (*String);
 		CurrentData = DataTable->FindRow<FBeardComparisonData> (Row, Context, false);
@@ -577,28 +580,21 @@ bool ATBSPlayerController::LoadBeardDataToCurrentCustomer (UDataTable* DataTable
 	FBeardComparisonData* CurrentData;
 	const FString Context = FString("");
 	bool success = true;
-	for (int32 i = 0; i < Components.Num (); i++) {
+	PlayerCharacter->Tool->ResetHairs();
+	for (int32 i = 0; i < PlayerCharacter->Tool->InstancedSMComponent->GetInstanceCount(); i++) {
 		FString String = FString::FromInt (i);
 		FName Row = FName (*String);
 		CurrentData = DataTable->FindRow<FBeardComparisonData> (Row, Context, false);
 		if (CurrentData) {
-			UStaticMeshComponent* Mesh = (UStaticMeshComponent*) Components[i];
 			switch (CurrentData->HairState) {
 				case(0) :
-					Mesh->SetVisibility (false);
-					Mesh->SetCollisionResponseToAllChannels (ECR_Ignore);
-					PlayerCharacter->Tool->Trimmed (1, Components[i]);
+					PlayerCharacter->Tool->ShaveHair(i);
 					break;
 				case(1) :
-					Mesh->SetVisibility (true);
-					Mesh->SetCollisionResponseToAllChannels (ECR_Ignore);
-					PlayerCharacter->Tool->Trimmed (0.8, Components[i]);
-
+					PlayerCharacter->Tool->TrimmHair(i);
 					break;
 				case(2) :
-					Mesh->SetVisibility (true);
-					Mesh->SetCollisionResponseToAllChannels (ECR_Overlap);
-					PlayerCharacter->Tool->Trimmed (0, Components[i]);
+					//
 					break;
 			}
 		}
@@ -614,27 +610,18 @@ void ATBSPlayerController::LoadBeardToCustomer(TArray<FBeardComparisonData*> Dat
 	if (PlayerCharacter == NULL) {
 		return;
 	}
-	TArray<UActorComponent*> Components;
-	Components = PlayerCharacter->CurrentCustomer->Beard->GetComponentsByClass(UStaticMeshComponent::StaticClass());
-	for (int32 i = 0; i < Components.Num(); i++) {
+	PlayerCharacter->Tool->ResetHairs();
+	for (int32 i = 0; i < PlayerCharacter->Tool->InstancedSMComponent->GetInstanceCount(); i++) {
 		if (Data[i]) {
-			UStaticMeshComponent* Mesh = (UStaticMeshComponent*)Components[i];
 			switch (Data[i]->HairState) {
 			case(0) :
-				Mesh->SetVisibility(false);
-				Mesh->SetCollisionResponseToAllChannels(ECR_Ignore);
-				PlayerCharacter->Tool->Trimmed(1, Components[i]);
+				PlayerCharacter->Tool->ShaveHair(i);
 				break;
 			case(1) :
-				Mesh->SetVisibility(true);
-				Mesh->SetCollisionResponseToAllChannels(ECR_Ignore);
-				PlayerCharacter->Tool->Trimmed(0.8, Components[i]);
-
+				PlayerCharacter->Tool->TrimmHair(i);
 				break;
 			case(2) :
-				Mesh->SetVisibility(true);
-				Mesh->SetCollisionResponseToAllChannels(ECR_Overlap);
-				PlayerCharacter->Tool->Trimmed(0, Components[i]);
+				//
 				break;
 			}
 		}

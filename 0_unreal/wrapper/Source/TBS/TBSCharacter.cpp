@@ -391,26 +391,39 @@ float ATBSCharacter::CalculateResult () {
 		TArray<UActorComponent*> Components;
 		int32 Total = Tool->InstancedSMComponent->GetInstanceCount();
 		int32 Incorrect = 0;
-		int32 NumTrimmed = (Tool->TrimmedBeardInstances ? Tool->TrimmedBeardInstances->GetInstanceCount() : 0);
+		int32 NumTrimmed = 0;
 		int32 NumShaved = Tool->CutHairsIndices.Num() - NumTrimmed;
 		int32 TotalTarget = 0;
 		int32 NumTargetTrimmed = 0;
 		int32 NumTargetShaved = 0;
+		FTransform Transform;
 
-		for (int32 i = 0; i < BeardData_MT.Num(); i++){
-			switch (BeardData_MT[i]->HairState)
-			{
-			case(0) : // Shaved
-				NumTargetShaved++;
-				break;
-			case(1) : // Trimmed
-				NumTargetTrimmed++;
-				break;
-			case(2) : // Unshaved
-				break;
+		for (int32 i = 0; i < Tool->InstancedSMComponent->GetInstanceCount() ; i++) {
+			if (Tool->InstancedSMComponent->GetInstanceTransform(i, Transform)) {
+				if (Transform.GetLocation().Z >= 1000) { // Shaved
+					NumShaved++;
+				}
+				else if (Transform.GetLocation().Z <= -1000){ // Trimmed
+					NumTrimmed++;
+				}
 			}
-			TotalTarget++;
+			if (BeardData_MT[i]) {
+				switch (BeardData_MT[i]->HairState)
+				{
+				case(0) : // Shaved
+					NumTargetShaved++;
+					break;
+				case(1) : // Trimmed
+					NumTargetTrimmed++;
+					break;
+				case(2) : // Unshaved
+					break;
+				}
+				TotalTarget++;
+			}
+
 		}
+
 		Incorrect = NumTargetTrimmed - NumTrimmed + NumTargetShaved - NumShaved;
 		float Result = ((float)(Total - Incorrect) / (float)Total) * 100;
 		UE_LOG(LogClass, Log, TEXT("*** Customer Finished with %.1f %% accuracy ***"), Result);
