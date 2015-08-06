@@ -4,16 +4,9 @@
 
 #include "GameFramework/Actor.h"
 #include "Components/InstancedStaticMeshComponent.h"
+#include "TBSEquipment.h"
 #include "TBSRazor.generated.h"
 
-UENUM (BlueprintType)
-namespace ETBSRazor {
-	enum Type {
-		TBSClipper		= 0 	UMETA (DisplayName = "Clipper"),
-		TBSRazorSmall	= 1		UMETA (DisplayName = "RazorSmall"),
-		TBSRazorBig		= 2		UMETA (DisplayName = "RazorBig"),
-	};
-}
 
 UCLASS()
 class TBS_API ATBSRazor : public AActor {

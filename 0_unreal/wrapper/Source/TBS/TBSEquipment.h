@@ -2,15 +2,24 @@
 #pragma once
 
 #include "Engine/DataTable.h"
-
 #include "TBSEquipment.generated.h"
+
+UENUM(BlueprintType)
+namespace ETBSRazor {
+	enum Type {
+		TBSClipper = 0 	UMETA(DisplayName = "Clipper"),
+		TBSRazorSmall = 1		UMETA(DisplayName = "RazorSmall"),
+		TBSRazorBig = 2		UMETA(DisplayName = "RazorBig"),
+	};
+}
 
 UENUM (BlueprintType)
 enum class ETBSEquipmentType : uint8 {
 	NONE			= 0		UMETA (DisplayName = "NONE"),
 	Towel			= 1		UMETA (DisplayName = "Towel"),
 	Clipper			= 2		UMETA (DisplayName = "Clipper"),
-	Razor			= 3		UMETA (DisplayName = "Razor")
+	RazorSmall		= 3		UMETA(DisplayName = "RazorSmall"),
+	RazorLarge		= 4		UMETA(DisplayName = "RazorLarge")
 };
 
 USTRUCT(BlueprintType)
@@ -36,4 +45,18 @@ public:
 		UTexture2D* Icon;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment")
 		int32 Cost;
+};
+
+
+USTRUCT(BlueprintType)
+struct FTBSItem {
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment")
+		TEnumAsByte<ETBSEquipmentType> Type;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment")
+		int32 EquipmentID;
+
 };

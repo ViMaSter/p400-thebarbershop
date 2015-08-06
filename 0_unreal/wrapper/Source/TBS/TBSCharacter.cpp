@@ -55,16 +55,16 @@ void ATBSCharacter::CheckMTTasks() {
 			switch (Task.Type)
 			{
 				case ETBSMultiThreadingTask::BeardComparison:
-					UE_LOG(LogClass, Warning, TEXT("*** Thread: Finished loading BeardCompData ***"), (uint32)Task.Type);
+					UE_LOG(LogClass, Log, TEXT("*** Thread: Finished loading BeardCompData ***"), (uint32)Task.Type);
 					break;
 				case ETBSMultiThreadingTask::Equipment:
-					UE_LOG(LogClass, Warning, TEXT("*** Thread: Finished loading EquipmentData ***"), (uint32)Task.Type);
+					UE_LOG(LogClass, Log, TEXT("*** Thread: Finished loading EquipmentData ***"), (uint32)Task.Type);
 					break;
 				case ETBSMultiThreadingTask::Level:
-					UE_LOG(LogClass, Warning, TEXT("*** Thread: Finished loading LevelData ***"), (uint32)Task.Type);
+					UE_LOG(LogClass, Log, TEXT("*** Thread: Finished loading LevelData ***"), (uint32)Task.Type);
 					break;
 				case ETBSMultiThreadingTask::Bonus:
-					UE_LOG(LogClass, Warning, TEXT("*** Thread: Finished loading BonusData ***"), (uint32)Task.Type);
+					UE_LOG(LogClass, Log, TEXT("*** Thread: Finished loading BonusData ***"), (uint32)Task.Type);
 					break;
 			}
 		}
@@ -72,7 +72,7 @@ void ATBSCharacter::CheckMTTasks() {
 	if (Rdycounter > 0 && Rdycounter == MTTasks.Num()) {
 		MTTasks[0].Runnable->Shutdown();
 		MTTasks.Empty();
-		UE_LOG(LogClass, Warning, TEXT("*** Thread finished and shut down ***"));
+		UE_LOG(LogClass, Log, TEXT("*** Thread finished and shut down ***"));
 	}
 }
 
@@ -122,6 +122,37 @@ void ATBSCharacter::BeginPlay () {
 		((ATBSPlayerController*)Controller)->PlayerCharacter = this;
 	}
 
+	if (EquipedItems.Num() == 0) {
+		// Equip Basic Items
+		FTBSItem ItemClipper;
+		ItemClipper.EquipmentID = 0;
+		ItemClipper.Type = ETBSEquipmentType::Clipper;
+
+		FTBSItem ItemRazor_L;
+		ItemRazor_L.EquipmentID = 3;
+		ItemRazor_L.Type = ETBSEquipmentType::RazorLarge;
+
+		FTBSItem ItemRazor_S;
+		ItemRazor_S.EquipmentID = 4;
+		ItemRazor_S.Type = ETBSEquipmentType::RazorSmall;
+
+		FTBSItem ItemTowel;
+		ItemTowel.EquipmentID = 9;
+		ItemTowel.Type = ETBSEquipmentType::Towel;
+
+		EquipedItems.Add(ItemClipper);
+		EquipedItems.Add(ItemRazor_L);
+		EquipedItems.Add(ItemRazor_S);
+		EquipedItems.Add(ItemTowel);
+		
+		// Check If Items Are Already In Saved Files
+		if (((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Num() == 0) {
+			((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Add(ItemClipper.EquipmentID);
+			((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Add(ItemRazor_L.EquipmentID);
+			((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Add(ItemRazor_S.EquipmentID);
+			((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Add(ItemTowel.EquipmentID);
+		}
+	}
 }
 
 void ATBSCharacter::StartGame() {
@@ -509,7 +540,7 @@ bool ATBSCharacter::BuyEquipment(int32 ID) {
 		if (CurrentData && CurrentData->Cost <= CurrentCash) {
 			CurrentCash -= CurrentData->Cost;
 			((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Add(ID);
-			EquipedItem(ID);
+			EquipItem(ID);
 			return true;
 		}
 	}
@@ -533,12 +564,18 @@ TMap<int32, FTBSEquipmentData> ATBSCharacter::GetEquipmentList() {
 			FTBSEquipmentData Data;
 			Data.Cost = EquipmentData_MT[i]->Cost;
 			Data.Name = EquipmentData_MT[i]->Name;
+			Data.Type = EquipmentData_MT[i]->Type;
 			Data.EquipmentID = EquipmentData_MT[i]->EquipmentID;
 			EquipmentList.Add(Data.EquipmentID, Data);
 		}
 	}
 	return EquipmentList;
 }
+
+TArray<FTBSItem> ATBSCharacter::GetEquipedItems() {
+	return EquipedItems;
+}
+
 
 TArray<FTBSEquipmentData> ATBSCharacter::GetEquipmentListAsArray() {
 	TArray<FTBSEquipmentData> TargetArray;
@@ -552,6 +589,14 @@ bool ATBSCharacter::EquipItem(int32 ID) {
 		return false;
 	}
 	else {
+		ETBSEquipmentType Type = GetEquipmentByID(ID).Type;
+		bool ItemFound = false;
+		for (FTBSItem &Item : EquipedItems) {
+			if (Item.Type == Type) {
+				Item.EquipmentID = ID;
+				break;
+			}
+		}
 		EquipedItem(ID);
 		return true;
 	}

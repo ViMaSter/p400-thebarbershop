@@ -182,6 +182,9 @@ private:
 
 #pragma region Equipment
 public:
+	// @Vincent TODO: Save in Gamestate. Move it maybe somewhere else to gamestate, savegame or so
+	TArray<FTBSItem> EquipedItems;
+
 	// Event for Equipping an Item
 	UFUNCTION(BlueprintImplementableEvent, Category = "Equipment")	void EquipedItem(int32 ID);
 
@@ -191,6 +194,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Equipment")	TArray<int32> GetObtainedEquipment();
 	UFUNCTION(BlueprintCallable, Category = "Equipment")	bool EquipItem(int32 ID);
 	UFUNCTION(BlueprintCallable, exec, Category = "Equipment")	bool BuyEquipment(int32 ID);
+
+	UFUNCTION(BlueprintCallable, Category = "Equipment")	TArray<FTBSItem> GetEquipedItems();
 
 	TMap<int32, FTBSEquipmentData> GetEquipmentList();
 	// Wrapper function, since TMap is not supported by the reflection system
