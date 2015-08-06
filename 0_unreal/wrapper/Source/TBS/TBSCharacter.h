@@ -18,6 +18,7 @@ struct FMTTask {
 	GENERATED_USTRUCT_BODY()
 	
 		FTimerHandle Handle;
+		ETBSMultiThreadingTask Type;
 		FTBSDataLoadWorker* Runnable;
 		bool TaskStarted = false;
 
@@ -217,6 +218,7 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Transition")	void SwapedScreenCap();
 	UFUNCTION(BlueprintImplementableEvent, Category = "ScreenCap")	void ResultOpened();
+	UFUNCTION(BlueprintImplementableEvent, Category = "ScreenCap")	void ChangedCustomer();
 
 };
 
