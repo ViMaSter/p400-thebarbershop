@@ -46,19 +46,33 @@ void ATBSCharacter::Tick(float DeltaTime){
 }
 
 void ATBSCharacter::CheckMTTasks() {
-	TArray<FMTTask> TMPTasks;
+	int32 Rdycounter = 0;
 	for (FMTTask Task : MTTasks) {
-		if (Task.TaskStarted && GetWorldTimerManager().TimerExists(Task.Handle) && Task.Runnable->IsThreadFinished()) {
-			Task.Runnable->Shutdown();
+		if (Task.TaskStarted && GetWorldTimerManager().TimerExists(Task.Handle) && Task.Runnable->IsTaskFinished(Task.Type)) {
 			Task.TaskStarted = false;
 			GetWorldTimerManager().ClearTimer(Task.Handle);
-			TMPTasks.Add(Task);
-
-			UE_LOG(LogClass, Warning, TEXT("*** Thread finished ***"));
+			Rdycounter++;
+			switch (Task.Type)
+			{
+				case ETBSMultiThreadingTask::BeardComparison:
+					UE_LOG(LogClass, Warning, TEXT("*** Thread: Finished loading BeardCompData ***"), (uint32)Task.Type);
+					break;
+				case ETBSMultiThreadingTask::Equipment:
+					UE_LOG(LogClass, Warning, TEXT("*** Thread: Finished loading EquipmentData ***"), (uint32)Task.Type);
+					break;
+				case ETBSMultiThreadingTask::Level:
+					UE_LOG(LogClass, Warning, TEXT("*** Thread: Finished loading LevelData ***"), (uint32)Task.Type);
+					break;
+				case ETBSMultiThreadingTask::Bonus:
+					UE_LOG(LogClass, Warning, TEXT("*** Thread: Finished loading BonusData ***"), (uint32)Task.Type);
+					break;
+			}
 		}
 	}
-	for (FMTTask Task : TMPTasks) {
-		MTTasks.Remove(Task);
+	if (Rdycounter > 0 && Rdycounter == MTTasks.Num()) {
+		MTTasks[0].Runnable->Shutdown();
+		MTTasks.Empty();
+		UE_LOG(LogClass, Warning, TEXT("*** Thread finished and shut down ***"));
 	}
 }
 
@@ -134,12 +148,19 @@ void ATBSCharacter::StartGame() {
 	GetWorldTimerManager().SetTimer(TimerHandle, TimeLimit, false, -1.f);
 
 	// Load Data with another thread
+	BeardData_MT.Empty();
+	EquipmentData_MT.Empty();
+	LevelData_MT.Empty();
+	TimeBonusData_MT.Empty();
+	
 	if (CurrentCustomer) {
 		FName DesiredCustomerBeard = CurrentCustomer->DesiredBeard;
+		UE_LOG(LogClass, Warning, TEXT("*** %s ***"), *DesiredCustomerBeard.ToString());
 		UDataTable* BeardDataTable = ((ATBSPlayerController*)GetController())->FindDataTableToName(DesiredCustomerBeard);
 		if (BeardDataTable) {
 			FMTTask Task;
 			Task.Runnable = FTBSDataLoadWorker::JoyInitBeardComp(BeardData_MT, BeardDataTable);
+			Task.Type = ETBSMultiThreadingTask::BeardComparison;
 			Task.TaskStarted = true;
 			GetWorldTimerManager().SetTimer(Task.Handle, 0.1f, true, -1.f);
 			MTTasks.Add(Task);
@@ -149,6 +170,7 @@ void ATBSCharacter::StartGame() {
 	if (EquipmentData) {
 		FMTTask Task;
 		Task.Runnable = FTBSDataLoadWorker::JoyInitEquipment(EquipmentData_MT, EquipmentData);
+		Task.Type = ETBSMultiThreadingTask::Equipment;
 		Task.TaskStarted = true;
 		GetWorldTimerManager().SetTimer(Task.Handle, 0.1f, true, -1.f);
 		MTTasks.Add(Task);
@@ -157,6 +179,7 @@ void ATBSCharacter::StartGame() {
 	if (LevelData) {
 		FMTTask Task;
 		Task.Runnable = FTBSDataLoadWorker::JoyInitLevel(LevelData_MT, LevelData);
+		Task.Type = ETBSMultiThreadingTask::Level;
 		Task.TaskStarted = true;
 		GetWorldTimerManager().SetTimer(Task.Handle, 0.1f, true, -1.f);
 		MTTasks.Add(Task);
@@ -165,6 +188,7 @@ void ATBSCharacter::StartGame() {
 	if (BonusCashData) {
 		FMTTask Task;
 		Task.Runnable = FTBSDataLoadWorker::JoyInitBonus(TimeBonusData_MT, BonusCashData);
+		Task.Type = ETBSMultiThreadingTask::Bonus;
 		Task.TaskStarted = true;
 		GetWorldTimerManager().SetTimer(Task.Handle, 0.1f, true, -1.f);
 		MTTasks.Add(Task);
@@ -194,7 +218,7 @@ void ATBSCharacter::StartGame() {
 	LastBeardResult = 0;
 }
 
-void ATBSCharacter::FinishCurrentCustomer () {
+void ATBSCharacter::FinishCurrentCustomer() {
 	ResultOpened();
 	BeardResult = CalculateResult();
 	int32 EXP = (int32)BeardResult;
@@ -247,6 +271,9 @@ void ATBSCharacter::TransitionToNewCustomer() {
 	FirstCustomerActive = !FirstCustomerActive;
 	//GetWorldTimerManager().SetTimer(NextCustomer->SpawnTimerHandle, NextCustomer, &ATBSCustomer::SpawnBeardPart, 0.05f, true);
 	CurrentCustomer->FinisheBeardSpawning();
+
+	ChangedCustomer();
+	Tool->ResetHairs();
 }
 
 
@@ -260,8 +287,10 @@ void ATBSCharacter::LoadNewCustomer () {
 			FName DesiredCustomerBeard = CurrentCustomer->DesiredBeard;
 			UDataTable* BeardDataTable = ((ATBSPlayerController*)GetController())->FindDataTableToName(DesiredCustomerBeard);
 			if (BeardDataTable) {
+				BeardData_MT.Empty();
 				FMTTask Task;
 				Task.Runnable = FTBSDataLoadWorker::JoyInitBeardComp(BeardData_MT, BeardDataTable);
+				Task.Type = ETBSMultiThreadingTask::BeardComparison;
 				Task.TaskStarted = true;
 				GetWorldTimerManager().SetTimer(Task.Handle, 0.1f, true, -1.f);
 				MTTasks.Add(Task);
@@ -392,7 +421,7 @@ float ATBSCharacter::CalculateResult () {
 		int32 Total = Tool->InstancedSMComponent->GetInstanceCount();
 		int32 Incorrect = 0;
 		int32 NumTrimmed = 0;
-		int32 NumShaved = Tool->CutHairsIndices.Num() - NumTrimmed;
+		int32 NumShaved = 0;
 		int32 TotalTarget = 0;
 		int32 NumTargetTrimmed = 0;
 		int32 NumTargetShaved = 0;
@@ -424,7 +453,7 @@ float ATBSCharacter::CalculateResult () {
 
 		}
 
-		Incorrect = NumTargetTrimmed - NumTrimmed + NumTargetShaved - NumShaved;
+		Incorrect = abs(NumTargetTrimmed - NumTrimmed) + abs(NumTargetShaved - NumShaved);
 		float Result = ((float)(Total - Incorrect) / (float)Total) * 100;
 		UE_LOG(LogClass, Log, TEXT("*** Customer Finished with %.1f %% accuracy ***"), Result);
 		return Result;

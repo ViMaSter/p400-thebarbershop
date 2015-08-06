@@ -45,6 +45,9 @@ public:
 	void ShaveHair(int32 index);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Beard")
+	void ResetHair(int32 index);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Beard")
 	void ResetHairs();
 
 	void SwitchRazorTypeTo (TEnumAsByte<ETBSRazor::Type> NewType);
@@ -56,10 +59,4 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hairs Cut")
 	UInstancedStaticMeshComponent* InstancedSMComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hairs Cut")
-	TArray<UActorComponent*> CuttedHairs;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hairs Cut")
-	TArray<int32> CutHairsIndices;
 };

@@ -86,31 +86,7 @@ void ATBSCustomer::SpawnBeardPart(){
 }
 
 void ATBSCustomer::FinisheBeardSpawning(){
-	if (Beard != NULL){
-		if (GetOwner()){
-			((ATBSCharacter*)GetOwner())->Tool->ResetHairs();
-		}
-		if (GetWorldTimerManager().TimerExists(SpawnTimerHandle)) {
-			GetWorldTimerManager().ClearTimer(SpawnTimerHandle);
-		}
-	}
-	/*
-	if (Beard != NULL) {
-		if (HairIndex <= HairsCutted.Num() - 1 && HairsCutted[HairIndex]) {
-			for (int i = HairIndex; i < HairsCutted.Num(); i++) {
-				UStaticMeshComponent* Mesh = (UStaticMeshComponent*)HairsCutted[i];
-				Mesh->SetVisibility(true);
-				Mesh->SetCollisionResponseToAllChannels(ECR_Overlap);
-				((ATBSCharacter*)GetOwner())->Tool->Trimmed(0, HairsCutted[i]);
-			}
-		}
-		if (GetWorldTimerManager().TimerExists(SpawnTimerHandle)) {
-			GetWorldTimerManager().ClearTimer(SpawnTimerHandle);
-		}
-
-		HairsCutted.Empty();
-		HairIndex = 0;
-	}*/
+	
 }
 
 // THIS IS DEPRECATED!
@@ -201,7 +177,7 @@ void ATBSCustomer::FindDesiredBeardFromPool(int32 Playerlevel){
 					}
 				}
 
-				int32 randID = FMath::RandRange(MinBeardID, MaxBeardID);
+				int32 randID = FMath::RandRange(MinBeardID, MaxBeardID+1);
 
 				// Random stuff
 				for (int32 i = 0; i < Data.Num(); i++) {

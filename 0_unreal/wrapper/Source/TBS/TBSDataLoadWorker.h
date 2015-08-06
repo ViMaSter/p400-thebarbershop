@@ -15,6 +15,23 @@ enum class ETBSMultiThreadingTask : uint8 {
 	Bonus = 3
 };
 
+struct FMTRunningTask {
+
+	UDataTable* DataTable;
+	bool LoadingFinished = false;
+	int32 RowCount;
+	ETBSMultiThreadingTask Type;
+	
+	bool operator==(FMTRunningTask RHT) {
+		return Type == RHT.Type;
+	}
+
+	bool IsFinished() {
+		return LoadingFinished;
+	}
+
+};
+
 class FTBSDataLoadWorker : public FRunnable
 {
 	/** Singleton instance, can access the thread any time via static accessor, if it is active! */
@@ -31,31 +48,44 @@ class FTBSDataLoadWorker : public FRunnable
 	TArray<FLevelUpData*>* LevelData;
 	TArray<FTimeBonusData*>* BonusData;
 
-	void LoadBeardCompData();
-	void LoadEquipmentData();
-	void LoadLevelData();
-	void LoadBonusData();
+	void LoadBeardCompData(FMTRunningTask &Task);
+	void LoadEquipmentData(FMTRunningTask &Task);
+	void LoadLevelData(FMTRunningTask &Task);
+	void LoadBonusData(FMTRunningTask &Task);
 
 private:
-	int32				RowCount;
-	bool				LoadingFinished;
-	ETBSMultiThreadingTask Task;
+	TArray<FMTRunningTask> RunningTasks;
 
 public:
 
-	UDataTable*			DataTable;
+	UDataTable* DataTable;
 
 	//Done?
-	bool IsFinished() const
-	{
-		return LoadingFinished;
+	bool IsFinished(){
+		for (FMTRunningTask Task : RunningTasks) {
+			if (!Task.IsFinished()) {
+				return false;
+			}
+		}
+		return true;
 	}
+
+	bool IsTaskFinished(ETBSMultiThreadingTask Type){
+		for (FMTRunningTask Task : RunningTasks) {
+			if (Task.Type == Type) {
+				return Task.LoadingFinished;
+			}
+		}
+		return true;
+	} 
 	
-	//Constructor for every possible task (workaround until i found a solution to do it with one array of anything)
-	FTBSDataLoadWorker(TArray<FBeardComparisonData*>& TheArray, UDataTable* DataTable);
-	FTBSDataLoadWorker(TArray<FTBSEquipmentData*>& TheArray, UDataTable* DataTable);
-	FTBSDataLoadWorker(TArray<FLevelUpData*>& TheArray, UDataTable* DataTable);
-	FTBSDataLoadWorker(TArray<FTimeBonusData*>& TheArray, UDataTable* DataTable);
+	//Constructor
+	FTBSDataLoadWorker();
+
+	void StartNewTaskBeardComp(TArray<FBeardComparisonData*>& TheArray, UDataTable* DataTable);
+	void StartNewTaskEquipment(TArray<FTBSEquipmentData*>& TheArray, UDataTable* DataTable);
+	void StartNewTaskLevel(TArray<FLevelUpData*>& TheArray, UDataTable* DataTable);
+	void StartNewTaskBonus(TArray<FTimeBonusData*>& TheArray, UDataTable* DataTable);
 	
 	// Destructor
 	virtual ~FTBSDataLoadWorker();

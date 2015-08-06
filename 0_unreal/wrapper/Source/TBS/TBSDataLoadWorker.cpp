@@ -11,52 +11,32 @@
 //***********************************************************
 FTBSDataLoadWorker* FTBSDataLoadWorker::Runnable = NULL;
 
-FTBSDataLoadWorker::FTBSDataLoadWorker(TArray<FBeardComparisonData*>& TheArray, UDataTable* IN_DataTable)
-	: DataTable(IN_DataTable)
-	, StopTaskCounter(0)
-	, RowCount(0)
+FTBSDataLoadWorker::FTBSDataLoadWorker()
+	: StopTaskCounter(0)
 {
-	BeardCompData = &TheArray;
-	LoadingFinished = false;
-	Task = ETBSMultiThreadingTask::BeardComparison;
 
 	Thread = FRunnableThread::Create(this, TEXT("FTBSDataLoadWorker"), 0, TPri_BelowNormal); //windows default = 8mb for thread, could specify more
 }
-
+/*
 FTBSDataLoadWorker::FTBSDataLoadWorker(TArray<FTBSEquipmentData*>& TheArray, UDataTable* IN_DataTable)
-	: DataTable(IN_DataTable)
-	, StopTaskCounter(0)
-	, RowCount(0)
+	: StopTaskCounter(0)
 {
-	EquipmentDataData = &TheArray;
-	LoadingFinished = false;
-	Task = ETBSMultiThreadingTask::Equipment;
-
 	Thread = FRunnableThread::Create(this, TEXT("FTBSDataLoadWorker"), 0, TPri_BelowNormal); //windows default = 8mb for thread, could specify more
 }
 
 FTBSDataLoadWorker::FTBSDataLoadWorker(TArray<FLevelUpData*>& TheArray, UDataTable* IN_DataTable)
-	: DataTable(IN_DataTable)
-	, StopTaskCounter(0)
-	, RowCount(0)
+	: StopTaskCounter(0)
 {
-	LevelData = &TheArray;
-	LoadingFinished = false;
-	Task = ETBSMultiThreadingTask::Level;
 
 	Thread = FRunnableThread::Create(this, TEXT("FTBSDataLoadWorker"), 0, TPri_BelowNormal); //windows default = 8mb for thread, could specify more
 }
 FTBSDataLoadWorker::FTBSDataLoadWorker(TArray<FTimeBonusData*>& TheArray, UDataTable* IN_DataTable)
-	: DataTable(IN_DataTable)
-	, StopTaskCounter(0)
-	, RowCount(0)
+	: StopTaskCounter(0)
 {
-	BonusData = &TheArray;
-	LoadingFinished = false;
-	Task = ETBSMultiThreadingTask::Bonus;
 
 	Thread = FRunnableThread::Create(this, TEXT("FTBSDataLoadWorker"), 0, TPri_BelowNormal); //windows default = 8mb for thread, could specify more
 }
+*/
 
 FTBSDataLoadWorker::~FTBSDataLoadWorker() {
 	delete Thread;
@@ -78,39 +58,44 @@ bool FTBSDataLoadWorker::Init() {
 uint32 FTBSDataLoadWorker::Run() {
 	//Initial wait before starting
 	FPlatformProcess::Sleep(0.03);
-
-	switch (Task)
-	{
-	case ETBSMultiThreadingTask::BeardComparison:
-		while (!IsFinished())
+	TArray<FMTRunningTask> TmpArray;
+	for(FMTRunningTask Task : RunningTasks){
+		switch (Task.Type)
 		{
-			LoadBeardCompData();
-			RowCount++;
+		case ETBSMultiThreadingTask::BeardComparison:
+			while (!Task.LoadingFinished)
+			{
+				LoadBeardCompData(Task);
+				Task.RowCount++;
+			}
+			break;
+		case ETBSMultiThreadingTask::Equipment:
+			while (!Task.LoadingFinished)
+			{
+				LoadEquipmentData(Task);
+				Task.RowCount++;
+			}
+			break;
+		case ETBSMultiThreadingTask::Level:
+			while (!Task.LoadingFinished)
+			{
+				LoadLevelData(Task);
+				Task.RowCount++;
+			}
+			break;
+		case ETBSMultiThreadingTask::Bonus:
+			while (!Task.LoadingFinished)
+			{
+				LoadBonusData(Task);
+				Task.RowCount++;
+			}
+			break;
 		}
-		break;
-	case ETBSMultiThreadingTask::Equipment:
-		while (!IsFinished())
-		{
-			LoadEquipmentData();
-			RowCount++;
-		}
-		break;
-	case ETBSMultiThreadingTask::Level:
-		while (!IsFinished())
-		{
-			LoadLevelData();
-			RowCount++;
-		}
-		break;
-	case ETBSMultiThreadingTask::Bonus:
-		while (!IsFinished())
-		{
-			LoadBonusData();
-			RowCount++;
-		}
-		break;
+		TmpArray.Add(Task);
 	}
-
+	for (FMTRunningTask Task : TmpArray) {
+		RunningTasks.Remove(Task);
+	}
 	return 0;
 }
 
@@ -120,13 +105,65 @@ void FTBSDataLoadWorker::Stop()
 	StopTaskCounter.Increment();
 }
 
+void FTBSDataLoadWorker::StartNewTaskBeardComp(TArray<FBeardComparisonData*>& TheArray, UDataTable* DataTable) {
+
+	FMTRunningTask Task;
+	Task.DataTable = DataTable;
+	BeardCompData = &TheArray;
+	Task.LoadingFinished = false;
+	Task.Type = ETBSMultiThreadingTask::BeardComparison;
+	Task.RowCount = 0;
+
+	RunningTasks.Add(Task);
+}
+
+void FTBSDataLoadWorker::StartNewTaskEquipment(TArray<FTBSEquipmentData*>& TheArray, UDataTable* DataTable) {
+
+	FMTRunningTask Task;
+	Task.DataTable = DataTable;
+	EquipmentDataData = &TheArray;
+	Task.LoadingFinished = false;
+	Task.Type = ETBSMultiThreadingTask::Equipment;
+	Task.RowCount = 0;
+
+	RunningTasks.Add(Task);
+
+}
+
+void FTBSDataLoadWorker::StartNewTaskLevel(TArray<FLevelUpData*>& TheArray, UDataTable* DataTable) {
+
+	FMTRunningTask Task;
+	Task.DataTable = DataTable;
+	LevelData = &TheArray;
+	Task.LoadingFinished = false;
+	Task.Type = ETBSMultiThreadingTask::Level;
+	Task.RowCount = 0;
+
+	RunningTasks.Add(Task);
+}
+
+void FTBSDataLoadWorker::StartNewTaskBonus(TArray<FTimeBonusData*>& TheArray, UDataTable* DataTable) {
+
+	FMTRunningTask Task;
+	Task.DataTable = DataTable;
+	BonusData = &TheArray;
+	Task.LoadingFinished = false;
+	Task.Type = ETBSMultiThreadingTask::Bonus;
+	Task.RowCount = 0;
+
+	RunningTasks.Add(Task);
+}
+
+
+
 FTBSDataLoadWorker* FTBSDataLoadWorker::JoyInitBeardComp(TArray<FBeardComparisonData*>& TheArray, UDataTable* IN_DataTable) {
 	//Create new instance of thread if it does not exist
 	//		and the platform supports multi threading!
 	if (!Runnable && FPlatformProcess::SupportsMultithreading())
 	{
-		Runnable = new FTBSDataLoadWorker(TheArray, IN_DataTable);
+		Runnable = new FTBSDataLoadWorker();
 	}
+	Runnable->StartNewTaskBeardComp(TheArray, IN_DataTable);
 	return Runnable;
 }
 
@@ -135,8 +172,9 @@ FTBSDataLoadWorker* FTBSDataLoadWorker::JoyInitEquipment(TArray<FTBSEquipmentDat
 	//		and the platform supports multi threading!
 	if (!Runnable && FPlatformProcess::SupportsMultithreading())
 	{
-		Runnable = new FTBSDataLoadWorker(TheArray, IN_DataTable);
+		Runnable = new FTBSDataLoadWorker();
 	}
+	Runnable->StartNewTaskEquipment(TheArray, IN_DataTable);
 	return Runnable;
 }
 
@@ -145,8 +183,9 @@ FTBSDataLoadWorker*  FTBSDataLoadWorker::JoyInitLevel(TArray<FLevelUpData*>& The
 	//		and the platform supports multi threading!
 	if (!Runnable && FPlatformProcess::SupportsMultithreading())
 	{
-		Runnable = new FTBSDataLoadWorker(TheArray, IN_DataTable);
+		Runnable = new FTBSDataLoadWorker();
 	}
+	Runnable->StartNewTaskLevel(TheArray, IN_DataTable);
 	return Runnable;
 }
 
@@ -155,8 +194,9 @@ FTBSDataLoadWorker*  FTBSDataLoadWorker::JoyInitBonus(TArray<FTimeBonusData*>& T
 	//		and the platform supports multi threading!
 	if (!Runnable && FPlatformProcess::SupportsMultithreading())
 	{
-		Runnable = new FTBSDataLoadWorker(TheArray, IN_DataTable);
+		Runnable = new FTBSDataLoadWorker();
 	}
+	Runnable->StartNewTaskBonus(TheArray, IN_DataTable);
 	return Runnable;
 }
 
@@ -185,60 +225,60 @@ bool FTBSDataLoadWorker::IsThreadFinished() {
 	return true;
 }
 
-void FTBSDataLoadWorker::LoadBeardCompData() {
+void FTBSDataLoadWorker::LoadBeardCompData(FMTRunningTask &Task) {
 	FBeardComparisonData* CurrentData;
 	const FString Context = FString("");
 	bool success = true;
-	FString String = FString::FromInt(RowCount);
+	FString String = FString::FromInt(Task.RowCount);
 	FName Row = FName(*String);
-	CurrentData = DataTable->FindRow<FBeardComparisonData>(Row, Context, false);
+	CurrentData = Task.DataTable->FindRow<FBeardComparisonData>(Row, Context, false);
 	if (CurrentData == NULL) {
-		LoadingFinished = true;
+		Task.LoadingFinished = true;
 	}
 	else{
 		BeardCompData->Add(CurrentData);
 	}
 }
 
-void FTBSDataLoadWorker::LoadEquipmentData() {
+void FTBSDataLoadWorker::LoadEquipmentData(FMTRunningTask &Task) {
 	FTBSEquipmentData* CurrentData;
 	const FString Context = FString("");
 	bool success = true;
-	FString String = FString::FromInt(RowCount);
+	FString String = FString::FromInt(Task.RowCount);
 	FName Row = FName(*String);
-	CurrentData = DataTable->FindRow<FTBSEquipmentData>(Row, Context, false);
+	CurrentData = Task.DataTable->FindRow<FTBSEquipmentData>(Row, Context, false);
 	if (CurrentData == NULL) {
-		LoadingFinished = true;
+		Task.LoadingFinished = true;
 	}
 	else{
 		EquipmentDataData->Add(CurrentData);
 	}
 }
 
-void FTBSDataLoadWorker::LoadLevelData() {
+void FTBSDataLoadWorker::LoadLevelData(FMTRunningTask &Task) {
 	FLevelUpData* CurrentData;
 	const FString Context = FString("");
 	bool success = true;
-	FString String = FString::FromInt(RowCount);
+	FString String = FString::FromInt(Task.RowCount);
 	FName Row = FName(*String);
-	CurrentData = DataTable->FindRow<FLevelUpData>(Row, Context, false);
+	CurrentData = Task.DataTable->FindRow<FLevelUpData>(Row, Context, false);
 	if (CurrentData == NULL) {
-		LoadingFinished = true;
+		Task.LoadingFinished = true;
 	}
 	else{
 		LevelData->Add(CurrentData);
 	}
 }
 
-void FTBSDataLoadWorker::LoadBonusData() {
+void FTBSDataLoadWorker::LoadBonusData(FMTRunningTask &Task) {
 	FTimeBonusData* CurrentData;
 	const FString Context = FString("");
 	bool success = true;
-	FString String = FString::FromInt(RowCount);
+	FString String = FString::FromInt(Task.RowCount);
 	FName Row = FName(*String);
-	CurrentData = DataTable->FindRow<FTimeBonusData>(Row, Context, false);
+	CurrentData = Task.DataTable->FindRow<FTimeBonusData>(Row, Context, false);
 	if (CurrentData == NULL) {
-		LoadingFinished = true;
+		Task.LoadingFinished = true;
 	}
 	else{
 		BonusData->Add(CurrentData);

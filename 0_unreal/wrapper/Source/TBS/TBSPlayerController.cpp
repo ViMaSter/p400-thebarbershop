@@ -663,9 +663,8 @@ UDataTable* ATBSPlayerController::FindDataTableToName(FName BeardName) {
 					if (CurrentData->BeardName == BeardName) {
 						DataTableName = CurrentData->BeardSlotName;
 						for (int32 j = 0; j < PlayerCharacter->BeardData.Num(); j++) {
-							if (PlayerCharacter->BeardData[i]->GetName() == DataTableName.ToString()) {
+							if (PlayerCharacter->BeardData[j]->GetName() == DataTableName.ToString()) {
 								return PlayerCharacter->BeardData[j];
-								break;
 							}
 						}
 						break;
