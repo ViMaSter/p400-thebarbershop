@@ -93,6 +93,9 @@ public:
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus")
 	int32 CurrentExperienceToLvl;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus")
+	bool LeveledUp = false;
+
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus")
 	int32 CurrentCash;
 
@@ -114,9 +117,6 @@ public:
 	// Customer
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CSV Data")
 	TArray<UDataTable*> BeardData;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CSV Data")
-	TArray<UTexture2D*> BeardIcons;
 
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "CSV Data")
 	UDataTable* BeardCollection;
@@ -216,6 +216,7 @@ private:
 	TArray<int32> NewUnlocks;
 
 	void CheckBeardUnlocks();
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "Beard")	TArray<FBeardNameLevelData> GetBeards();
 	UFUNCTION(BlueprintCallable, Category = "Beard")	FBeardNameLevelData GetBeardByID(int32 ID);

@@ -52,71 +52,10 @@ void ATBSCustomer::Tick(float DeltaTime) {
 }
 
 void ATBSCustomer::CreateNewCustomer (int32 CharacterLevel) {
-	// Reset the beard to Trimmed 0 and visibile.
-
-	// Deprecated!
-	// CreateRandomDesiredBeard(CharacterLevel);
-
 	FindDesiredBeardFromPool(CharacterLevel);
 
 	CreatedCustomer();
 	UE_LOG(LogClass, Log, TEXT("*** Customer Customer created ***"))
-}
-
-void ATBSCustomer::SpawnBeardPart(){
-	// @TODO: remove workaround
-
-	/*
-	if (Beard != NULL) {
-		if (HairIndex < HairsCutted.Num()-1 && HairsCutted[HairIndex]){
-			UStaticMeshComponent* Mesh = (UStaticMeshComponent*)HairsCutted[HairIndex];
-			Mesh->SetVisibility(true);
-			Mesh->SetCollisionResponseToAllChannels(ECR_Overlap);
-			((ATBSCharacter*)GetOwner())->Tool->Trimmed(0, HairsCutted[HairIndex]);
-			HairIndex++;
-		}
-		else{
-			if (GetWorldTimerManager().TimerExists(SpawnTimerHandle)) {
-				GetWorldTimerManager().ClearTimer(SpawnTimerHandle);
-			}
-			HairsCutted.Empty();
-			HairIndex = 0;
-		}
-	}*/
-}
-
-void ATBSCustomer::FinisheBeardSpawning(){
-	
-}
-
-// THIS IS DEPRECATED!
-// Might become handy in MS2 when tweaking some stuff
-// Dont delete please
-void ATBSCustomer::CreateRandomDesiredBeard(int32 MaxLevelBeard){
-	ATBSCharacter* Character = (ATBSCharacter*) GetOwner();
-	ATBSPlayerController* PlayerController = NULL;
-	if (Character) {
-		PlayerController = (ATBSPlayerController*) Character->GetController();
-		
-		if (PlayerController) {
-			TArray<FName> PossibleBeardNames;
-			TArray<FBeardNameLevelData> Data = PlayerController->GetBeardNameLevelData();
-			for (int32 i = 0; i < Data.Num(); i++) {
-				if (Data[i].BeardLevel <= MaxLevelBeard) {
-					PossibleBeardNames.Add(Data[i].BeardName);
-				}
-			}
-			if (PossibleBeardNames.Num() > 0) {
-				int32 randomIndex;
-				randomIndex = FMath::RandRange(0, PossibleBeardNames.Num()-1);
-				DesiredBeard = PossibleBeardNames[randomIndex];
-			}
-			else {
-				UE_LOG(LogClass, Warning, TEXT("*** No possible beard in data for level ***"));
-				UE_LOG(LogClass, Warning, TEXT("*** Could not generate desired beard for Customer! ***"));
-			}
-		}
-	}
 }
 
 void ATBSCustomer::FindDesiredBeardFromPool(int32 Playerlevel){

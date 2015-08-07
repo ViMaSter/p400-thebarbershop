@@ -31,7 +31,7 @@ ATBSCharacter::ATBSCharacter (const FObjectInitializer& ObjectInitializer)
 	VerticalUpperCameraRotationBorder = -35;
 	VerticalLowerCameraRotationBorder = 10;
 
-	CurrentLevel = 0;
+	CurrentLevel = 1;
 	CurrentExperience = 0;
 	CurrentExperienceToLvl = 0;
 	CurrentCash = 0;
@@ -304,11 +304,26 @@ void ATBSCharacter::TransitionToNewCustomer() {
 	NextCustomer->IsCurrentCustomer = false;
 
 	FirstCustomerActive = !FirstCustomerActive;
-	//GetWorldTimerManager().SetTimer(NextCustomer->SpawnTimerHandle, NextCustomer, &ATBSCustomer::SpawnBeardPart, 0.05f, true);
 	CurrentCustomer->FinisheBeardSpawning();
 
 	ChangedCustomer();
 	Tool->ResetHairs();
+
+	// Setup for next Customer
+	SessionID++;
+	BeardResult = 0;
+	CashEarned = 0;
+	CashPenalty = 0;
+	LeveledUp = false;
+	if (LevelData_MT.Num() > 0) {
+		for (FLevelUpData* LevelData : LevelData_MT)
+		{
+			if (LevelData->Level == CurrentLevel) {
+				CurrentExperienceToLvl = LevelData->XPtoLvl;
+			}
+		}
+	}
+		
 }
 
 
@@ -332,11 +347,6 @@ void ATBSCharacter::LoadNewCustomer () {
 			}
 		}
 
-		// Setup for next Customer
-		SessionID++;
-		BeardResult = 0;
-		CashEarned = 0;
-		CashPenalty = 0;
 	}
 	else {
 		UE_LOG(LogClass, Warning, TEXT("*** No Customer Reference! ***"));
@@ -406,6 +416,7 @@ void ATBSCharacter::IncreaseEXP (int32 Value) {
 			if (CurrentExperience >= CurrentData->XPtoLvl) {
 				CurrentLevel++;
 				CurrentExperience -= CurrentData->XPtoLvl;
+				LeveledUp = true;
 				CheckBeardUnlocks();
 			}
 		}
