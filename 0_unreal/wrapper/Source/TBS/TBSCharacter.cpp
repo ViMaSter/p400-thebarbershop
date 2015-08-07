@@ -35,6 +35,8 @@ ATBSCharacter::ATBSCharacter (const FObjectInitializer& ObjectInitializer)
 	CurrentExperience = 0;
 	CurrentExperienceToLvl = 0;
 	CurrentCash = 0;
+	CashEarned = 0;
+	CashPenalty = 0;
 
 	TimeLimit = 99999.f;		// Hack until final Bonustimerdecision is made ~ 27.7h per customer until the Clock in UI is broken :D
 
@@ -121,11 +123,7 @@ void ATBSCharacter::BeginPlay () {
 	if (Controller) {
 		((ATBSPlayerController*)Controller)->PlayerCharacter = this;
 		BeardList = ((ATBSPlayerController*)Controller)->GetBeardNameLevelData();
-		for (FBeardNameLevelData Beard : BeardList) {
-			if (Beard.BeardLevel <= CurrentLevel && !UnlockedBeards.Contains(Beard.UniqueID)) {
-				UnlockedBeards.Add(Beard.UniqueID);
-			}
-		}
+		CheckBeardUnlocks();
 	}
 
 	if (EquipedItems.Num() == 0) {
@@ -253,6 +251,7 @@ void ATBSCharacter::StartGame() {
 
 	BeardResult = 0;
 	LastBeardResult = 0;
+
 }
 
 void ATBSCharacter::FinishCurrentCustomer() {
@@ -263,7 +262,6 @@ void ATBSCharacter::FinishCurrentCustomer() {
 
 	IncreaseEXP(EXP);
 	IncreaseCash(BeardResult);
-	CalculateBonusCash();
 	SaveSessionData();
 
 	GetWorldTimerManager().PauseTimer(TimerHandle);
@@ -337,6 +335,8 @@ void ATBSCharacter::LoadNewCustomer () {
 		// Setup for next Customer
 		SessionID++;
 		BeardResult = 0;
+		CashEarned = 0;
+		CashPenalty = 0;
 	}
 	else {
 		UE_LOG(LogClass, Warning, TEXT("*** No Customer Reference! ***"));
@@ -406,19 +406,37 @@ void ATBSCharacter::IncreaseEXP (int32 Value) {
 			if (CurrentExperience >= CurrentData->XPtoLvl) {
 				CurrentLevel++;
 				CurrentExperience -= CurrentData->XPtoLvl;
-
-				for (FBeardNameLevelData Beard : BeardList) {
-					if (Beard.BeardLevel <= CurrentLevel && !UnlockedBeards.Contains(Beard.UniqueID)) {
-						UnlockedBeards.Add(Beard.UniqueID);
-					}
-				}
+				CheckBeardUnlocks();
 			}
 		}
 	}
 }
 
+void ATBSCharacter::CheckBeardUnlocks() {
+	for (FBeardNameLevelData Beard : BeardList) {
+		if (Beard.BeardLevel <= CurrentLevel && !UnlockedBeards.Contains(Beard.UniqueID)) {
+			UnlockedBeards.Add(Beard.UniqueID);
+			NewUnlocks.Add(Beard.UniqueID);
+		}
+	}
+}
+
+
+void ATBSCharacter::ApplyCashPenalty(int32 Value) {
+	CashPenalty += Value;
+	UE_LOG(LogClass, Log, TEXT("*** %d $ penalty for hurting the customer!***"), Value);
+}
+
+int32 ATBSCharacter::GetCashEarned() {
+	return CashEarned;
+}
+
+int32 ATBSCharacter::GetCashPenalty() {
+	return CashPenalty;
+}
+
 void ATBSCharacter::IncreaseCash(float ComparisionResult) {
-	int32 CashEarned = 0;
+	CashEarned = 0;
 	if (ComparisionResult < 10.0f) {
 		CashEarned = 0;
 	}
@@ -434,8 +452,17 @@ void ATBSCharacter::IncreaseCash(float ComparisionResult) {
 	else {
 		CashEarned = 45;
 	}
-	CurrentCash += CashEarned;
-	UE_LOG(LogClass, Log, TEXT("*** Player earned %d $ ***"), CashEarned);
+
+	CalculateBonusCash();
+
+	if (CashEarned - CashPenalty < 0) {
+		CashPenalty = CashEarned;
+		UE_LOG(LogClass, Log, TEXT("*** Player earned 0$! ***"), );
+	}
+	else {
+		CurrentCash += CashEarned - CashPenalty;
+		UE_LOG(LogClass, Log, TEXT("*** Player earned %d$! ***"), CashEarned - CashPenalty);
+	}
 }
 
 void ATBSCharacter::SwitchTool (bool IsNextTool) {
@@ -450,7 +477,7 @@ void ATBSCharacter::SwitchTool (bool IsNextTool) {
 void ATBSCharacter::CalculateBonusCash(){
 	for (int32 i = 0; i < TimeBonusData_MT.Num(); i++) {
 		if (TimeBonusData_MT[i] && IsInTimeRange(GetTimeElapsed(), TimeBonusData_MT[i]->TimeMin, TimeBonusData_MT[i]->TimeMax)) {
-			CurrentCash += TimeBonusData_MT[i]->BonusCash;
+			CashEarned += TimeBonusData_MT[i]->BonusCash;
 			UE_LOG(LogClass, Log, TEXT("*** Player earned %d $ as a bonus! ***"), TimeBonusData_MT[i]->BonusCash);
 			return;
 		}
@@ -645,4 +672,11 @@ bool ATBSCharacter::IsBeardUnlocked(int32 ID) {
 	return UnlockedBeards.Contains(ID);
 }
 
-#pragma region Beard
+TArray<int32> ATBSCharacter::GetNewBeardUnlocks() {
+	TArray<int32> TMPNewUnlocks = NewUnlocks;
+	NewUnlocks.Empty();
+	return TMPNewUnlocks;
+}
+
+
+#pragma endregion
