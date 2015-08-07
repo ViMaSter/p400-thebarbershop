@@ -120,6 +120,12 @@ void ATBSCharacter::BeginPlay () {
 	}
 	if (Controller) {
 		((ATBSPlayerController*)Controller)->PlayerCharacter = this;
+		BeardList = ((ATBSPlayerController*)Controller)->GetBeardNameLevelData();
+		for (FBeardNameLevelData Beard : BeardList) {
+			if (Beard.BeardLevel <= CurrentLevel && !UnlockedBeards.Contains(Beard.UniqueID)) {
+				UnlockedBeards.Add(Beard.UniqueID);
+			}
+		}
 	}
 
 	if (EquipedItems.Num() == 0) {
@@ -400,6 +406,12 @@ void ATBSCharacter::IncreaseEXP (int32 Value) {
 			if (CurrentExperience >= CurrentData->XPtoLvl) {
 				CurrentLevel++;
 				CurrentExperience -= CurrentData->XPtoLvl;
+
+				for (FBeardNameLevelData Beard : BeardList) {
+					if (Beard.BeardLevel <= CurrentLevel && !UnlockedBeards.Contains(Beard.UniqueID)) {
+						UnlockedBeards.Add(Beard.UniqueID);
+					}
+				}
 			}
 		}
 	}
@@ -603,3 +615,34 @@ bool ATBSCharacter::EquipItem(int32 ID) {
 }
 
 #pragma endregion Equipment
+
+#pragma region Beard
+TArray<FBeardNameLevelData> ATBSCharacter::GetBeards() {
+	TArray<FBeardNameLevelData> Beards;
+	if (BeardList.Num() > 0) {
+		return BeardList; 
+	}
+	else {
+		if (Controller){
+			Beards = BeardList = ((ATBSPlayerController*)GetController())->GetBeardNameLevelData();
+		}
+		return Beards;
+	}
+}
+
+FBeardNameLevelData ATBSCharacter::GetBeardByID(int32 ID) {
+	FBeardNameLevelData TMPBeard;
+	for (FBeardNameLevelData Beard : BeardList) {
+		if (Beard.UniqueID == ID) {
+			TMPBeard = Beard;
+			break;
+		}
+	}
+	return TMPBeard;
+}
+
+bool ATBSCharacter::IsBeardUnlocked(int32 ID) {
+	return UnlockedBeards.Contains(ID);
+}
+
+#pragma region Beard

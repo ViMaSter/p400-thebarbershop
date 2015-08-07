@@ -180,10 +180,13 @@ private:
 	void SaveSessionData();
 #pragma endregion SessionData
 
+
+
 #pragma region Equipment
-public:
 	// @Vincent TODO: Save in Gamestate. Move it maybe somewhere else to gamestate, savegame or so
 	TArray<FTBSItem> EquipedItems;
+
+public:
 
 	// Event for Equipping an Item
 	UFUNCTION(BlueprintImplementableEvent, Category = "Equipment")	void EquipedItem(int32 ID);
@@ -203,7 +206,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Equipment")	TArray<FTBSEquipmentData> GetEquipmentListAsArray();
 #pragma endregion Equipment
 
+#pragma region Beard
+private:
+	TArray<FBeardNameLevelData> BeardList;
+	TArray<int32> UnlockedBeards;
+public:
+	UFUNCTION(BlueprintCallable, Category = "Beard")	TArray<FBeardNameLevelData> GetBeards();
+	UFUNCTION(BlueprintCallable, Category = "Beard")	FBeardNameLevelData GetBeardByID(int32 ID);
+	UFUNCTION(BlueprintCallable, Category = "Beard")	bool IsBeardUnlocked(int32 ID);
+
+#pragma region Beard
+
 #pragma region Multi-Threading
+private:
 	void CheckMTTasks();
 
 	TArray<FMTTask> MTTasks;
@@ -214,7 +229,7 @@ public:
 	TArray<FLevelUpData*> LevelData_MT;
 
 #pragma endregion Multi-Threading
-
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer management") bool FirstCustomerActive = true;
 
 #pragma region MS2
