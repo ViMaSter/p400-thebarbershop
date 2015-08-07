@@ -369,6 +369,7 @@ float ATBSCharacter::GetTimeElapsed() {
 		float TimeElapsed;
 		TimeElapsed = GetWorldTimerManager().GetTimerElapsed(TimerHandle);
 		//UE_LOG (LogClass, Log, TEXT ("*** Time Left: %.2f from %.2f ***"), TimeLeft, TimeLimit);
+		ElapsedTime = TimeElapsed;
 		return TimeElapsed;
 	}
 	return -1.f;
@@ -433,6 +434,9 @@ void ATBSCharacter::CheckBeardUnlocks() {
 
 
 void ATBSCharacter::ApplyCashPenalty(int32 Value) {
+	if (CurrentCustomer) {
+		CurrentCustomer->HurtCustomer();
+	}
 	CashPenalty += Value;
 	UE_LOG(LogClass, Log, TEXT("*** %d $ penalty for hurting the customer!***"), Value);
 }
@@ -690,3 +694,17 @@ TArray<int32> ATBSCharacter::GetNewBeardUnlocks() {
 
 
 #pragma endregion
+
+
+float ATBSCharacter::GetCustomerTime() {
+	if (CurrentCustomer) {
+		return CurrentCustomer->CustomerTimeLimit;
+	}
+	return -99;
+}
+float ATBSCharacter::GetCustomerSatisfaction() {
+	if (CurrentCustomer) {
+		return  CurrentCustomer->CustomerSatisfaction;
+	}
+	return -99;
+}

@@ -150,6 +150,12 @@ public:
 	virtual void BeginPlay () override;
 	virtual void Tick(float DeltaTime) override;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStatus")
+		float ElapsedTime;
+	UFUNCTION (BlueprintCallable, Category = "Timer") float GetCustomerTime();
+	UFUNCTION (BlueprintCallable, Category = "Timer") float GetCustomerSatisfaction();
+
 	// (BP-)Helper functions
 	UFUNCTION (BlueprintCallable, Category = "Timer") float GetTimeElapsed();
 	UFUNCTION (BlueprintCallable, Category = "Timer") float GetTimeLeft();

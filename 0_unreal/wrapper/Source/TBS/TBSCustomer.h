@@ -32,6 +32,12 @@ public:
 	UPROPERTY (EditAnywhere, BlueprintReadWrite, Category = "Beard")
 	AActor* Beard;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Beard")
+	float CustomerTimeLimit = 30;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Beard")
+	float CustomerSatisfaction = 100;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer")
 	UTexture2D* PortraitTexture;
 
@@ -45,6 +51,7 @@ public:
 	void CreatedCustomer ();
 	void CreateNewCustomer(int32 CharacterLevel = 1);
 	void FindDesiredBeardFromPool(int32 Playerlevel);
+	void HurtCustomer();
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

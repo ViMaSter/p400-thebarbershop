@@ -54,6 +54,9 @@ void ATBSCustomer::Tick(float DeltaTime) {
 void ATBSCustomer::CreateNewCustomer (int32 CharacterLevel) {
 	FindDesiredBeardFromPool(CharacterLevel);
 
+	CustomerTimeLimit = FMath::RandRange(10, 30);
+	CustomerSatisfaction = 100;
+
 	CreatedCustomer();
 	UE_LOG(LogClass, Log, TEXT("*** Customer Customer created ***"))
 }
@@ -131,6 +134,10 @@ void ATBSCustomer::FindDesiredBeardFromPool(int32 Playerlevel){
 			UE_LOG(LogClass, Warning, TEXT("*** Could not find Character or BeardPoolData! ***"));
 		}
 	}
+}
+
+void ATBSCustomer::HurtCustomer() {
+	CustomerSatisfaction -= 10;
 }
 
 void ATBSCustomer::LiftPositionPressed() {
