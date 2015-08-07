@@ -304,7 +304,6 @@ void ATBSCharacter::TransitionToNewCustomer() {
 	NextCustomer->IsCurrentCustomer = false;
 
 	FirstCustomerActive = !FirstCustomerActive;
-	CurrentCustomer->FinisheBeardSpawning();
 
 	ChangedCustomer();
 	Tool->ResetHairs();
