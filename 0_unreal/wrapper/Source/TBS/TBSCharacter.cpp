@@ -124,6 +124,7 @@ void ATBSCharacter::BeginPlay () {
 		((ATBSPlayerController*)Controller)->PlayerCharacter = this;
 		BeardList = ((ATBSPlayerController*)Controller)->GetBeardNameLevelData();
 		CheckBeardUnlocks();
+		NewUnlocks.Empty();
 	}
 
 	if (EquipedItems.Num() == 0) {
@@ -313,16 +314,7 @@ void ATBSCharacter::TransitionToNewCustomer() {
 	BeardResult = 0;
 	CashEarned = 0;
 	CashPenalty = 0;
-	LeveledUp = false;
-	if (LevelData_MT.Num() > 0) {
-		for (FLevelUpData* LevelData : LevelData_MT)
-		{
-			if (LevelData->Level == CurrentLevel) {
-				CurrentExperienceToLvl = LevelData->XPtoLvl;
-			}
-		}
-	}
-		
+	LeveledUp = false;		
 }
 
 
@@ -418,6 +410,13 @@ void ATBSCharacter::IncreaseEXP (int32 Value) {
 				CurrentExperience -= CurrentData->XPtoLvl;
 				LeveledUp = true;
 				CheckBeardUnlocks();
+
+				for (FLevelUpData* Data : LevelData_MT) {
+					if (Data->Level == CurrentLevel) {
+						CurrentExperienceToLvl = Data->XPtoLvl;
+						break;
+					}
+				}
 			}
 		}
 	}
@@ -503,42 +502,50 @@ float ATBSCharacter::CalculateResult () {
 	if (Tool  && Tool->InstancedSMComponent) {
 		TArray<UActorComponent*> Components;
 		int32 Total = Tool->InstancedSMComponent->GetInstanceCount();
-		int32 Incorrect = 0;
-		int32 NumTrimmed = 0;
-		int32 NumShaved = 0;
 		int32 TotalTarget = 0;
-		int32 NumTargetTrimmed = 0;
+		int32 NumShaved = 0;
 		int32 NumTargetShaved = 0;
+		int32 NumTrimmed = 0;
+		int32 NumTargetTrimmed = 0;
 		FTransform Transform;
 
-		for (int32 i = 0; i < Tool->InstancedSMComponent->GetInstanceCount() ; i++) {
+		int32 Correct = 0;
+
+		
+		int32 TrimmedIndex = 0;
+		for (int32 i = 0; i < Tool->InstancedSMComponent->GetInstanceCount(); i++) {
+			int32 State = 2;
 			if (Tool->InstancedSMComponent->GetInstanceTransform(i, Transform)) {
 				if (Transform.GetLocation().Z >= 1000) { // Shaved
-					NumShaved++;
+					State = 0;
 				}
-				else if (Transform.GetLocation().Z <= -1000){ // Trimmed
-					NumTrimmed++;
+				else if (Transform.GetLocation().Z <= -1000) { // Trimmed
+					if (Tool->InstancedSMComponent->GetInstanceTransform(TrimmedIndex, Transform)) {
+						if (Transform.GetLocation().Z >= 1000) { // Shaved
+							State = 0;
+						}
+						else if (Transform.GetLocation().Z <= -1000) { // Trimmed
+							State = 1;
+						}
+					}
+					TrimmedIndex++;
 				}
 			}
 			if (BeardData_MT[i]) {
-				switch (BeardData_MT[i]->HairState)
-				{
-				case(0) : // Shaved
-					NumTargetShaved++;
-					break;
-				case(1) : // Trimmed
-					NumTargetTrimmed++;
-					break;
-				case(2) : // Unshaved
-					break;
+				if (State == BeardData_MT[i]->HairState) {
+					Correct++;
 				}
 				TotalTarget++;
 			}
 
 		}
 
-		Incorrect = abs(NumTargetTrimmed - NumTrimmed) + abs(NumTargetShaved - NumShaved);
-		float Result = ((float)(Total - Incorrect) / (float)Total) * 100;
+		if (TotalTarget != Total) {
+			UE_LOG(LogClass, Warning, TEXT("*** Possible missmatch of Haircount in Beard(%d) and BeardCSVData(%d)! ***"), Total, TotalTarget);
+		}
+
+		float Result = ((float)Correct / (float)Total) * 100;
+
 		UE_LOG(LogClass, Log, TEXT("*** Customer Finished with %.1f %% accuracy ***"), Result);
 		return Result;
 	}
