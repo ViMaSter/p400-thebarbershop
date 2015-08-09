@@ -96,9 +96,11 @@ void ATBSCharacter::BeginPlay () {
 	}
 	if (FirstCustomer) {
 		CurrentCustomer = FirstCustomer;
+		CurrentCustomer->SetActorHiddenInGame(false);
 	}
 	if (SecondCustomer){
 		NextCustomer = SecondCustomer;
+		NextCustomer->SetActorHiddenInGame(true);
 	}
 
 	if (World && ScreenCaptureCustomer == NULL && ScreenCaptureCustomerClass != NULL) {
@@ -119,6 +121,7 @@ void ATBSCharacter::BeginPlay () {
 		FVector SpawnLocation = {0, 0, 0};
 		FRotator SpawnRotation = {180, 0, 0};
 		Tool = World->SpawnActor<ATBSRazor>(ToolClass, SpawnLocation, SpawnRotation, SpawnParams);
+		Tool->SetActorHiddenInGame(false);
 	}
 	if (Controller) {
 		((ATBSPlayerController*)Controller)->PlayerCharacter = this;
@@ -127,6 +130,10 @@ void ATBSCharacter::BeginPlay () {
 		NewUnlocks.Empty();
 	}
 
+
+}
+
+void ATBSCharacter::StartGame() {
 	if (EquipedItems.Num() == 0) {
 		// Equip Basic Items
 		FTBSItem ItemClipper;
@@ -149,19 +156,25 @@ void ATBSCharacter::BeginPlay () {
 		EquipedItems.Add(ItemRazor_L);
 		EquipedItems.Add(ItemRazor_S);
 		EquipedItems.Add(ItemTowel);
-		
+
 		// Check If Items Are Already In Saved Files
-		if (((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Num() == 0) {
-			((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Add(ItemClipper.EquipmentID);
-			((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Add(ItemRazor_L.EquipmentID);
-			((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Add(ItemRazor_S.EquipmentID);
-			((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Add(ItemTowel.EquipmentID);
+		ATBSGameState* bla = (ATBSGameState*)GetWorld()->GameState;
+		if (bla) {
+			UTBSSaveGame* SaveGame = bla->CurrentSaveGame;
+			if (SaveGame) {
+				if (SaveGame->ObtainedEquipment.Num() == 0) {
+					((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Add(ItemClipper.EquipmentID);
+					((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Add(ItemRazor_L.EquipmentID);
+					((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Add(ItemRazor_S.EquipmentID);
+					((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Add(ItemTowel.EquipmentID);
+				}
+			}
 		}
 	}
-}
 
-void ATBSCharacter::StartGame() {
+
 	GameIsRunning = true;
+	GameStarted = true;
 	CurrentCustomer->CreateNewCustomer(CurrentLevel);
 	CurrentBeardRow = ((ATBSPlayerController*)GetController())->FindDataRowToName(CurrentCustomer->DesiredBeard);
 
@@ -371,6 +384,9 @@ void ATBSCharacter::PauseGameTimer() {
 	if (GetWorldTimerManager().TimerExists(TimerHandle) && !GetWorldTimerManager().IsTimerPaused(TimerHandle)) {
 		GetWorldTimerManager().PauseTimer(TimerHandle);
 		GameIsRunning = false;
+		if (Controller) {
+			((ATBSPlayerController*)Controller)->SetIsPaused(true);
+		}
 	}
 	else {
 		UE_LOG(LogClass, Warning, TEXT("*** No game timer active or already paused! ***"));
@@ -381,6 +397,7 @@ void ATBSCharacter::UnpauseGameTimer() {
 	if (GetWorldTimerManager().TimerExists(TimerHandle) && GetWorldTimerManager().IsTimerPaused(TimerHandle)) {
 		GetWorldTimerManager().UnPauseTimer(TimerHandle);
 		GameIsRunning = true;
+		((ATBSPlayerController*)Controller)->SetIsPaused(false);
 	}
 	else {
 		UE_LOG(LogClass, Warning, TEXT("*** No game timer active or not paused! ***"));

@@ -525,52 +525,6 @@ void ATBSPlayerController::LoadBeardID_MT(FName BeardName) {
 	}
 }
 
-bool ATBSPlayerController::SetCurrentBeardDataToCSV(UDataTable* DataTable) {
-	if (PlayerCharacter == NULL) {
-		return false;
-	}
-	TArray<UActorComponent*> Components;
-	Components = PlayerCharacter->CurrentCustomer->Beard->GetComponentsByClass (UStaticMeshComponent::StaticClass ());
-	FBeardComparisonData* CurrentData;
-	for (int32 i = 0; i < PlayerCharacter->Tool->InstancedSMComponent->GetInstanceCount(); i++) {
-		int32 ComponentStatus = 2;
-		const FString Context = FString("");
-		FTransform Transform;
-		if (PlayerCharacter->Tool->InstancedSMComponent->GetInstanceTransform(i, Transform)) {
-			if (Transform.GetLocation().Z >= 1000) { // Shaved
-				ComponentStatus = 0;
-			}
-			else if (Transform.GetLocation().Z <= -1000) { // Trimmed
-				ComponentStatus = 1;
-			}
-			else {	// Unshaved
-				ComponentStatus = 2;
-			}
-		}
-
-		FString String = FString::FromInt (i);
-		FName Row = FName (*String);
-		CurrentData = DataTable->FindRow<FBeardComparisonData> (Row, Context, false);
-
-		if (CurrentData) {
-			CurrentData->HairState = ComponentStatus;
-		}
-		else {
-			UScriptStruct* LoadUsingStruct = FBeardComparisonData::StaticStruct ();
-			uint8* RowData = (uint8*) FMemory::Malloc (LoadUsingStruct->PropertiesSize);
-			DataTable->RowMap.Add (Row, RowData);
-			CurrentData = DataTable->FindRow<FBeardComparisonData> (Row, Context, false);
-			if (CurrentData) {
-				CurrentData->HairState = ComponentStatus;
-			}
-			else{
-				return false;
-			}
-		}
-	}
-	return true;
-}
-
 bool ATBSPlayerController::LoadBeardDataToCurrentCustomer (UDataTable* DataTable) {
 	if (PlayerCharacter == NULL) {
 		return false;
@@ -701,6 +655,54 @@ bool ATBSPlayerController::RemoveBeardFromCollection (FName BeardName) {
 	return Success;
 }
 
+bool ATBSPlayerController::SetCurrentBeardDataToCSV(UDataTable* DataTable) {
+	if (PlayerCharacter == NULL) {
+		return false;
+	}
+	TArray<UActorComponent*> Components;
+	Components = PlayerCharacter->CurrentCustomer->Beard->GetComponentsByClass (UStaticMeshComponent::StaticClass ());
+	FBeardComparisonData* CurrentData;
+
+	for (int32 i = 0; i < PlayerCharacter->Tool->InstancedSMComponent->GetInstanceCount(); i++) {
+		int32 ComponentStatus = 2;
+		const FString Context = FString("");
+		FTransform Transform;
+		if (PlayerCharacter->Tool->InstancedSMComponent->GetInstanceTransform(i, Transform)) {
+			if (Transform.GetLocation().Z >= 1000) { // Shaved
+				ComponentStatus = 0;
+			}
+			else if (Transform.GetLocation().Z <= -1000) { // Trimmed
+				ComponentStatus = 1;
+			}
+			else {	// Unshaved
+				ComponentStatus = 2;
+			}
+		}
+
+		FString String = FString::FromInt (i);
+		FName Row = FName (*String);
+		CurrentData = DataTable->FindRow<FBeardComparisonData> (Row, Context, false);
+
+		if (CurrentData) {
+			CurrentData->HairState = ComponentStatus;
+		}
+		else {
+			UScriptStruct* LoadUsingStruct = FBeardComparisonData::StaticStruct ();
+			uint8* RowData = (uint8*) FMemory::Malloc (LoadUsingStruct->PropertiesSize);
+			DataTable->RowMap.Add (Row, RowData);
+			CurrentData = DataTable->FindRow<FBeardComparisonData> (Row, Context, false);
+			if (CurrentData) {
+				CurrentData->HairState = ComponentStatus;
+			}
+			else{
+				return false;
+			}
+		}
+		DataTable->SaveConfig(16384Ui64,*DataTable->ImportPath);
+	}
+	return true;
+}
+
 bool ATBSPlayerController::SetBeardToCollectionData(FName BeardName, int32 BeardLevel, int32 UniqueId) {
 	FBeardCollectionData* CurrentData;
 	bool Success = false;
@@ -768,9 +770,11 @@ bool ATBSPlayerController::SetBeardToCollectionData(FName BeardName, int32 Beard
 				CurrentData->BeardSlotName = NewSlotName;
 				CurrentData->BeardLevel = BeardLevel;
 				CurrentData->UniqueIdentifier = UniqueId;
+				CurrentData->ComparisionScreenshot = NULL;
 				return true;
 			}
 		}
+		PlayerCharacter->BeardCollection->SaveConfig(16384Ui64, *PlayerCharacter->BeardCollection->ImportPath);
 	}
 	return Success;
 }
@@ -913,3 +917,11 @@ void ATBSPlayerController::UpdateCurrentSaveGame() {
 	GetWorld()->GetGameState<ATBSGameState>()->CurrentSaveGame->MoneyAvailable = controlledPawn->CurrentCash;
 }
 #pragma endregion
+
+bool ATBSPlayerController::IsMainMenuLevel() {
+	UE_LOG(LogClass, Log, TEXT("*** Mapname: %s ***"),*GetWorld()->GetMapName());
+	if (GetWorld()->GetMapName().Contains("MainMenuLevel") ) {
+		return true;
+	}
+	return false;
+}

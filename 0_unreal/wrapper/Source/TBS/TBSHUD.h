@@ -12,11 +12,12 @@
  */
 UCLASS()
 class TBS_API ATBSHUD : public AHUD {
-	GENERATED_BODY ()
+	GENERATED_BODY()
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State")
-	UStateComponent* StateComponent;
+		UStateComponent* StateComponent;
 
-	ATBSHUD (const FObjectInitializer& ObjectInitializer);
+	ATBSHUD(const FObjectInitializer& ObjectInitializer);
+
 };

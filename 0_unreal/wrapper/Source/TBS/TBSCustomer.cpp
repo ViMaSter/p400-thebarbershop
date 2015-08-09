@@ -54,7 +54,7 @@ void ATBSCustomer::Tick(float DeltaTime) {
 void ATBSCustomer::CreateNewCustomer (int32 CharacterLevel) {
 	FindDesiredBeardFromPool(CharacterLevel);
 
-	CustomerTimeLimit = FMath::RandRange(10, 30);
+	CustomerTimeLimit = FMath::RandRange(30, 60);
 	CustomerSatisfaction = 100;
 
 	CreatedCustomer();
@@ -90,9 +90,11 @@ void ATBSCustomer::FindDesiredBeardFromPool(int32 Playerlevel){
 				}
 				// Fallback, if no valid ID was set in ForcedSessionBeards 
 				if (DesiredBeard == "DEFAULT") {
-					DesiredBeard = Data[0].BeardName;
-					PortraitTexture = Data[0].ComparisionScreenshot;
-					UE_LOG(LogClass, Warning, TEXT("*** No beard in BeardPoolData using UniqueIdentifier %d! Falling back to the first one available! ***"), ForcedSessionBeards[FMath::Min(NumberOfPlaythrough, ForcedSessionBeards.Num() - 1)]);
+					if (Data.Num() > 0) {
+						DesiredBeard = Data[0].BeardName;
+						PortraitTexture = Data[0].ComparisionScreenshot;
+						UE_LOG(LogClass, Warning, TEXT("*** No beard in BeardPoolData using UniqueIdentifier %d! Falling back to the first one available! ***"), ForcedSessionBeards[FMath::Min(NumberOfPlaythrough, ForcedSessionBeards.Num() - 1)]);
+					}
 				}
 			}
 			// Or randomly choose from our pool

@@ -22,7 +22,9 @@ enum class ETBSHUDState : uint8 {
 	PauseMenuConfirm	= 15	UMETA (DisplayName = "Pause Menu Confirm"),
 	AudioConfirm		= 16	UMETA (DisplayName = "Audio Confirm"),
 	VideoConfirm		= 17	UMETA(DisplayName = "Video Confirm"),
-	StatsScreen			= 18	UMETA(DisplayName = "Stats Screen")
+	StatsScreen			= 18	UMETA(DisplayName = "Stats Screen"),
+	GameMenu			= 19	UMETA(DisplayName = "Game Menu"),
+	LoadingScreen		= 20	UMETA(DisplayName = "Loading Screen")
 };
 
 

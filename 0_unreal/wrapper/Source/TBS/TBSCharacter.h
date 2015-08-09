@@ -109,6 +109,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Status")
 	bool GameIsRunning = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Status")
+	bool GameStarted = false;
+
 	// Timer
 	FTimerHandle TimerHandle;
 	float TimeLimit;

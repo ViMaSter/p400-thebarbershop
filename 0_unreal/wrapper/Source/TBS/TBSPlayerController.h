@@ -181,4 +181,7 @@ protected:
 	void SwitchToNormalRazor();
 	void SwitchToClipper();
 
+public:
+	UFUNCTION(BlueprintCallable, Category = "Level") bool IsMainMenuLevel();
+
 };

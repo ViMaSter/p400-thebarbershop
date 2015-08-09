@@ -7,3 +7,4 @@ ATBSHUD::ATBSHUD (const class FObjectInitializer& PCIP)
 	: Super (PCIP) {
 	StateComponent = CreateDefaultSubobject<UStateComponent>(TEXT("StateComponent"));
 }
+
