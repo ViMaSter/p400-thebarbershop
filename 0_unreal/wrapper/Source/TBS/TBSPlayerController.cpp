@@ -913,6 +913,7 @@ void ATBSPlayerController::SetIsIngame(bool IsIngame) {
 void ATBSPlayerController::UpdateCurrentSaveGame() {
 	ATBSCharacter* controlledPawn = Cast<ATBSCharacter>(GetPawn());
 
+	GetWorld()->GetGameState<ATBSGameState>()->CurrentSaveGame->CurrentLevel = controlledPawn->CurrentLevel;
 	GetWorld()->GetGameState<ATBSGameState>()->CurrentSaveGame->ShaveperiencePoints = controlledPawn->CurrentExperience;
 	GetWorld()->GetGameState<ATBSGameState>()->CurrentSaveGame->MoneyAvailable = controlledPawn->CurrentCash;
 }
