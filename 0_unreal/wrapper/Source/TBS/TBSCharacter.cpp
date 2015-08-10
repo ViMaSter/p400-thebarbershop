@@ -384,9 +384,6 @@ void ATBSCharacter::PauseGameTimer() {
 	if (GetWorldTimerManager().TimerExists(TimerHandle) && !GetWorldTimerManager().IsTimerPaused(TimerHandle)) {
 		GetWorldTimerManager().PauseTimer(TimerHandle);
 		GameIsRunning = false;
-		if (Controller) {
-			((ATBSPlayerController*)Controller)->SetIsPaused(true);
-		}
 	}
 	else {
 		UE_LOG(LogClass, Warning, TEXT("*** No game timer active or already paused! ***"));
@@ -397,7 +394,6 @@ void ATBSCharacter::UnpauseGameTimer() {
 	if (GetWorldTimerManager().TimerExists(TimerHandle) && GetWorldTimerManager().IsTimerPaused(TimerHandle)) {
 		GetWorldTimerManager().UnPauseTimer(TimerHandle);
 		GameIsRunning = true;
-		((ATBSPlayerController*)Controller)->SetIsPaused(false);
 	}
 	else {
 		UE_LOG(LogClass, Warning, TEXT("*** No game timer active or not paused! ***"));
