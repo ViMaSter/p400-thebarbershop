@@ -589,8 +589,13 @@ void ATBSCharacter::SaveSessionData() {
 		FTBSSessionState sessionState;
 		sessionState.SessionID = SessionID;
 		sessionState.BeardName = CurrentCustomer->DesiredBeard;
+		sessionState.TimesHurt = CurrentCustomer->TimesHurt;
+		sessionState.SatisfiedCustomer = CurrentCustomer->SatisfiedCustomer;
 		sessionState.BeardResult = BeardResult;
 		sessionState.TimeRequired = GetTimeElapsed();
+
+		CurrentCustomer->TimesHurt = 0;
+		CurrentCustomer->SatisfiedCustomer = false;
 
 		gameState->CurrentSaveGame->AddSessionState(sessionState);
 		return;

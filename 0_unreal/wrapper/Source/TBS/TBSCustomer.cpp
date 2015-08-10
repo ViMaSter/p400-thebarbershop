@@ -140,6 +140,7 @@ void ATBSCustomer::FindDesiredBeardFromPool(int32 Playerlevel){
 
 void ATBSCustomer::HurtCustomer() {
 	CustomerSatisfaction -= 10;
+	TimesHurt++;
 }
 
 void ATBSCustomer::LiftPositionPressed() {
