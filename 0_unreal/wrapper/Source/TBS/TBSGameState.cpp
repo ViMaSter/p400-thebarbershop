@@ -94,6 +94,7 @@ bool ATBSGameState::LoadGame(int32 UserIndex) {
 
 		// Apply values from savefile
 		PlayerPawn->CurrentCash += CurrentSaveGame->MoneyAvailable;
+		PlayerPawn->CurrentLevel = CurrentSaveGame->CurrentLevel;
 		PlayerPawn->IncreaseEXP(CurrentSaveGame->ShaveperiencePoints);
 		UTBSSaveGame_Equipment* EquipmentSaveState = Cast<UTBSSaveGame_Equipment>(UGameplayStatics::CreateSaveGameObject(UTBSSaveGame_Equipment::StaticClass()));
 		// Load ObtainedEquipment
