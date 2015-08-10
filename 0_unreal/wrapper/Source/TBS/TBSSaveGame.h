@@ -30,7 +30,7 @@ public:
 
 	TArray<int32> ObtainedEquipment;
 #pragma region SessionState
-	TArray<FTBSSessionState> SessionList;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Session") TArray<FTBSSessionState> SessionList;
 
 	int32 AddSessionState(FTBSSessionState SessionState);
 	int32 RemoveSessionState(FTBSSessionState SessionState);

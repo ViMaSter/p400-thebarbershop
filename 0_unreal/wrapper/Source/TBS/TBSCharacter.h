@@ -189,6 +189,8 @@ private:
 	uint32 SessionID = 0;
 	float BeardResult = 0;
 
+public: 
+	UFUNCTION(BlueprintCallable, Category = "Save")
 	void SaveSessionData();
 #pragma endregion SessionData
 

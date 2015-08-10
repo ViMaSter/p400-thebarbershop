@@ -276,7 +276,6 @@ void ATBSCharacter::FinishCurrentCustomer() {
 
 	IncreaseEXP(EXP);
 	IncreaseCash(BeardResult);
-	SaveSessionData();
 
 	GetWorldTimerManager().PauseTimer(TimerHandle);
 	if (Controller){

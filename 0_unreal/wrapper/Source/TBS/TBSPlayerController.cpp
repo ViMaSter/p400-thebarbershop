@@ -585,25 +585,6 @@ void ATBSPlayerController::LoadBeardToCustomer(TArray<FBeardComparisonData*> Dat
 	}
 }
 
-FBeardCollectionData ATBSPlayerController::FindDataRowToName(FName BeardName) {
-	if (PlayerCharacter) {
-		FBeardCollectionData CurrentData;
-		FName DataTableName;
-		if (PlayerCharacter->BeardCollection) {
-			const FString Context = FString("");
-			for (int32 i = 0; i < PlayerCharacter->BeardCollection->GetRowNames().Num(); i++) {
-				FName Row = PlayerCharacter->BeardCollection->GetRowNames()[i];
-				CurrentData = *(PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData>(Row, Context, false));
-				if (CurrentData.BeardName == BeardName) {
-					return CurrentData;
-				}
-			}
-			UE_LOG(LogClass, Warning, TEXT("*** Could not find Beard in CollectionData! ***"));
-		}
-	}
-	return FBeardCollectionData();
-}
-
 UDataTable* ATBSPlayerController::FindDataTableToName(FName BeardName) {
 	if (PlayerCharacter) {
 		FBeardCollectionData* CurrentData;
@@ -632,6 +613,25 @@ UDataTable* ATBSPlayerController::FindDataTableToName(FName BeardName) {
 		}
 	}
 	return NULL;
+}
+
+FBeardCollectionData ATBSPlayerController::FindDataRowToName(FName BeardName) {
+	if (PlayerCharacter) {
+		FBeardCollectionData CurrentData;
+		FName DataTableName;
+		if (PlayerCharacter->BeardCollection) {
+			const FString Context = FString("");
+			for (int32 i = 0; i < PlayerCharacter->BeardCollection->GetRowNames().Num(); i++) {
+				FName Row = PlayerCharacter->BeardCollection->GetRowNames()[i];
+				CurrentData = *(PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData>(Row, Context, false));
+				if (CurrentData.BeardName == BeardName) {
+					return CurrentData;
+				}
+			}
+			UE_LOG(LogClass, Warning, TEXT("*** Could not find Beard in CollectionData! ***"));
+		}
+	}
+	return FBeardCollectionData();
 }
 
 bool ATBSPlayerController::RemoveBeardFromCollection (FName BeardName) {
