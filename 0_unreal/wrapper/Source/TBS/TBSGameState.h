@@ -36,6 +36,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Game State") bool GetIsPaused();
 #pragma endregion
 #pragma region SaveState
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Save State") int32 CurrentSaveGame;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Save State") UTBSSaveGame* CurrentSaveGame;
 
 	UFUNCTION(BlueprintCallable, Category = "Save State") bool SaveGame(int32 UserIndex);
