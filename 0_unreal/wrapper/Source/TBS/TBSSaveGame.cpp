@@ -7,6 +7,7 @@ UTBSSaveGame::UTBSSaveGame(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {
 	SaveSlotName = TEXT("EMPTY");
 	UserIndex = 0;
+	CurrentLevel = 1;
 }
 
 #pragma region SessionState
