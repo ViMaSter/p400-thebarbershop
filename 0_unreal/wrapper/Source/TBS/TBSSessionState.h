@@ -18,6 +18,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Session Information")	FName BeardName;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Session Information")	float BeardResult;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Session Information")	float TimeRequired;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Session Information")	int32 TimesHurt;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Session Information")	bool SatisfiedCustomer;
 
 	bool operator==(FTBSSessionState const& Other) const {
 		return SessionID == Other.SessionID;

@@ -160,4 +160,33 @@ float ATBSGameState::GetBestTime() {
 	return BestTime;
 }
 
+bool ATBSGameState::WipeSaveFiles(int32 UserIndex) {
+	CurrentSaveGame = Cast<UTBSSaveGame>(UGameplayStatics::LoadGameFromSlot("Meta", UserIndex));
+
+	// Delete all sessions
+	FString fileName;
+	for (int i = 0; i < CurrentSaveGame->SessionListNum; i++) {
+		fileName = FString("Session");
+		fileName.AppendInt(i);
+		UGameplayStatics::DeleteGameInSlot(fileName, UserIndex);
+	}
+
+	// Delete all equipment info
+	for (int i = 0; i < CurrentSaveGame->ObtainedEquipmentNum; i++) {
+		fileName = FString("Equipment");
+		fileName.AppendInt(i);
+		UGameplayStatics::DeleteGameInSlot(fileName, UserIndex);
+	}
+
+	// Delete additional files
+	UGameplayStatics::DeleteGameInSlot("Meta", UserIndex);
+	UGameplayStatics::DeleteGameInSlot("Settings", UserIndex);
+
+	return true;
+}
+
+bool ATBSGameState::SaveFilesExist(int32 UserIndex) {
+	return UGameplayStatics::DoesSaveGameExist("Meta", UserIndex);
+}
+
 #pragma endregion

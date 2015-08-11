@@ -53,6 +53,13 @@ public:
 	void FindDesiredBeardFromPool(int32 Playerlevel);
 	void HurtCustomer();
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Result")
+	int32 TimesHurt = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Result")
+	bool SatisfiedCustomer = false;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
