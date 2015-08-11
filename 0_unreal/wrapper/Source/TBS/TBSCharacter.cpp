@@ -47,6 +47,55 @@ void ATBSCharacter::Tick(float DeltaTime){
 	CheckMTTasks();
 }
 
+void ATBSCharacter::StartMTLoading() {
+	// Load Data with another thread
+	BeardData_MT.Empty();
+	EquipmentData_MT.Empty();
+	LevelData_MT.Empty();
+	TimeBonusData_MT.Empty();
+
+	if (CurrentCustomer) {
+		FName DesiredCustomerBeard = CurrentCustomer->DesiredBeard;
+		UE_LOG(LogClass, Warning, TEXT("*** %s ***"), *DesiredCustomerBeard.ToString());
+		UDataTable* BeardDataTable = ((ATBSPlayerController*)GetController())->FindDataTableToName(DesiredCustomerBeard);
+		if (BeardDataTable) {
+			FMTTask Task;
+			Task.Runnable = FTBSDataLoadWorker::JoyInitBeardComp(BeardData_MT, BeardDataTable);
+			Task.Type = ETBSMultiThreadingTask::BeardComparison;
+			Task.TaskStarted = true;
+			GetWorldTimerManager().SetTimer(Task.Handle, 0.1f, true, -1.f);
+			MTTasks.Add(Task);
+		}
+	}
+
+	if (EquipmentData) {
+		FMTTask Task;
+		Task.Runnable = FTBSDataLoadWorker::JoyInitEquipment(EquipmentData_MT, EquipmentData);
+		Task.Type = ETBSMultiThreadingTask::Equipment;
+		Task.TaskStarted = true;
+		GetWorldTimerManager().SetTimer(Task.Handle, 0.1f, true, -1.f);
+		MTTasks.Add(Task);
+	}
+
+	if (LevelData) {
+		FMTTask Task;
+		Task.Runnable = FTBSDataLoadWorker::JoyInitLevel(LevelData_MT, LevelData);
+		Task.Type = ETBSMultiThreadingTask::Level;
+		Task.TaskStarted = true;
+		GetWorldTimerManager().SetTimer(Task.Handle, 0.1f, true, -1.f);
+		MTTasks.Add(Task);
+	}
+
+	if (BonusCashData) {
+		FMTTask Task;
+		Task.Runnable = FTBSDataLoadWorker::JoyInitBonus(TimeBonusData_MT, BonusCashData);
+		Task.Type = ETBSMultiThreadingTask::Bonus;
+		Task.TaskStarted = true;
+		GetWorldTimerManager().SetTimer(Task.Handle, 0.1f, true, -1.f);
+		MTTasks.Add(Task);
+	}
+}
+
 void ATBSCharacter::CheckMTTasks() {
 	int32 Rdycounter = 0;
 	for (FMTTask Task : MTTasks) {
@@ -123,13 +172,18 @@ void ATBSCharacter::BeginPlay () {
 		Tool = World->SpawnActor<ATBSRazor>(ToolClass, SpawnLocation, SpawnRotation, SpawnParams);
 		Tool->SetActorHiddenInGame(false);
 	}
+
+	GetWorldTimerManager().SetTimer(TimerHandle, TimeLimit, false, -1.f);
+
 	if (Controller) {
 		((ATBSPlayerController*)Controller)->PlayerCharacter = this;
 		BeardList = ((ATBSPlayerController*)Controller)->GetBeardNameLevelData();
 		CheckBeardUnlocks();
 		NewUnlocks.Empty();
-	}
 
+		((ATBSPlayerController*)Controller)->SetIsPaused(true);
+	}
+	StartMTLoading();
 
 }
 
@@ -158,9 +212,9 @@ void ATBSCharacter::StartGame() {
 		EquipedItems.Add(ItemTowel);
 
 		// Check If Items Are Already In Saved Files
-		ATBSGameState* bla = (ATBSGameState*)GetWorld()->GameState;
-		if (bla) {
-			UTBSSaveGame* SaveGame = bla->CurrentSaveGame;
+		ATBSGameState* GameState = (ATBSGameState*)GetWorld()->GameState;
+		if (GameState) {
+			UTBSSaveGame* SaveGame = GameState->CurrentSaveGame;
 			if (SaveGame) {
 				if (SaveGame->ObtainedEquipment.Num() == 0) {
 					((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Add(ItemClipper.EquipmentID);
@@ -178,7 +232,7 @@ void ATBSCharacter::StartGame() {
 	CurrentCustomer->CreateNewCustomer(CurrentLevel);
 	CurrentBeardRow = ((ATBSPlayerController*)GetController())->FindDataRowToName(CurrentCustomer->DesiredBeard);
 
-	ScreenCaptureCustomer->CreateNewCustomer(CurrentLevel);
+	//ScreenCaptureCustomer->CreateNewCustomer(CurrentLevel);
 	ScreenCaptureCustomer->IsCurrentCustomer = true;
 	ScreenCaptureCustomer->SetActorHiddenInGame(false);
 	ScreenCaptureCustomer->Beard->SetActorHiddenInGame(false);
@@ -192,55 +246,6 @@ void ATBSCharacter::StartGame() {
 		if (CurrentData) {
 			CurrentExperienceToLvl = CurrentData->XPtoLvl;
 		}
-	}
-
-	GetWorldTimerManager().SetTimer(TimerHandle, TimeLimit, false, -1.f);
-
-	// Load Data with another thread
-	BeardData_MT.Empty();
-	EquipmentData_MT.Empty();
-	LevelData_MT.Empty();
-	TimeBonusData_MT.Empty();
-	
-	if (CurrentCustomer) {
-		FName DesiredCustomerBeard = CurrentCustomer->DesiredBeard;
-		UE_LOG(LogClass, Warning, TEXT("*** %s ***"), *DesiredCustomerBeard.ToString());
-		UDataTable* BeardDataTable = ((ATBSPlayerController*)GetController())->FindDataTableToName(DesiredCustomerBeard);
-		if (BeardDataTable) {
-			FMTTask Task;
-			Task.Runnable = FTBSDataLoadWorker::JoyInitBeardComp(BeardData_MT, BeardDataTable);
-			Task.Type = ETBSMultiThreadingTask::BeardComparison;
-			Task.TaskStarted = true;
-			GetWorldTimerManager().SetTimer(Task.Handle, 0.1f, true, -1.f);
-			MTTasks.Add(Task);
-		}
-	}
-
-	if (EquipmentData) {
-		FMTTask Task;
-		Task.Runnable = FTBSDataLoadWorker::JoyInitEquipment(EquipmentData_MT, EquipmentData);
-		Task.Type = ETBSMultiThreadingTask::Equipment;
-		Task.TaskStarted = true;
-		GetWorldTimerManager().SetTimer(Task.Handle, 0.1f, true, -1.f);
-		MTTasks.Add(Task);
-	}
-
-	if (LevelData) {
-		FMTTask Task;
-		Task.Runnable = FTBSDataLoadWorker::JoyInitLevel(LevelData_MT, LevelData);
-		Task.Type = ETBSMultiThreadingTask::Level;
-		Task.TaskStarted = true;
-		GetWorldTimerManager().SetTimer(Task.Handle, 0.1f, true, -1.f);
-		MTTasks.Add(Task);
-	}
-
-	if (BonusCashData) {
-		FMTTask Task;
-		Task.Runnable = FTBSDataLoadWorker::JoyInitBonus(TimeBonusData_MT, BonusCashData);
-		Task.Type = ETBSMultiThreadingTask::Bonus;
-		Task.TaskStarted = true;
-		GetWorldTimerManager().SetTimer(Task.Handle, 0.1f, true, -1.f);
-		MTTasks.Add(Task);
 	}
 
 	CurrentCustomer = FirstCustomer;

@@ -239,6 +239,7 @@ public:
 #pragma region Multi-Threading
 private:
 	void CheckMTTasks();
+	void StartMTLoading();
 
 	TArray<FMTTask> MTTasks;
 	
@@ -263,6 +264,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Cash")	int32 GetCashEarned();
 	UFUNCTION(BlueprintCallable, Category = "Cash")	int32 GetCashPenalty();
 	UFUNCTION(BlueprintCallable, exec, Category = "Cash")	void ApplyCashPenalty(int32 Value);
+
 };
 
 
