@@ -315,10 +315,6 @@ void ATBSPlayerController::UpdateMechanicChecks() {
 
 #pragma region Pitch Hacks
 void ATBSPlayerController::SpawnNextCustomer () {
-	if (GetWorld()->GetGameState<ATBSGameState>()) {
-		GetWorld()->GetGameState<ATBSGameState>()->SetIsPaused(false);
-	}
-	
 	SpawnedNextCustomer();
 	if (PlayerCharacter) {
 		PlayerCharacter->TransitionToNewCustomer();
@@ -340,7 +336,6 @@ void ATBSPlayerController::FinishCurrentCustomer() {
 	}
 
 	if (GetWorld()->GetGameState<ATBSGameState>()) {
-		GetWorld()->GetGameState<ATBSGameState>()->SetIsPaused(true);
 		UpdateCurrentSaveGame();
 	}
 }

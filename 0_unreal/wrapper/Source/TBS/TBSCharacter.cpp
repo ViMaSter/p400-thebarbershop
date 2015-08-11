@@ -304,11 +304,8 @@ void ATBSCharacter::TransitionToNewCustomer() {
 	}
 
 	// Set Timer
-	if (GetWorldTimerManager().TimerExists(TimerHandle)) {
-		GetWorldTimerManager().ClearTimer(TimerHandle);
-	}
+	GetWorldTimerManager().ClearTimer(TimerHandle);
 	GetWorldTimerManager().SetTimer(TimerHandle, TimeLimit, false, -1.f);
-	GetWorldTimerManager().PauseTimer(TimerHandle);
 
 	if (GetController()) {
 		((ATBSPlayerController*)GetController())->ResetCamera();
@@ -332,7 +329,8 @@ void ATBSCharacter::TransitionToNewCustomer() {
 	BeardResult = 0;
 	CashEarned = 0;
 	CashPenalty = 0;
-	LeveledUp = false;		
+	LeveledUp = false;
+	ElapsedTime = 0;
 }
 
 
@@ -375,12 +373,11 @@ float ATBSCharacter::GetTimeLeft() {
 
 float ATBSCharacter::GetTimeElapsed() {
 	if (GetWorldTimerManager().IsTimerActive(TimerHandle)) {
-		float TimeElapsed;
-		TimeElapsed = GetWorldTimerManager().GetTimerElapsed(TimerHandle);
-		ElapsedTime = TimeElapsed;
-		return TimeElapsed;
+		ElapsedTime = GetWorldTimerManager().GetTimerElapsed(TimerHandle);
+		UE_LOG(LogClass, Log, TEXT("%.2f"), ElapsedTime);
+		return ElapsedTime;
 	}
-	return -1.f;
+	return ElapsedTime;
 }
 
 void ATBSCharacter::PauseGameTimer() {
