@@ -318,7 +318,7 @@ void ATBSPlayerController::SpawnNextCustomer () {
 	if (GetWorld()->GetGameState<ATBSGameState>()) {
 		GetWorld()->GetGameState<ATBSGameState>()->SetIsPaused(false);
 	}
-
+	
 	SpawnedNextCustomer();
 	if (PlayerCharacter) {
 		PlayerCharacter->TransitionToNewCustomer();
@@ -920,7 +920,6 @@ void ATBSPlayerController::UpdateCurrentSaveGame() {
 #pragma endregion
 
 bool ATBSPlayerController::IsMainMenuLevel() {
-	UE_LOG(LogClass, Log, TEXT("*** Mapname: %s ***"),*GetWorld()->GetMapName());
 	if (GetWorld()->GetMapName().Contains("MainMenuLevel") ) {
 		return true;
 	}

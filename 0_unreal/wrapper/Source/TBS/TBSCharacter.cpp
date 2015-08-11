@@ -183,7 +183,6 @@ void ATBSCharacter::BeginPlay () {
 
 		((ATBSPlayerController*)Controller)->SetIsPaused(true);
 	}
-	StartMTLoading();
 
 }
 
@@ -231,6 +230,7 @@ void ATBSCharacter::StartGame() {
 	GameStarted = true;
 	CurrentCustomer->CreateNewCustomer(CurrentLevel);
 	CurrentBeardRow = ((ATBSPlayerController*)GetController())->FindDataRowToName(CurrentCustomer->DesiredBeard);
+	StartMTLoading();
 
 	//ScreenCaptureCustomer->CreateNewCustomer(CurrentLevel);
 	ScreenCaptureCustomer->IsCurrentCustomer = true;
@@ -282,9 +282,9 @@ void ATBSCharacter::FinishCurrentCustomer() {
 	IncreaseEXP(EXP);
 	IncreaseCash(BeardResult);
 
-	GetWorldTimerManager().PauseTimer(TimerHandle);
 	if (Controller){
 		((ATBSPlayerController*)Controller)->FinishedCurrentCustomer();
+		((ATBSPlayerController*)Controller)->SetIsPaused(true);
 	}
 
 	// Background Load New Customer
@@ -292,12 +292,6 @@ void ATBSCharacter::FinishCurrentCustomer() {
 }
 
 void ATBSCharacter::TransitionToNewCustomer() {
-	// Set Timer
-	if (GetWorldTimerManager().TimerExists(TimerHandle)){
-		GetWorldTimerManager().ClearTimer(TimerHandle);
-	}
-	GetWorldTimerManager().SetTimer(TimerHandle, TimeLimit, false, -1.f);
-
 	if (FirstCustomerActive && SecondCustomer) {
 		SetActorLocation(FVector(0, -810, 340));
 		CurrentCustomer = SecondCustomer;
@@ -308,7 +302,14 @@ void ATBSCharacter::TransitionToNewCustomer() {
 		CurrentCustomer = FirstCustomer;
 		NextCustomer = SecondCustomer;
 	}
-	
+
+	// Set Timer
+	if (GetWorldTimerManager().TimerExists(TimerHandle)) {
+		GetWorldTimerManager().ClearTimer(TimerHandle);
+	}
+	GetWorldTimerManager().SetTimer(TimerHandle, TimeLimit, false, -1.f);
+	GetWorldTimerManager().PauseTimer(TimerHandle);
+
 	if (GetController()) {
 		((ATBSPlayerController*)GetController())->ResetCamera();
 	}
@@ -367,7 +368,6 @@ float ATBSCharacter::GetTimeLeft() {
 	if (GetWorldTimerManager().IsTimerActive(TimerHandle)) {
 		float TimeLeft;
 		TimeLeft = GetWorldTimerManager().GetTimerRemaining(TimerHandle);
-		//UE_LOG (LogClass, Log, TEXT ("*** Time Left: %.2f from %.2f ***"), TimeLeft, TimeLimit);
 		return TimeLeft;
 	}
 	return -1.f;
@@ -377,7 +377,6 @@ float ATBSCharacter::GetTimeElapsed() {
 	if (GetWorldTimerManager().IsTimerActive(TimerHandle)) {
 		float TimeElapsed;
 		TimeElapsed = GetWorldTimerManager().GetTimerElapsed(TimerHandle);
-		//UE_LOG (LogClass, Log, TEXT ("*** Time Left: %.2f from %.2f ***"), TimeLeft, TimeLimit);
 		ElapsedTime = TimeElapsed;
 		return TimeElapsed;
 	}

@@ -41,7 +41,6 @@ void ATBSCustomer::BeginPlay () {
 	}
 
 	CustomerStartPosition = GetActorLocation();
-	UE_LOG(LogClass, Log, TEXT("*** %f,%f,%f  ***"), CustomerStartPosition.X, CustomerStartPosition.Y, CustomerStartPosition.Z);
 }
 
 void ATBSCustomer::Tick(float DeltaTime) {
@@ -84,7 +83,7 @@ void ATBSCustomer::FindDesiredBeardFromPool(int32 Playerlevel){
 					if (Data[i].UniqueID == ForcedSessionBeards[FMath::Min(NumberOfPlaythrough, ForcedSessionBeards.Num()-1)]) {
 						DesiredBeard = Data[i].BeardName;
 						PortraitTexture = Data[i].ComparisionScreenshot;
-						UE_LOG(LogClass, Warning, TEXT("*** Falling back to %s. ***"), *DesiredBeard.ToString());
+						UE_LOG(LogClass, Log, TEXT("*** Tutorial: Falling back to %s. ***"), *DesiredBeard.ToString());
 						break;
 					}
 				}
