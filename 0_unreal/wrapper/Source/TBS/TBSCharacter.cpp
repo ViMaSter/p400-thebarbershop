@@ -374,7 +374,6 @@ float ATBSCharacter::GetTimeLeft() {
 float ATBSCharacter::GetTimeElapsed() {
 	if (GetWorldTimerManager().IsTimerActive(TimerHandle)) {
 		ElapsedTime = GetWorldTimerManager().GetTimerElapsed(TimerHandle);
-		UE_LOG(LogClass, Log, TEXT("%.2f"), ElapsedTime);
 		return ElapsedTime;
 	}
 	return ElapsedTime;

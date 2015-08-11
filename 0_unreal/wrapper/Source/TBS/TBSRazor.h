@@ -43,6 +43,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Beard")
 	void ResetHairs();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Beard")
+	void ResetEditorHairs();
+
 	void SwitchRazorTypeTo (TEnumAsByte<ETBSRazor::Type> NewType);
 
 	virtual void Tick (float DeltaSeconds) override;

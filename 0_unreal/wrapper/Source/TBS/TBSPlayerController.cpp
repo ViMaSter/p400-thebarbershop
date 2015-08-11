@@ -80,12 +80,16 @@ void ATBSPlayerController::SetupInputComponent () {
 	InputComponent->BindAction("Rotate", IE_Pressed, this, &ATBSPlayerController::OnSetRotationPressed);
 	InputComponent->BindAction("Rotate", IE_Released, this, &ATBSPlayerController::OnSetRotationReleased);
 
-	// Cheat Codes Pitch Hack
-	InputComponent->BindAction("FinishCustomer", IE_Pressed, this, &ATBSPlayerController::FinishCurrentCustomer);
-	InputComponent->BindAction("SpawnNextCustomer", IE_Pressed, this, &ATBSPlayerController::SpawnNextCustomer);
+	InputComponent->BindAction("EnterEditor", IE_Pressed, this, &ATBSPlayerController::EnterEditorMode);
+	InputComponent->BindAction("ResetBeard", IE_Pressed, this, &ATBSPlayerController::SpawnNextCustomer); 
 	
 	InputComponent->BindAction("MoveChair", IE_Pressed, this, &ATBSPlayerController::LiftPositionPressed);
 	InputComponent->BindAction("MoveChair", IE_Released, this, &ATBSPlayerController::LiftPositionReleased);
+}
+
+void ATBSPlayerController::EnterEditorMode() {
+	SetIsEditorMode(true);
+	EnteredEditorMode();
 }
 
 #pragma region Camera Control
@@ -315,6 +319,10 @@ void ATBSPlayerController::UpdateMechanicChecks() {
 
 #pragma region Pitch Hacks
 void ATBSPlayerController::SpawnNextCustomer () {
+	if (GetIsEditorMode()) {
+		PlayerCharacter->Tool->ResetEditorHairs();
+		return;
+	}
 	SpawnedNextCustomer();
 	if (PlayerCharacter) {
 		PlayerCharacter->TransitionToNewCustomer();
@@ -524,12 +532,17 @@ bool ATBSPlayerController::LoadBeardDataToCurrentCustomer (UDataTable* DataTable
 	if (PlayerCharacter == NULL) {
 		return false;
 	}
+	if (GetIsEditorMode()) {
+		PlayerCharacter->Tool->ResetEditorHairs();
+	}
+	else {
+		PlayerCharacter->Tool->ResetHairs();
+	}
 	TArray<UActorComponent*> Components;
 	Components = PlayerCharacter->CurrentCustomer->Beard->GetComponentsByClass (UStaticMeshComponent::StaticClass ());
 	FBeardComparisonData* CurrentData;
 	const FString Context = FString("");
 	bool success = true;
-	PlayerCharacter->Tool->ResetHairs();
 	for (int32 i = 0; i < PlayerCharacter->Tool->InstancedSMComponent->GetInstanceCount(); i++) {
 		FString String = FString::FromInt (i);
 		FName Row = FName (*String);

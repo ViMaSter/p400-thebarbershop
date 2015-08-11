@@ -19,6 +19,8 @@ public:
 
 	/// Vincent: Needed to move this from protected to public, since this methods will be called from the HUD
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool SaveStep();
+	UFUNCTION(BlueprintCallable, exec, Category = "Editor Mode") void EnterEditorMode();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Editor Mode") void EnteredEditorMode();
 	UFUNCTION (BlueprintCallable, Category = "Beard Control") void SetChangedBeard();
 
 	UFUNCTION (BlueprintCallable, exec, Category = "Beard Control") bool ClearBeardData ();
