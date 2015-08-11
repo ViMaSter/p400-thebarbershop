@@ -42,14 +42,14 @@ ENUM_CLASS_FLAGS (ETBSHUDAnimationDirection)
 UENUM(BlueprintType)
 namespace ETBSRating {
 	enum Type {
-		TBSRating_A = 0 	UMETA(DisplayName = "A"),
-		TBSRating_B = 1		UMETA(DisplayName = "B"),
-		TBSRating_C = 2		UMETA(DisplayName = "C"),
-		TBSRating_D = 3		UMETA(DisplayName = "D"),
-		TBSRating_F = 4		UMETA(DisplayName = "F"),
-		TBSRating_AM = 5		UMETA(DisplayName = "A-"),
-		TBSRating_BP = 6		UMETA(DisplayName = "B+"),
-		TBSRating_BM = 7		UMETA(DisplayName = "B-"),
-		TBSRating_CP = 8		UMETA(DisplayName = "C+"),
+		TBSRating_A		= 0 	UMETA(DisplayName = "A"),
+		TBSRating_B		= 1		UMETA(DisplayName = "B"),
+		TBSRating_C		= 2		UMETA(DisplayName = "C"),
+		TBSRating_D		= 3		UMETA(DisplayName = "D"),
+		TBSRating_F		= 4		UMETA(DisplayName = "F"),
+		TBSRating_AM	= 5		UMETA(DisplayName = "A-"),
+		TBSRating_BP	= 6		UMETA(DisplayName = "B+"),
+		TBSRating_BM	= 7		UMETA(DisplayName = "B-"),
+		TBSRating_CP	= 8		UMETA(DisplayName = "C+"),
 	};
 }
