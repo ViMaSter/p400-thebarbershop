@@ -45,6 +45,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Save State") float GetBestTime();
 
 	UFUNCTION(BlueprintCallable, Category = "Save State") bool WipeSaveFiles(int32 UserIndex);
-	UFUNCTION(BlueprintCallable, Category = "Save State") bool SaveFilesExist(int32 UserIndex);
+	UFUNCTION(BlueprintCallable, Category = "Save State") bool SaveFilesExist(int32 UserIndex = 0);
 #pragma endregion
 };
