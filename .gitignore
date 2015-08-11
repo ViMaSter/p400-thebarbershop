@@ -7,3 +7,5 @@ Builds/
 backup_log.txt
 /0_unreal/Content/TheBarberShop/Assets/Environment/ThirdPersonSkelMesh.uasset
 /0_unreal/wrapper/Build/Receipts/
+
+0_unreal/wrapper/Content/TheBarberShop/Assets/Audio/Music*/
