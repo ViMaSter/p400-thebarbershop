@@ -3,6 +3,7 @@
 #include "GameFramework/PlayerController.h"
 #include "Engine/LocalPlayer.h"
 
+#include "TBSRadio.h"
 #include "TBSBeard.h"
 #include "TBSCharacter.h"
 #include "TBSPlayerController.generated.h"
@@ -76,6 +77,8 @@ protected:
 #pragma region References
 public:
 	ATBSCharacter* PlayerCharacter;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ATBSRadio* Radio;
 #pragma endregion
 
 #pragma region Camera
