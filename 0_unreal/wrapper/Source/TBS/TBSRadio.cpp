@@ -68,7 +68,10 @@ void ATBSRadio::Tick (float DeltaTime) {
 	Super::Tick(DeltaTime);
 }
 
-void ATBSRadio::AudioFinished0 () {
+void ATBSRadio::AudioFinished0() {
+	if (CurrentStation == -1)
+		return;
+
 	if (ChannelToFadeIn == Music0) {
 		CurrentSong = RadioStations[CurrentStation].NextTrack();
 		OnSongChange(*CurrentSong);
@@ -78,6 +81,9 @@ void ATBSRadio::AudioFinished0 () {
 }
 
 void ATBSRadio::AudioFinished1 () {
+	if (CurrentStation == -1)
+		return;
+
 	if (ChannelToFadeIn == Music1) {
 		CurrentSong = RadioStations[CurrentStation].NextTrack();
 		OnSongChange(*CurrentSong);
