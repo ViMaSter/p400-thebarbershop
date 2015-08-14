@@ -660,6 +660,7 @@ bool ATBSPlayerController::RemoveBeardFromCollection (FName BeardName) {
 			UE_LOG (LogClass, Warning, TEXT ("*** Could not find Beard in CollectionData! ***"));
 		}
 	}
+	PlayerCharacter->BeardCollection->ReloadConfig();
 	return Success;
 }
 
@@ -706,8 +707,9 @@ bool ATBSPlayerController::SetCurrentBeardDataToCSV(UDataTable* DataTable) {
 				return false;
 			}
 		}
-		DataTable->SaveConfig(16384Ui64,*DataTable->ImportPath);
 	}
+
+	DataTable->ReloadConfig();
 	return true;
 }
 
@@ -716,10 +718,10 @@ bool ATBSPlayerController::SetBeardToCollectionData(FName BeardName, int32 Beard
 	bool Success = false;
 	if (PlayerCharacter->BeardCollection) {
 		const FString Context = FString("");
-		TArray<FName> RowNames = PlayerCharacter->BeardCollection->GetRowNames ();
-		for (int32 i = 0; i < RowNames.Num (); i++) {
+		TArray<FName> RowNames = PlayerCharacter->BeardCollection->GetRowNames();
+		for (int32 i = 0; i < RowNames.Num(); i++) {
 			FName Row = RowNames[i];
-			CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData> (Row, Context, false);
+			CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData>(Row, Context, false);
 			if (CurrentData && CurrentData->BeardName == BeardName) {
 				Success = true;
 				CurrentData->BeardLevel = BeardLevel;
@@ -733,9 +735,9 @@ bool ATBSPlayerController::SetBeardToCollectionData(FName BeardName, int32 Beard
 			int32 RowID = 0;
 			while (true) {
 				bool IsFreeID = true;
-				FString RowString = FString::FromInt (RowID);
-				NewRowName = FName (*RowString);
-				for (int32 i = 0; i < RowNames.Num (); i++) {
+				FString RowString = FString::FromInt(RowID);
+				NewRowName = FName(*RowString);
+				for (int32 i = 0; i < RowNames.Num(); i++) {
 					if (RowNames[i] == NewRowName) IsFreeID = false;
 				}
 				if (IsFreeID) break;
@@ -749,41 +751,41 @@ bool ATBSPlayerController::SetBeardToCollectionData(FName BeardName, int32 Beard
 				bool IsFreeSlot = true;
 				FString SlotString = "Beard";
 				if (SlotID < 10) {
-					SlotString.Append ("0");
+					SlotString.Append("0");
 				}
-				SlotString.Append (FString::FromInt (SlotID));
-				NewSlotName = FName (*SlotString);
-				for (int32 i = 0; i < RowNames.Num (); i++) {
+				SlotString.Append(FString::FromInt(SlotID));
+				NewSlotName = FName(*SlotString);
+				for (int32 i = 0; i < RowNames.Num(); i++) {
 					FName Row = RowNames[i];
-					CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData> (Row, Context, false);
+					CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData>(Row, Context, false);
 					if (CurrentData && CurrentData->BeardSlotName == NewSlotName) IsFreeSlot = false;
 				}
 				if (IsFreeSlot) break;
 				SlotID++;
 				// TEMPORARY HARD BREAK DUE TO LIMITED SLOTS
 				if (SlotID >= 10) {
-					UE_LOG (LogClass, Warning, TEXT ("*** Could not save the beard! ***"));
-					UE_LOG (LogClass, Warning, TEXT ("*** All slots are full please delete old beards or add new Slots! ***"));
+					UE_LOG(LogClass, Warning, TEXT("*** Could not save the beard! ***"));
+					UE_LOG(LogClass, Warning, TEXT("*** All slots are full please delete old beards or add new Slots! ***"));
 					return false;
 				}
 			}
 
 			// Allocate Memory
-			UScriptStruct* LoadUsingStruct = FBeardCollectionData::StaticStruct ();
-			uint8* RowData = (uint8*) FMemory::Malloc (LoadUsingStruct->PropertiesSize);
-			PlayerCharacter->BeardCollection->RowMap.Add (NewRowName, RowData);
-			CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData> (NewRowName, Context, false);
+			UScriptStruct* LoadUsingStruct = FBeardCollectionData::StaticStruct();
+			uint8* RowData = (uint8*)FMemory::Malloc(LoadUsingStruct->PropertiesSize);
+			PlayerCharacter->BeardCollection->RowMap.Add(NewRowName, RowData);
+			CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData>(NewRowName, Context, false);
 			if (CurrentData) {
 				CurrentData->BeardName = BeardName;
 				CurrentData->BeardSlotName = NewSlotName;
 				CurrentData->BeardLevel = BeardLevel;
 				CurrentData->UniqueIdentifier = UniqueId;
 				CurrentData->ComparisionScreenshot = NULL;
-				return true;
+				Success = true;
 			}
 		}
-		PlayerCharacter->BeardCollection->SaveConfig(16384Ui64, *PlayerCharacter->BeardCollection->ImportPath);
 	}
+	PlayerCharacter->BeardCollection->ReloadConfig();
 	return Success;
 }
 
