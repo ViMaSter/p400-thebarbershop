@@ -511,45 +511,40 @@ void ATBSCharacter::CalculateBonusCash(){
 
 // Returns the comparison Result from the shaved beard of the customer and the CSV data
 float ATBSCharacter::CalculateResult () {
-	if (Tool  && Tool->InstancedSMComponent) {
-		TArray<UActorComponent*> Components;
-		int32 Total = Tool->InstancedSMComponent->GetInstanceCount();
+	if (Tool  && Tool->ISMNormalTotal.Num() > 0) {
+		TArray<UActorComponent*> Components;	
+		int32 Total = 0;
 		int32 TotalTarget = 0;
-		int32 NumShaved = 0;
-		int32 NumTargetShaved = 0;
-		int32 NumTrimmed = 0;
-		int32 NumTargetTrimmed = 0;
 		FTransform Transform;
-
-		int32 Correct = 0;
-
-		
+		int32 Correct = 0;		
 		int32 TrimmedIndex = 0;
-		for (int32 i = 0; i < Tool->InstancedSMComponent->GetInstanceCount(); i++) {
-			int32 State = 2;
-			if (Tool->InstancedSMComponent->GetInstanceTransform(i, Transform)) {
-				if (Transform.GetLocation().Z >= 1000) { // Shaved
-					State = 0;
-				}
-				else if (Transform.GetLocation().Z <= -1000) { // Trimmed
-					if (Tool->InstancedSMComponent->GetInstanceTransform(TrimmedIndex, Transform)) {
-						if (Transform.GetLocation().Z >= 1000) { // Shaved
-							State = 0;
-						}
-						else if (Transform.GetLocation().Z <= -1000) { // Trimmed
-							State = 1;
-						}
+		for (int32 j = 0; j < Tool->ISMNormalTotal.Num(); j++) {
+			for (int32 i = 0; i < Tool->ISMNormalTotal[j]->GetInstanceCount(); i++) {
+				int32 State = 2;
+				if (Tool->ISMNormalTotal[j]->GetInstanceTransform(i, Transform)) {
+					if (Transform.GetLocation().Z >= 1000) { // Shaved
+						State = 0;
 					}
-					TrimmedIndex++;
+					else if (Transform.GetLocation().Z <= -1000) { // Trimmed
+						if (Tool->ISMNormalTotal[j]->GetInstanceTransform(TrimmedIndex, Transform)) {
+							if (Transform.GetLocation().Z >= 1000) { // Shaved
+								State = 0;
+							}
+							else if (Transform.GetLocation().Z <= -1000) { // Trimmed
+								State = 1;
+							}
+						}
+						TrimmedIndex++;
+					}
 				}
-			}
-			if (BeardData_MT[i]) {
-				if (State == BeardData_MT[i]->HairState) {
-					Correct++;
+				if (i < BeardData_MT.Num() && BeardData_MT[i]) {
+					if (State == BeardData_MT[i]->HairState) {
+						Correct++;
+					}
+					TotalTarget++;
 				}
-				TotalTarget++;
+				Total++;
 			}
-
 		}
 
 		if (TotalTarget != Total) {

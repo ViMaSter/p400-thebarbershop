@@ -543,26 +543,28 @@ bool ATBSPlayerController::LoadBeardDataToCurrentCustomer (UDataTable* DataTable
 	FBeardComparisonData* CurrentData;
 	const FString Context = FString("");
 	bool success = true;
-	for (int32 i = 0; i < PlayerCharacter->Tool->InstancedSMComponent->GetInstanceCount(); i++) {
-		FString String = FString::FromInt (i);
-		FName Row = FName (*String);
-		CurrentData = DataTable->FindRow<FBeardComparisonData> (Row, Context, false);
-		if (CurrentData) {
-			switch (CurrentData->HairState) {
-				case(0) :
-					PlayerCharacter->Tool->ShaveHair(i);
-					break;
-				case(1) :
-					PlayerCharacter->Tool->TrimmHair(i);
-					break;
-				case(2) :
-					//
-					break;
+	for (int32 j = 0; j < PlayerCharacter->Tool->ISMNormalTotal.Num(); j++) {
+		for (int32 i = 0; i < PlayerCharacter->Tool->ISMNormalTotal[j]->GetInstanceCount(); i++) {
+			FString String = FString::FromInt (i);
+			FName Row = FName (*String);
+			CurrentData = DataTable->FindRow<FBeardComparisonData> (Row, Context, false);
+			if (CurrentData) {
+				switch (CurrentData->HairState) {
+					case(0) :
+						PlayerCharacter->Tool->ShaveHair(i);
+						break;
+					case(1) :
+						PlayerCharacter->Tool->TrimmHair(i);
+						break;
+					case(2) :
+						//
+						break;
+				}
 			}
-		}
-		else {
-			UE_LOG (LogClass, Warning, TEXT ("*** Could not load Beard Data Row! Possible missmatch of Meshcount ***"));
-			success = false;
+			else {
+				UE_LOG (LogClass, Warning, TEXT ("*** Could not load Beard Data Row! Possible missmatch of Meshcount ***"));
+				success = false;
+			}
 		}
 	}
 	return success;
@@ -573,22 +575,24 @@ void ATBSPlayerController::LoadBeardToCustomer(TArray<FBeardComparisonData*> Dat
 		return;
 	}
 	PlayerCharacter->Tool->ResetHairs();
-	for (int32 i = 0; i < PlayerCharacter->Tool->InstancedSMComponent->GetInstanceCount(); i++) {
-		if (Data[i]) {
-			switch (Data[i]->HairState) {
-			case(0) :
-				PlayerCharacter->Tool->ShaveHair(i);
-				break;
-			case(1) :
-				PlayerCharacter->Tool->TrimmHair(i);
-				break;
-			case(2) :
-				//
-				break;
+	for (int32 j = 0; j < PlayerCharacter->Tool->ISMNormalTotal.Num(); j++) {
+		for (int32 i = 0; i < PlayerCharacter->Tool->ISMNormalTotal[j]->GetInstanceCount(); i++) {
+			if (Data[i]) {
+				switch (Data[i]->HairState) {
+				case(0) :
+					PlayerCharacter->Tool->ShaveHair(i);
+					break;
+				case(1) :
+					PlayerCharacter->Tool->TrimmHair(i);
+					break;
+				case(2) :
+					//
+					break;
+				}
 			}
-		}
-		else {
-			UE_LOG(LogClass, Warning, TEXT("*** Possible missmatch of meshcount! Array of FBeardComparisonData from thread has not enough rows! ***"));
+			else {
+				UE_LOG(LogClass, Warning, TEXT("*** Possible missmatch of meshcount! Array of FBeardComparisonData from thread has not enough rows! ***"));
+			}
 		}
 	}
 }
@@ -671,42 +675,44 @@ bool ATBSPlayerController::SetCurrentBeardDataToCSV(UDataTable* DataTable) {
 	Components = PlayerCharacter->CurrentCustomer->Beard->GetComponentsByClass (UStaticMeshComponent::StaticClass ());
 	FBeardComparisonData* CurrentData;
 
-	for (int32 i = 0; i < PlayerCharacter->Tool->InstancedSMComponent->GetInstanceCount(); i++) {
-		int32 ComponentStatus = 2;
-		const FString Context = FString("");
-		FTransform Transform;
-		if (PlayerCharacter->Tool->InstancedSMComponent->GetInstanceTransform(i, Transform)) {
-			if (Transform.GetLocation().Z >= 1000) { // Shaved
-				ComponentStatus = 0;
+	for (int32 j = 0; j < PlayerCharacter->Tool->ISMNormalTotal.Num(); j++) {
+		for (int32 i = 0; i < PlayerCharacter->Tool->ISMNormalTotal[j]->GetInstanceCount(); i++) {
+			int32 ComponentStatus = 2;
+			const FString Context = FString("");
+			FTransform Transform;
+			if (PlayerCharacter->Tool->ISMNormalTotal[j]->GetInstanceTransform(i, Transform)) {
+				if (Transform.GetLocation().Z >= 1000) { // Shaved
+					ComponentStatus = 0;
+				}
+				else if (Transform.GetLocation().Z <= -1000) { // Trimmed
+					ComponentStatus = 1;
+				}
+				else {	// Unshaved
+					ComponentStatus = 2;
+				}
 			}
-			else if (Transform.GetLocation().Z <= -1000) { // Trimmed
-				ComponentStatus = 1;
-			}
-			else {	// Unshaved
-				ComponentStatus = 2;
-			}
-		}
 
-		FString String = FString::FromInt (i);
-		FName Row = FName (*String);
-		CurrentData = DataTable->FindRow<FBeardComparisonData> (Row, Context, false);
-
-		if (CurrentData) {
-			CurrentData->HairState = ComponentStatus;
-		}
-		else {
-			UScriptStruct* LoadUsingStruct = FBeardComparisonData::StaticStruct ();
-			uint8* RowData = (uint8*) FMemory::Malloc (LoadUsingStruct->PropertiesSize);
-			DataTable->RowMap.Add (Row, RowData);
+			FString String = FString::FromInt (i);
+			FName Row = FName (*String);
 			CurrentData = DataTable->FindRow<FBeardComparisonData> (Row, Context, false);
+
 			if (CurrentData) {
 				CurrentData->HairState = ComponentStatus;
 			}
-			else{
-				return false;
+			else {
+				UScriptStruct* LoadUsingStruct = FBeardComparisonData::StaticStruct ();
+				uint8* RowData = (uint8*) FMemory::Malloc (LoadUsingStruct->PropertiesSize);
+				DataTable->RowMap.Add (Row, RowData);
+				CurrentData = DataTable->FindRow<FBeardComparisonData> (Row, Context, false);
+				if (CurrentData) {
+					CurrentData->HairState = ComponentStatus;
+				}
+				else{
+					return false;
+				}
 			}
+			DataTable->SaveConfig(16384Ui64,*DataTable->ImportPath);
 		}
-		DataTable->SaveConfig(16384Ui64,*DataTable->ImportPath);
 	}
 	return true;
 }

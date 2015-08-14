@@ -48,11 +48,48 @@ public:
 
 	void SwitchRazorTypeTo (TEnumAsByte<ETBSRazor::Type> NewType);
 
-	virtual void Tick (float DeltaSeconds) override;
+	virtual void Tick(float DeltaSeconds) override;	
+	
+	// Current Customer ISMArrays
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hairs Cut")
-	UInstancedStaticMeshComponent* TrimmedBeardInstances;
+	TArray<UInstancedStaticMeshComponent*> ISMNormalTotal;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hairs Cut")
-	UInstancedStaticMeshComponent* InstancedSMComponent;
+	TArray<UInstancedStaticMeshComponent*> ISMNormalFillerTotal;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hairs Cut")
+	TArray<UInstancedStaticMeshComponent*> ISMTrimmedTotal;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hairs Cut")
+	TArray<UInstancedStaticMeshComponent*> ISMTrimmedFillerTotal;
+
+	// Capture Customer ISMArrays
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hairs Cut")
+		TArray<UInstancedStaticMeshComponent*> ISMCaptureNormalTotal;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hairs Cut")
+		TArray<UInstancedStaticMeshComponent*> ISMCaptureNormalFillerTotal;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hairs Cut")
+		TArray<UInstancedStaticMeshComponent*> ISMCaptureTrimmedTotal;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hairs Cut")
+		TArray<UInstancedStaticMeshComponent*> ISMCaptureTrimmedFillerTotal;
+	
+	// TMP/ Next Customer ISMArrays (for Reset)
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hairs Cut")
+		TArray<UInstancedStaticMeshComponent*> ISMTmpNormalTotal;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hairs Cut")
+		TArray<UInstancedStaticMeshComponent*> ISMTmpNormalFillerTotal;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hairs Cut")
+		TArray<UInstancedStaticMeshComponent*> ISMTmpTrimmedTotal;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hairs Cut")
+		TArray<UInstancedStaticMeshComponent*> ISMTmpTrimmedFillerTotal;
+
 };
