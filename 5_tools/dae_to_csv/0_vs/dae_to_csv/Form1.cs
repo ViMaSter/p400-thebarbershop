@@ -135,9 +135,12 @@ namespace dae_to_csv
                 float.TryParse(rotationY.Groups[1].Value, out column.Roll);
                 float.TryParse(rotationZ.Groups[1].Value, out column.Yaw);
 
-                float.TryParse(scale.Groups[1].Value, out column.ScaleX);
-                float.TryParse(scale.Groups[2].Value, out column.ScaleY);
-                float.TryParse(scale.Groups[3].Value, out column.ScaleZ);
+                if (scale.Groups.Count > 2)
+                {
+                    float.TryParse(scale.Groups[1].Value, out column.ScaleX);
+                    float.TryParse(scale.Groups[2].Value, out column.ScaleY);
+                    float.TryParse(scale.Groups[3].Value, out column.ScaleZ);
+                }
 
                 if (Max2016Fix)
                 {
