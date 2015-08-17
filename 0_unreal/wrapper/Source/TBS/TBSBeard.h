@@ -79,6 +79,9 @@ public:
 		, Roll(0)
 		, Pitch(0)
 		, Yaw(0)
+		, ScaleX(1)
+		, ScaleY(1)
+		, ScaleZ(1)
 	{}
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Translation")	float TranslateX;
@@ -88,6 +91,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rotation")		float Roll;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rotation")		float Pitch;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rotation")		float Yaw;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Scale")	float ScaleX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Scale")	float ScaleY;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Scale")	float ScaleZ;
 };
 
 USTRUCT(BlueprintType)
