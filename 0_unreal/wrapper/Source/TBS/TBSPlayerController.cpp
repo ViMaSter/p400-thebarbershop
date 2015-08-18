@@ -713,7 +713,7 @@ bool ATBSPlayerController::SetCurrentBeardDataToCSV(UDataTable* DataTable) {
 					ComponentStatus = 0;
 				}
 				else if (Transform.GetLocation().Z <= -500) { // Trimmed
-					if (PlayerCharacter->Tool->ISMTmpTrimmedTotal[j]->GetInstanceTransform(TrimmedIndex, Transform)) {
+					if (PlayerCharacter->Tool->ISMTrimmedTotal[j]->GetInstanceTransform(TrimmedIndex, Transform)) {
 						if (Transform.GetLocation().Z >= 500) { // Shaved
 							ComponentStatus = 0;
 						}
@@ -763,7 +763,7 @@ bool ATBSPlayerController::SetCurrentBeardDataToCSV(UDataTable* DataTable) {
 					ComponentStatus = 0;
 				}
 				else if (Transform.GetLocation().Z <= -500) { // Trimmed
-					if (PlayerCharacter->Tool->ISMTmpTrimmedFillerTotal[j]->GetInstanceTransform(TrimmedIndex, Transform)) {
+					if (PlayerCharacter->Tool->ISMTrimmedFillerTotal[j]->GetInstanceTransform(TrimmedIndex, Transform)) {
 						if (Transform.GetLocation().Z >= 500) { // Shaved
 							ComponentStatus = 0;
 						}
