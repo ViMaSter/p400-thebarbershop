@@ -8,15 +8,15 @@
 #include "TBSGameState.h"
 #include "TBSDataLoadWorker.h"
 
-ATBSPlayerController::ATBSPlayerController (const FObjectInitializer& ObjectInitializer)
-	: Super (ObjectInitializer) {
+ATBSPlayerController::ATBSPlayerController(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer) {
 	bShowMouseCursor = false;
 	ShaveActive = false;
 	RotationActive = false;
 
 	PointingAtCustomer = false;
 
-	ToolRotationTarget = FRotator (0, 0, 180);
+	ToolRotationTarget = FRotator(0, 0, 180);
 
 	RazorRotationLerpIntensity = 1.0f;
 	RazorPositionLerpIntensity = 1.0f;
@@ -27,13 +27,13 @@ ATBSPlayerController::ATBSPlayerController (const FObjectInitializer& ObjectInit
 }
 
 
-void ATBSPlayerController::BeginPlay () {
-	Super::BeginPlay ();
+void ATBSPlayerController::BeginPlay() {
+	Super::BeginPlay();
 	//PlayerCharacter = (ATBSCharacter*) GetPawn ();
 }
 
-void ATBSPlayerController::PlayerTick (float DeltaTime) {
-	Super::PlayerTick (DeltaTime);
+void ATBSPlayerController::PlayerTick(float DeltaTime) {
+	Super::PlayerTick(DeltaTime);
 
 	if (!GetWorld()->GetGameState<ATBSGameState>() || !GetWorld()->GetGameState<ATBSGameState>()->GetIsIngame()) {
 		return;
@@ -42,11 +42,11 @@ void ATBSPlayerController::PlayerTick (float DeltaTime) {
 	if (PlayerCharacter && PlayerCharacter->Tool && !GetIsPaused()) {
 		UpdateMechanicChecks();
 
-		UpdateRazor (DeltaTime);
-		UpdateCamera (DeltaTime);
+		UpdateRazor(DeltaTime);
+		UpdateCamera(DeltaTime);
 
-		ApplyRazor (DeltaTime);
-		ApplyCamera (DeltaTime);
+		ApplyRazor(DeltaTime);
+		ApplyCamera(DeltaTime);
 
 		bShowMouseCursor = !PointingAtCustomer;
 	}
@@ -61,9 +61,9 @@ void ATBSPlayerController::PlayerTick (float DeltaTime) {
 	}
 }
 
-void ATBSPlayerController::SetupInputComponent () {
+void ATBSPlayerController::SetupInputComponent() {
 	// set up gameplay key bindings
-	Super::SetupInputComponent ();
+	Super::SetupInputComponent();
 
 	InputComponent->BindAxis("RotateTop", this, &ATBSPlayerController::RotateTop);
 	InputComponent->BindAxis("RotateRight", this, &ATBSPlayerController::RotateRight);
@@ -81,8 +81,8 @@ void ATBSPlayerController::SetupInputComponent () {
 	InputComponent->BindAction("Rotate", IE_Released, this, &ATBSPlayerController::OnSetRotationReleased);
 
 	InputComponent->BindAction("EnterEditor", IE_Pressed, this, &ATBSPlayerController::EnterEditorMode);
-	InputComponent->BindAction("ResetBeard", IE_Pressed, this, &ATBSPlayerController::SpawnNextCustomer); 
-	
+	InputComponent->BindAction("ResetBeard", IE_Pressed, this, &ATBSPlayerController::SpawnNextCustomer);
+
 	InputComponent->BindAction("MoveChair", IE_Pressed, this, &ATBSPlayerController::LiftPositionPressed);
 	InputComponent->BindAction("MoveChair", IE_Released, this, &ATBSPlayerController::LiftPositionReleased);
 }
@@ -101,37 +101,37 @@ void ATBSPlayerController::ResetCamera() {
 	PlayerCharacter->CameraBoom->AddRelativeRotation(FRotator(0, 180, 0));
 }
 
-void ATBSPlayerController::RotateCamera (float Pitch, float Yaw) {
+void ATBSPlayerController::RotateCamera(float Pitch, float Yaw) {
 	if (PlayerCharacter && !bCinematicMode) {
-		CameraRotationTarget.Add (Pitch, Yaw, 0);
+		CameraRotationTarget.Add(Pitch, Yaw, 0);
 
-		CameraRotationTarget.Pitch = FMath::ClampAngle (CameraRotationTarget.Pitch, PlayerCharacter->VerticalUpperCameraRotationBorder, PlayerCharacter->VerticalLowerCameraRotationBorder);
-		CameraRotationTarget.Yaw = FMath::ClampAngle (CameraRotationTarget.Yaw, -PlayerCharacter->HorizontalCameraRotationBorder, PlayerCharacter->HorizontalCameraRotationBorder);
+		CameraRotationTarget.Pitch = FMath::ClampAngle(CameraRotationTarget.Pitch, PlayerCharacter->VerticalUpperCameraRotationBorder, PlayerCharacter->VerticalLowerCameraRotationBorder);
+		CameraRotationTarget.Yaw = FMath::ClampAngle(CameraRotationTarget.Yaw, -PlayerCharacter->HorizontalCameraRotationBorder, PlayerCharacter->HorizontalCameraRotationBorder);
 	}
 }
 
-void ATBSPlayerController::RotateTop (float Value) {
+void ATBSPlayerController::RotateTop(float Value) {
 	if (!GetWorld()->GetGameState<ATBSGameState>() || !GetWorld()->GetGameState<ATBSGameState>()->GetIsIngame()) {
 		return;
 	}
 
-	RotateCamera (-Value, 0);
+	RotateCamera(-Value, 0);
 }
 
-void ATBSPlayerController::RotateRight (float Value) {
+void ATBSPlayerController::RotateRight(float Value) {
 	if (!GetWorld()->GetGameState<ATBSGameState>() || !GetWorld()->GetGameState<ATBSGameState>()->GetIsIngame()) {
 		return;
 	}
 
-	RotateCamera (0, -Value);
+	RotateCamera(0, -Value);
 }
 #pragma endregion
 
 #pragma region Tool Control
-void ATBSPlayerController::RotateToolTop (float Value) {
+void ATBSPlayerController::RotateToolTop(float Value) {
 	if (RotationActive && Value != 0.f) {
 		Value *= -10;
-		ToolRotationTarget += FRotator (0, 0, Value);
+		ToolRotationTarget += FRotator(0, 0, Value);
 	}
 }
 
@@ -156,22 +156,22 @@ void ATBSPlayerController::OnSetRotationPressed() {
 
 	RotationActive = true;
 
-	GetMousePosition (StoredMousePosition.X, StoredMousePosition.Y);
+	GetMousePosition(StoredMousePosition.X, StoredMousePosition.Y);
 }
 
 void ATBSPlayerController::OnSetRotationReleased() {
 	if (ShaveActive)
 		return;
 
-	ToolRotationTarget = PlayerCharacter->Tool->GetActorRotation ();
+	ToolRotationTarget = PlayerCharacter->Tool->GetActorRotation();
 
 	RotationActive = false;
-	ULocalPlayer* LocalPlayer = CastChecked<ULocalPlayer> (Player);
+	ULocalPlayer* LocalPlayer = CastChecked<ULocalPlayer>(Player);
 	FViewport* ViewPort = LocalPlayer->ViewportClient->Viewport;
-	ViewPort->SetMouse (StoredMousePosition.X, StoredMousePosition.Y);
+	ViewPort->SetMouse(StoredMousePosition.X, StoredMousePosition.Y);
 }
 
-void ATBSPlayerController::SwitchToNextTool () {
+void ATBSPlayerController::SwitchToNextTool() {
 	if (!GetWorld()->GetGameState<ATBSGameState>() || !GetWorld()->GetGameState<ATBSGameState>()->GetIsIngame()) {
 		return;
 	}
@@ -183,14 +183,14 @@ void ATBSPlayerController::SwitchToNextTool () {
 	// Save the fact, that the user "discovered" the other tools
 	ATBSGameState* GameState = GetWorld()->GetGameState<ATBSGameState>();
 
-	if ( !(GameState->CurrentSaveGame->UsedOtherTools) )
+	if (!(GameState->CurrentSaveGame->UsedOtherTools))
 		GameState->CurrentSaveGame->UsedOtherTools = true;
 
 	// Actually switch tools
 	PlayerCharacter->SwitchTool(true);
 }
 
-void ATBSPlayerController::SwitchToPrevTool () {
+void ATBSPlayerController::SwitchToPrevTool() {
 	if (!GetWorld()->GetGameState<ATBSGameState>() || !GetWorld()->GetGameState<ATBSGameState>()->GetIsIngame()) {
 		return;
 	}
@@ -202,25 +202,25 @@ void ATBSPlayerController::SwitchToPrevTool () {
 	// Save the fact, that the user "discovered" the other tools
 	ATBSGameState* GameState = GetWorld()->GetGameState<ATBSGameState>();
 
-	if ( !(GameState->CurrentSaveGame->UsedOtherTools) )
+	if (!(GameState->CurrentSaveGame->UsedOtherTools))
 		GameState->CurrentSaveGame->UsedOtherTools = true;
 
-	PlayerCharacter->SwitchTool (false);
+	PlayerCharacter->SwitchTool(false);
 }
 
-void ATBSPlayerController::SwitchToShortRazor(){
+void ATBSPlayerController::SwitchToShortRazor() {
 	if (PlayerCharacter && PlayerCharacter->Tool && PlayerCharacter->GameIsRunning) {
 		PlayerCharacter->Tool->SwitchRazorTypeTo(ETBSRazor::TBSRazorSmall);
 	}
 }
 
-void ATBSPlayerController::SwitchToNormalRazor(){
+void ATBSPlayerController::SwitchToNormalRazor() {
 	if (PlayerCharacter && PlayerCharacter->Tool && PlayerCharacter->GameIsRunning) {
 		PlayerCharacter->Tool->SwitchRazorTypeTo(ETBSRazor::TBSRazorBig);
 	}
 }
 
-void ATBSPlayerController::SwitchToClipper(){
+void ATBSPlayerController::SwitchToClipper() {
 	if (PlayerCharacter && PlayerCharacter->Tool && PlayerCharacter->GameIsRunning) {
 		PlayerCharacter->Tool->SwitchRazorTypeTo(ETBSRazor::TBSClipper);
 	}
@@ -229,7 +229,7 @@ void ATBSPlayerController::SwitchToClipper(){
 #pragma endregion
 
 #pragma region Tick
-void ATBSPlayerController::UpdateRazor (float DeltaTime) {
+void ATBSPlayerController::UpdateRazor(float DeltaTime) {
 	if (!GetWorld()->GetGameState<ATBSGameState>() || !GetWorld()->GetGameState<ATBSGameState>()->GetIsIngame()) {
 		return;
 	}
@@ -238,10 +238,10 @@ void ATBSPlayerController::UpdateRazor (float DeltaTime) {
 		if (!RotationActive) {
 			// Get hit from mouse cursor ray
 			FHitResult Hitresult;
-			GetHitResultUnderCursor (ECC_Camera, true, Hitresult);
+			GetHitResultUnderCursor(ECC_Camera, true, Hitresult);
 
 			if (Hitresult.GetActor()) {
-				if(Hitresult.GetActor()->GetClass()->IsChildOf(ATBSCustomer::StaticClass())) {
+				if (Hitresult.GetActor()->GetClass()->IsChildOf(ATBSCustomer::StaticClass())) {
 					// Save hitresult info
 					LastValidMouseCursorImpactPoint = Hitresult.ImpactPoint;
 					LastValidMouseCursorImpactNormal = Hitresult.ImpactNormal;
@@ -254,7 +254,7 @@ void ATBSPlayerController::UpdateRazor (float DeltaTime) {
 					else {
 						ToolHeightOffsetTarget = Hitresult.ImpactNormal*PlayerCharacter->Tool->ToolInactiveHight;
 					}
-					ToolHeightOffsetCurrent = FMath::Lerp (ToolHeightOffsetCurrent, ToolHeightOffsetTarget, (1.0f / DeltaTime / 60.0f) * RazorLoweringLerpIntensity);
+					ToolHeightOffsetCurrent = FMath::Lerp(ToolHeightOffsetCurrent, ToolHeightOffsetTarget, (1.0f / DeltaTime / 60.0f) * RazorLoweringLerpIntensity);
 
 					// Whether or not the tool is active, is now dependent on the razors distance from the skin
 					PlayerCharacter->Tool->IsActive = ToolHeightOffsetCurrent.Size() < ShavingThreshold && IsMovingShave;
@@ -263,15 +263,15 @@ void ATBSPlayerController::UpdateRazor (float DeltaTime) {
 					ToolLocationTarget = Hitresult.ImpactPoint + ToolHeightOffsetCurrent;
 
 					// ROTATION
-					ToolRotationTarget.Pitch = Hitresult.ImpactNormal.Rotation ().Pitch;
-					ToolRotationTarget.Yaw = Hitresult.ImpactNormal.Rotation ().Yaw - 180;
+					ToolRotationTarget.Pitch = Hitresult.ImpactNormal.Rotation().Pitch;
+					ToolRotationTarget.Yaw = Hitresult.ImpactNormal.Rotation().Yaw - 180;
 
 					PointingAtCustomer = true;
 				}
 				else if (!Hitresult.GetActor()->GetClass()->IsChildOf(ATBSRazor::StaticClass())) {
 					// Fall back to our default position
-					ToolLocationTarget = PlayerCharacter->ToolResetPosition->GetComponentLocation ();
-					ToolRotationTarget = PlayerCharacter->ToolResetPosition->GetComponentRotation ();
+					ToolLocationTarget = PlayerCharacter->ToolResetPosition->GetComponentLocation();
+					ToolRotationTarget = PlayerCharacter->ToolResetPosition->GetComponentRotation();
 
 					PointingAtCustomer = false;
 				}
@@ -280,7 +280,7 @@ void ATBSPlayerController::UpdateRazor (float DeltaTime) {
 	}
 }
 
-void ATBSPlayerController::ApplyRazor (float DeltaTime) {
+void ATBSPlayerController::ApplyRazor(float DeltaTime) {
 	// Fetch current values
 	ToolRotationCurrent = PlayerCharacter->Tool->GetActorRotation();
 	ToolLocationCurrent = PlayerCharacter->Tool->GetActorLocation();
@@ -295,17 +295,17 @@ void ATBSPlayerController::ApplyRazor (float DeltaTime) {
 		);
 }
 
-void ATBSPlayerController::UpdateCamera (float DeltaTime) {
+void ATBSPlayerController::UpdateCamera(float DeltaTime) {
 	// Could modify CameraRotationTarget and CameraLocationTarget before it's ultimately being used here
 }
-void ATBSPlayerController::ApplyCamera (float DeltaTime) {
-	PlayerCharacter->CameraBoom->SetRelativeRotation (FMath::Lerp (PlayerCharacter->CameraBoom->RelativeRotation - FRotator (0, 180, 0), CameraRotationTarget, PlayerCharacter->CameraRotationLerpIntensity));
-	PlayerCharacter->CameraBoom->AddRelativeRotation (FRotator (0, 180, 0));
+void ATBSPlayerController::ApplyCamera(float DeltaTime) {
+	PlayerCharacter->CameraBoom->SetRelativeRotation(FMath::Lerp(PlayerCharacter->CameraBoom->RelativeRotation - FRotator(0, 180, 0), CameraRotationTarget, PlayerCharacter->CameraRotationLerpIntensity));
+	PlayerCharacter->CameraBoom->AddRelativeRotation(FRotator(0, 180, 0));
 }
 
 void ATBSPlayerController::UpdateMechanicChecks() {
 	FVector CurrentToolDirection = PlayerCharacter->Tool->GetTransform().InverseTransformVector(ToolLocationTarget - ToolLocationCurrent);
-	
+
 	float value = FMath::Atan2(CurrentToolDirection.Y, CurrentToolDirection.Z);
 
 	/// IsLegalShaveAngle
@@ -318,7 +318,7 @@ void ATBSPlayerController::UpdateMechanicChecks() {
 #pragma endregion
 
 #pragma region Pitch Hacks
-void ATBSPlayerController::SpawnNextCustomer () {
+void ATBSPlayerController::SpawnNextCustomer() {
 	if (GetIsEditorMode()) {
 		PlayerCharacter->Tool->ResetEditorHairs();
 		return;
@@ -385,7 +385,7 @@ bool ATBSPlayerController::SaveStep() {
 		bool success = false;
 
 		StepIndex++;
-		StepIndex = Modulo(StepIndex,MAXREDOSTEPS);
+		StepIndex = Modulo(StepIndex, MAXREDOSTEPS);
 
 		UDataTable* StepData;
 		StepData = PlayerCharacter->RedoUndoData[StepIndex];
@@ -451,7 +451,7 @@ bool ATBSPlayerController::ClearBeardData() {
 		return false;
 	}
 	TArray<FBeardNameLevelData> Beards = GetBeardNameLevelData();
-	if (PlayerCharacter){
+	if (PlayerCharacter) {
 		for (int32 i = 0; i < Beards.Num(); i++) {
 			ClearBeardID(Beards[i].BeardName);
 		}
@@ -471,11 +471,11 @@ bool ATBSPlayerController::ClearBeardID(FName BeardName) {
 	}
 	if (PlayerCharacter) {
 		UDataTable* DataTable;
-		DataTable = FindDataTableToName (BeardName);
+		DataTable = FindDataTableToName(BeardName);
 		if (DataTable) {
-			DataTable->EmptyTable ();
+			DataTable->EmptyTable();
 		}
-		return RemoveBeardFromCollection (BeardName);
+		return RemoveBeardFromCollection(BeardName);
 	}
 	return false;
 }
@@ -488,8 +488,8 @@ bool ATBSPlayerController::SaveBeardID(FName BeardName, int32 BeardLevel, int32 
 	if (PlayerCharacter) {
 		bool success = true;
 		UDataTable* DataTable;
-		success = SetBeardToCollectionData(BeardName, BeardLevel , UniqueId);
-		DataTable = FindDataTableToName (BeardName);
+		success = SetBeardToCollectionData(BeardName, BeardLevel, UniqueId);
+		DataTable = FindDataTableToName(BeardName);
 		if (DataTable) {
 			return success && SetCurrentBeardDataToCSV(DataTable);
 		}
@@ -504,9 +504,9 @@ bool ATBSPlayerController::LoadBeardID(FName BeardName) {
 	}
 	if (PlayerCharacter) {
 		UDataTable* DataTable;
-		DataTable = FindDataTableToName (BeardName);
+		DataTable = FindDataTableToName(BeardName);
 		if (DataTable) {
-			return LoadBeardDataToCurrentCustomer (DataTable);
+			return LoadBeardDataToCurrentCustomer(DataTable);
 		}
 	}
 	return false;
@@ -528,7 +528,7 @@ void ATBSPlayerController::LoadBeardID_MT(FName BeardName) {
 	}
 }
 
-bool ATBSPlayerController::LoadBeardDataToCurrentCustomer (UDataTable* DataTable) {
+bool ATBSPlayerController::LoadBeardDataToCurrentCustomer(UDataTable* DataTable) {
 	if (PlayerCharacter == NULL) {
 		return false;
 	}
@@ -538,35 +538,64 @@ bool ATBSPlayerController::LoadBeardDataToCurrentCustomer (UDataTable* DataTable
 	else {
 		PlayerCharacter->Tool->ResetHairs();
 	}
+	int32 RowIndex = 0;
 	TArray<UActorComponent*> Components;
-	Components = PlayerCharacter->CurrentCustomer->Beard->GetComponentsByClass (UStaticMeshComponent::StaticClass ());
+	Components = PlayerCharacter->CurrentCustomer->Beard->GetComponentsByClass(UStaticMeshComponent::StaticClass());
 	FBeardComparisonData* CurrentData;
 	const FString Context = FString("");
 	bool success = true;
 	for (int32 j = 0; j < PlayerCharacter->Tool->ISMNormalTotal.Num(); j++) {
 		for (int32 i = 0; i < PlayerCharacter->Tool->ISMNormalTotal[j]->GetInstanceCount(); i++) {
-			FString String = FString::FromInt (i);
-			FName Row = FName (*String);
-			CurrentData = DataTable->FindRow<FBeardComparisonData> (Row, Context, false);
+			FString String = FString::FromInt(RowIndex);
+			FName Row = FName(*String);
+			CurrentData = DataTable->FindRow<FBeardComparisonData>(Row, Context, false);
 			if (CurrentData) {
 				switch (CurrentData->HairState) {
-					case(0) :
-						PlayerCharacter->Tool->ShaveHair(i);
-						break;
-					case(1) :
-						PlayerCharacter->Tool->TrimmHair(i);
-						break;
-					case(2) :
-						//
-						break;
+				case(0) :
+					PlayerCharacter->Tool->ShaveHair(RowIndex);
+					break;
+				case(1) :
+					PlayerCharacter->Tool->TrimmHair(RowIndex);
+					break;
+				case(2) :
+					//
+					break;
 				}
 			}
 			else {
-				UE_LOG (LogClass, Warning, TEXT ("*** Could not load Beard Data Row! Possible missmatch of Meshcount ***"));
+				UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard Data Row! Possible missmatch of Meshcount ***"));
 				success = false;
 			}
+			RowIndex++;
 		}
 	}
+
+	for (int32 j = 0; j < PlayerCharacter->Tool->ISMNormalFillerTotal.Num(); j++) {
+		for (int32 i = 0; i < PlayerCharacter->Tool->ISMNormalFillerTotal[j]->GetInstanceCount(); i++) {
+			FString String = FString::FromInt(RowIndex);
+			FName Row = FName(*String);
+			CurrentData = DataTable->FindRow<FBeardComparisonData>(Row, Context, false);
+			if (CurrentData) {
+				switch (CurrentData->HairState) {
+				case(0) :
+					PlayerCharacter->Tool->ShaveHair(RowIndex);
+					break;
+				case(1) :
+					PlayerCharacter->Tool->TrimmHair(RowIndex);
+					break;
+				case(2) :
+					//
+					break;
+				}
+			}
+			else {
+				UE_LOG(LogClass, Warning, TEXT("*** Could not load Beard Data Row! Possible missmatch of Meshcount ***"));
+				success = false;
+			}
+			RowIndex++;
+		}
+	}
+
 	return success;
 }
 
@@ -575,24 +604,22 @@ void ATBSPlayerController::LoadBeardToCustomer(TArray<FBeardComparisonData*> Dat
 		return;
 	}
 	PlayerCharacter->Tool->ResetHairs();
-	for (int32 j = 0; j < PlayerCharacter->Tool->ISMNormalTotal.Num(); j++) {
-		for (int32 i = 0; i < PlayerCharacter->Tool->ISMNormalTotal[j]->GetInstanceCount(); i++) {
-			if (Data[i]) {
-				switch (Data[i]->HairState) {
-				case(0) :
-					PlayerCharacter->Tool->ShaveHair(i);
-					break;
-				case(1) :
-					PlayerCharacter->Tool->TrimmHair(i);
-					break;
-				case(2) :
-					//
-					break;
-				}
+	for (int32 i = 0; i < Data.Num(); i++) {
+		if (Data[i]) {
+			switch (Data[i]->HairState) {
+			case(0) :
+				PlayerCharacter->Tool->ShaveHair(i);
+				break;
+			case(1) :
+				PlayerCharacter->Tool->TrimmHair(i);
+				break;
+			case(2) :
+				//
+				break;
 			}
-			else {
-				UE_LOG(LogClass, Warning, TEXT("*** Possible missmatch of meshcount! Array of FBeardComparisonData from thread has not enough rows! ***"));
-			}
+		}
+		else {
+			UE_LOG(LogClass, Warning, TEXT("*** Possible missmatch of meshcount! Array of FBeardComparisonData from thread has not enough rows! ***"));
 		}
 	}
 }
@@ -646,23 +673,24 @@ FBeardCollectionData ATBSPlayerController::FindDataRowToName(FName BeardName) {
 	return FBeardCollectionData();
 }
 
-bool ATBSPlayerController::RemoveBeardFromCollection (FName BeardName) {
+bool ATBSPlayerController::RemoveBeardFromCollection(FName BeardName) {
 	FBeardCollectionData* CurrentData;
 	bool Success = false;
 	if (PlayerCharacter->BeardCollection) {
 		const FString Context = FString("");
-		for (int32 i = 0; i < PlayerCharacter->BeardCollection->GetRowNames ().Num (); i++) {
-			FName Row = PlayerCharacter->BeardCollection->GetRowNames ()[i];
-			CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData> (Row, Context, false);
+		for (int32 i = 0; i < PlayerCharacter->BeardCollection->GetRowNames().Num(); i++) {
+			FName Row = PlayerCharacter->BeardCollection->GetRowNames()[i];
+			CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData>(Row, Context, false);
 			if (CurrentData && CurrentData->BeardName == BeardName) {
-				PlayerCharacter->BeardCollection->RowMap.Remove (Row);
+				PlayerCharacter->BeardCollection->RowMap.Remove(Row);
 				Success = true;
 				break;
 			}
 		}
 		if (!Success) {
-			UE_LOG (LogClass, Warning, TEXT ("*** Could not find Beard in CollectionData! ***"));
+			UE_LOG(LogClass, Warning, TEXT("*** Could not find Beard in CollectionData! ***"));
 		}
+		PlayerCharacter->BeardCollection->RowStruct->PreSave();
 	}
 	return Success;
 }
@@ -671,48 +699,105 @@ bool ATBSPlayerController::SetCurrentBeardDataToCSV(UDataTable* DataTable) {
 	if (PlayerCharacter == NULL) {
 		return false;
 	}
-	TArray<UActorComponent*> Components;
-	Components = PlayerCharacter->CurrentCustomer->Beard->GetComponentsByClass (UStaticMeshComponent::StaticClass ());
 	FBeardComparisonData* CurrentData;
-
+	int32 RowIndex = 0;
+	int32 TrimmedIndex = 0;
 	for (int32 j = 0; j < PlayerCharacter->Tool->ISMNormalTotal.Num(); j++) {
+		TrimmedIndex = 0;
 		for (int32 i = 0; i < PlayerCharacter->Tool->ISMNormalTotal[j]->GetInstanceCount(); i++) {
 			int32 ComponentStatus = 2;
 			const FString Context = FString("");
 			FTransform Transform;
 			if (PlayerCharacter->Tool->ISMNormalTotal[j]->GetInstanceTransform(i, Transform)) {
-				if (Transform.GetLocation().Z >= 1000) { // Shaved
+				if (Transform.GetLocation().Z >= 500) { // Shaved
 					ComponentStatus = 0;
 				}
-				else if (Transform.GetLocation().Z <= -1000) { // Trimmed
-					ComponentStatus = 1;
+				else if (Transform.GetLocation().Z <= -500) { // Trimmed
+					if (PlayerCharacter->Tool->ISMTmpTrimmedTotal[j]->GetInstanceTransform(TrimmedIndex, Transform)) {
+						if (Transform.GetLocation().Z >= 500) { // Shaved
+							ComponentStatus = 0;
+						}
+						else ComponentStatus = 1;
+					}
+					TrimmedIndex++;
 				}
 				else {	// Unshaved
 					ComponentStatus = 2;
 				}
 			}
 
-			FString String = FString::FromInt (i);
-			FName Row = FName (*String);
-			CurrentData = DataTable->FindRow<FBeardComparisonData> (Row, Context, false);
+			FString String = FString::FromInt(RowIndex);
+			FName Row = FName(*String);
+			CurrentData = DataTable->FindRow<FBeardComparisonData>(Row, Context, false);
 
 			if (CurrentData) {
 				CurrentData->HairState = ComponentStatus;
 			}
 			else {
-				UScriptStruct* LoadUsingStruct = FBeardComparisonData::StaticStruct ();
-				uint8* RowData = (uint8*) FMemory::Malloc (LoadUsingStruct->PropertiesSize);
-				DataTable->RowMap.Add (Row, RowData);
-				CurrentData = DataTable->FindRow<FBeardComparisonData> (Row, Context, false);
+				UScriptStruct* LoadUsingStruct = FBeardComparisonData::StaticStruct();
+				uint8* RowData = (uint8*)FMemory::Malloc(LoadUsingStruct->PropertiesSize);
+				DataTable->RowMap.Add(Row, RowData);
+				CurrentData = DataTable->FindRow<FBeardComparisonData>(Row, Context, false);
 				if (CurrentData) {
 					CurrentData->HairState = ComponentStatus;
 				}
-				else{
+				else {
+					UE_LOG(LogClass, Warning, TEXT("*** Failed to write Data! ***"));
 					return false;
 				}
 			}
-			DataTable->SaveConfig(16384Ui64,*DataTable->ImportPath);
+
+			RowIndex++;
 		}
+	}
+
+	TrimmedIndex = 0;
+	for (int32 j = 0; j < PlayerCharacter->Tool->ISMNormalFillerTotal.Num(); j++) {
+		TrimmedIndex = 0;
+		for (int32 i = 0; i < PlayerCharacter->Tool->ISMNormalFillerTotal[j]->GetInstanceCount(); i++) {
+			int32 ComponentStatus = 2;
+			const FString Context = FString("");
+			FTransform Transform;
+			if (PlayerCharacter->Tool->ISMNormalFillerTotal[j]->GetInstanceTransform(i, Transform)) {
+				if (Transform.GetLocation().Z >= 500) { // Shaved
+					ComponentStatus = 0;
+				}
+				else if (Transform.GetLocation().Z <= -500) { // Trimmed
+					if (PlayerCharacter->Tool->ISMTmpTrimmedFillerTotal[j]->GetInstanceTransform(TrimmedIndex, Transform)) {
+						if (Transform.GetLocation().Z >= 500) { // Shaved
+							ComponentStatus = 0;
+						}
+						else ComponentStatus = 1;
+					}
+					TrimmedIndex++;
+				}
+				else {	// Unshaved
+					ComponentStatus = 2;
+				}
+			}
+			FString String = FString::FromInt(RowIndex);
+			FName Row = FName(*String);
+			CurrentData = DataTable->FindRow<FBeardComparisonData>(Row, Context, false);
+
+			if (CurrentData) {
+				CurrentData->HairState = ComponentStatus;
+			}
+			else {
+				UScriptStruct* LoadUsingStruct = FBeardComparisonData::StaticStruct();
+				uint8* RowData = (uint8*)FMemory::Malloc(LoadUsingStruct->PropertiesSize);
+				DataTable->RowMap.Add(Row, RowData);
+				CurrentData = DataTable->FindRow<FBeardComparisonData>(Row, Context, false);
+				if (CurrentData) {
+					CurrentData->HairState = ComponentStatus;
+				}
+				else {
+					UE_LOG(LogClass, Warning, TEXT("*** Failed to write Data! ***"));
+					return false;
+				}
+			}
+			RowIndex++;
+		}
+		DataTable->RowStruct->PreSave();
 	}
 	return true;
 }
@@ -722,10 +807,10 @@ bool ATBSPlayerController::SetBeardToCollectionData(FName BeardName, int32 Beard
 	bool Success = false;
 	if (PlayerCharacter->BeardCollection) {
 		const FString Context = FString("");
-		TArray<FName> RowNames = PlayerCharacter->BeardCollection->GetRowNames ();
-		for (int32 i = 0; i < RowNames.Num (); i++) {
+		TArray<FName> RowNames = PlayerCharacter->BeardCollection->GetRowNames();
+		for (int32 i = 0; i < RowNames.Num(); i++) {
 			FName Row = RowNames[i];
-			CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData> (Row, Context, false);
+			CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData>(Row, Context, false);
 			if (CurrentData && CurrentData->BeardName == BeardName) {
 				Success = true;
 				CurrentData->BeardLevel = BeardLevel;
@@ -739,9 +824,9 @@ bool ATBSPlayerController::SetBeardToCollectionData(FName BeardName, int32 Beard
 			int32 RowID = 0;
 			while (true) {
 				bool IsFreeID = true;
-				FString RowString = FString::FromInt (RowID);
-				NewRowName = FName (*RowString);
-				for (int32 i = 0; i < RowNames.Num (); i++) {
+				FString RowString = FString::FromInt(RowID);
+				NewRowName = FName(*RowString);
+				for (int32 i = 0; i < RowNames.Num(); i++) {
 					if (RowNames[i] == NewRowName) IsFreeID = false;
 				}
 				if (IsFreeID) break;
@@ -755,30 +840,30 @@ bool ATBSPlayerController::SetBeardToCollectionData(FName BeardName, int32 Beard
 				bool IsFreeSlot = true;
 				FString SlotString = "Beard";
 				if (SlotID < 10) {
-					SlotString.Append ("0");
+					SlotString.Append("0");
 				}
-				SlotString.Append (FString::FromInt (SlotID));
-				NewSlotName = FName (*SlotString);
-				for (int32 i = 0; i < RowNames.Num (); i++) {
+				SlotString.Append(FString::FromInt(SlotID));
+				NewSlotName = FName(*SlotString);
+				for (int32 i = 0; i < RowNames.Num(); i++) {
 					FName Row = RowNames[i];
-					CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData> (Row, Context, false);
+					CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData>(Row, Context, false);
 					if (CurrentData && CurrentData->BeardSlotName == NewSlotName) IsFreeSlot = false;
 				}
 				if (IsFreeSlot) break;
 				SlotID++;
 				// TEMPORARY HARD BREAK DUE TO LIMITED SLOTS
 				if (SlotID >= 10) {
-					UE_LOG (LogClass, Warning, TEXT ("*** Could not save the beard! ***"));
-					UE_LOG (LogClass, Warning, TEXT ("*** All slots are full please delete old beards or add new Slots! ***"));
+					UE_LOG(LogClass, Warning, TEXT("*** Could not save the beard! ***"));
+					UE_LOG(LogClass, Warning, TEXT("*** All slots are full please delete old beards or add new Slots! ***"));
 					return false;
 				}
 			}
 
 			// Allocate Memory
-			UScriptStruct* LoadUsingStruct = FBeardCollectionData::StaticStruct ();
-			uint8* RowData = (uint8*) FMemory::Malloc (LoadUsingStruct->PropertiesSize);
-			PlayerCharacter->BeardCollection->RowMap.Add (NewRowName, RowData);
-			CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData> (NewRowName, Context, false);
+			UScriptStruct* LoadUsingStruct = FBeardCollectionData::StaticStruct();
+			uint8* RowData = (uint8*)FMemory::Malloc(LoadUsingStruct->PropertiesSize);
+			PlayerCharacter->BeardCollection->RowMap.Add(NewRowName, RowData);
+			CurrentData = PlayerCharacter->BeardCollection->FindRow<FBeardCollectionData>(NewRowName, Context, false);
 			if (CurrentData) {
 				CurrentData->BeardName = BeardName;
 				CurrentData->BeardSlotName = NewSlotName;
@@ -787,8 +872,8 @@ bool ATBSPlayerController::SetBeardToCollectionData(FName BeardName, int32 Beard
 				CurrentData->ComparisionScreenshot = NULL;
 				return true;
 			}
+			PlayerCharacter->BeardCollection->RowStruct->PreSave();
 		}
-		PlayerCharacter->BeardCollection->SaveConfig(16384Ui64, *PlayerCharacter->BeardCollection->ImportPath);
 	}
 	return Success;
 }
@@ -934,7 +1019,7 @@ void ATBSPlayerController::UpdateCurrentSaveGame() {
 #pragma endregion
 
 bool ATBSPlayerController::IsMainMenuLevel() {
-	if (GetWorld()->GetMapName().Contains("MainMenuLevel") ) {
+	if (GetWorld()->GetMapName().Contains("MainMenuLevel")) {
 		return true;
 	}
 	return false;
