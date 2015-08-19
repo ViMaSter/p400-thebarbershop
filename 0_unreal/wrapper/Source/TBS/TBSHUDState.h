@@ -53,3 +53,16 @@ namespace ETBSRating {
 		TBSRating_CP	= 8		UMETA(DisplayName = "C+"),
 	};
 }
+
+UENUM(BlueprintType)
+enum class ETBSSFXEvents : uint8 {
+		ButtonClicked	= 0 	UMETA(DisplayName = "Button Clicked"),
+		ButtonHover		= 1		UMETA(DisplayName = "Button Hover"),
+		ScoreCount		= 2		UMETA(DisplayName = "Score Count"),
+		Crown			= 3		UMETA(DisplayName = "Crown"),
+		MoneyCount		= 4		UMETA(DisplayName = "Money Count"),
+		Cashier			= 5		UMETA(DisplayName = "Cashier"),
+};
+
+
+ENUM_CLASS_FLAGS(ETBSSFXEvents)
