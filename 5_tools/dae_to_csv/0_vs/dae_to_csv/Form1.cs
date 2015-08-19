@@ -24,6 +24,7 @@ namespace dae_to_csv
         string NameRegex = @"name=""(.*?)""";
         string RotateRegex = @"rotate{0}"">\d \d \d (.*?)<\/rotate";
         string TranslateRegex = @"translate"">(.*?) (.*?) (.*?)<\/translate";
+        string ScaleRegex = @"scale"">(.*?) (.*?) (.*?)<\/scale";
 
         bool HandinessFix = false;
         bool Max2016Fix = false;
@@ -122,6 +123,8 @@ namespace dae_to_csv
                 Match rotationY = Regex.Match(match.Groups[0].Value, string.Format(RotateRegex, "Y"), RegexOptions.Singleline);
                 Match rotationZ = Regex.Match(match.Groups[0].Value, string.Format(RotateRegex, "Z"), RegexOptions.Singleline);
 
+                Match scale = Regex.Match(match.Groups[0].Value, ScaleRegex, RegexOptions.Singleline);
+
                 column.ID = name.Groups[1].Value;
 
                 float.TryParse(translation.Groups[1].Value, out column.TranslateX);
@@ -131,6 +134,13 @@ namespace dae_to_csv
                 float.TryParse(rotationX.Groups[1].Value, out column.Pitch);
                 float.TryParse(rotationY.Groups[1].Value, out column.Roll);
                 float.TryParse(rotationZ.Groups[1].Value, out column.Yaw);
+
+                if (scale.Groups.Count > 2)
+                {
+                    float.TryParse(scale.Groups[1].Value, out column.ScaleX);
+                    float.TryParse(scale.Groups[2].Value, out column.ScaleY);
+                    float.TryParse(scale.Groups[3].Value, out column.ScaleZ);
+                }
 
                 if (Max2016Fix)
                 {
@@ -217,6 +227,10 @@ namespace dae_to_csv
         public float Roll = 0.0f;
         public float Pitch = 0.0f;
         public float Yaw = 0.0f;
+
+        public float ScaleX = 1.0f;
+        public float ScaleY = 1.0f;
+        public float ScaleZ = 1.0f;
     }
 
     public class CSVColumns : UE4CSVColumns
@@ -232,9 +246,13 @@ namespace dae_to_csv
             Roll = 0.0f;
             Pitch = 0.0f;
             Yaw = 0.0f;
+
+            ScaleX = 1.0f;
+            ScaleY = 1.0f;
+            ScaleZ = 1.0f;
         }
 
-        public CSVColumns(string id, string translateX, string translateY, string translateZ, string roll, string pitch, string yaw)
+        public CSVColumns(string id, string translateX, string translateY, string translateZ, string roll, string pitch, string yaw, string scaleX, string scaleY, string scaleZ)
         {
             ID = id;
             TranslateX = float.Parse(translateX);
@@ -244,6 +262,10 @@ namespace dae_to_csv
             Roll = float.Parse(roll);
             Pitch = float.Parse(pitch);
             Yaw = float.Parse(yaw);
+
+            ScaleX = float.Parse(scaleX);
+            ScaleY = float.Parse(scaleY);
+            ScaleZ = float.Parse(scaleZ);
         }
 
         public void Max2016Fix()

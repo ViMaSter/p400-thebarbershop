@@ -120,7 +120,7 @@ void ATBSCustomer::FindDesiredBeardFromPool(int32 Playerlevel){
 					}
 				}
 
-				int32 randID = FMath::RandRange(MinBeardID, MaxBeardID+1);
+				int32 randID = FMath::RandRange(MinBeardID, MaxBeardID);
 
 				// Random stuff
 				for (int32 i = 0; i < Data.Num(); i++) {
