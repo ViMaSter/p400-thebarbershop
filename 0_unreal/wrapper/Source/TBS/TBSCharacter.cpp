@@ -486,6 +486,9 @@ void ATBSCharacter::IncreaseCash(float ComparisionResult) {
 	}
 	else {
 		CurrentCash += CashEarned - CashPenalty;
+		if (GetWorld()->GetGameState<ATBSGameState>()) {
+			GetWorld()->GetGameState<ATBSGameState>()->CurrentSaveGame->CashEarned += CashEarned - CashPenalty;
+		}
 		UE_LOG(LogClass, Log, TEXT("*** Player earned %d$! ***"), CashEarned - CashPenalty);
 	}
 }
