@@ -20,7 +20,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "TBS") bool ShouldTutorialTextBeShown();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "TBS") float MoneyAvailable;
-	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "TBS") float CashEarned;
+
 	// We only store the absolute experience points - we can calculate the resulting level from that
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "TBS") int32 CurrentLevel;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "TBS") float ShaveperiencePoints;
