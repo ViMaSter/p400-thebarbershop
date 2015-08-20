@@ -852,7 +852,7 @@ bool ATBSPlayerController::SetBeardToCollectionData(FName BeardName, int32 Beard
 				if (IsFreeSlot) break;
 				SlotID++;
 				// TEMPORARY HARD BREAK DUE TO LIMITED SLOTS
-				if (SlotID >= 10) {
+				if (SlotID >= PlayerCharacter->BeardData.Num()) {
 					UE_LOG(LogClass, Warning, TEXT("*** Could not save the beard! ***"));
 					UE_LOG(LogClass, Warning, TEXT("*** All slots are full please delete old beards or add new Slots! ***"));
 					return false;
