@@ -869,7 +869,7 @@ bool ATBSPlayerController::SetBeardToCollectionData(FName BeardName, int32 Beard
 				CurrentData->BeardSlotName = NewSlotName;
 				CurrentData->BeardLevel = BeardLevel;
 				CurrentData->UniqueIdentifier = UniqueId;
-				CurrentData->ComparisionScreenshot = NULL;
+				CurrentData->ComparisionScreenshot = PlaceHolderPortrait;
 				Success = true;
 			}
 		}

@@ -189,4 +189,6 @@ protected:
 public:
 	UFUNCTION(BlueprintCallable, Category = "Level") bool IsMainMenuLevel();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Beard Manager")
+		UTexture2D* PlaceHolderPortrait;
 };
