@@ -114,6 +114,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shave Mechanics")
 	float MinimumShaveSpeed = 1.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shave Mechanics")
+	bool ShaveActive;		// LMB
+
 	void UpdateMechanicChecks();
 #pragma endregion
 
@@ -126,7 +129,6 @@ protected:
 
 	bool PointingAtCustomer;
 
-	bool ShaveActive;		// LMB
 	bool RotationActive;	// RMB
 #pragma endregion
 
