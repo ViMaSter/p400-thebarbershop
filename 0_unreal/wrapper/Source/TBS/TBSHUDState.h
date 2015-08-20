@@ -69,7 +69,11 @@ enum class ETBSSFXEvents : uint8 {
 	ClipperIdle		= 6		UMETA(DisplayName = "Clipper Idle"),
 	ClipperOnOff	= 7		UMETA(DisplayName = "Clipper On / Off"),
 	Razor			= 8		UMETA(DisplayName = "Razor"),
+<<<<<<< HEAD
 >>>>>>> d9001dafa6d0e0301fd8e3b6ffe1e582cd2df755
+=======
+	FadeIn			= 9		UMETA(DisplayName = "UI Fade In"),
+>>>>>>> fac035e007818112a3e41492b8436f41f0b5a730
 };
 
 
