@@ -173,7 +173,7 @@ public:
 	UFUNCTION (BlueprintCallable, Category = "Customer") void FinishCurrentCustomer();
 	UFUNCTION (BlueprintCallable, Category = "Customer") void StartGame();
 	
-	void SwitchTool (bool IsNextTool);
+	UFUNCTION(BlueprintCallable, Category = "Customer") void SwitchTool (bool IsNextTool);
 	UFUNCTION(BlueprintCallable, Category = "EXP") float CalculateResult();
 	void CalculateBonusCash();
 

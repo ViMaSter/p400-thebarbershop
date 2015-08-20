@@ -690,7 +690,7 @@ bool ATBSPlayerController::RemoveBeardFromCollection(FName BeardName) {
 		if (!Success) {
 			UE_LOG(LogClass, Warning, TEXT("*** Could not find Beard in CollectionData! ***"));
 		}
-		PlayerCharacter->BeardCollection->RowStruct->PreSave();
+		PlayerCharacter->BeardCollection->ReloadConfig();
 	}
 	return Success;
 }
@@ -797,8 +797,8 @@ bool ATBSPlayerController::SetCurrentBeardDataToCSV(UDataTable* DataTable) {
 			}
 			RowIndex++;
 		}
-		DataTable->RowStruct->PreSave();
 	}
+	DataTable->ReloadConfig();
 	return true;
 }
 
@@ -870,10 +870,10 @@ bool ATBSPlayerController::SetBeardToCollectionData(FName BeardName, int32 Beard
 				CurrentData->BeardLevel = BeardLevel;
 				CurrentData->UniqueIdentifier = UniqueId;
 				CurrentData->ComparisionScreenshot = NULL;
-				return true;
+				Success = true;
 			}
-			PlayerCharacter->BeardCollection->RowStruct->PreSave();
 		}
+		PlayerCharacter->BeardCollection->ReloadConfig();
 	}
 	return Success;
 }
