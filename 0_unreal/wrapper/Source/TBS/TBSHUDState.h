@@ -64,6 +64,7 @@ enum class ETBSSFXEvents : uint8 {
 	Cashier			= 5		UMETA(DisplayName = "Cashier"),
 	ClipperIdle		= 6		UMETA(DisplayName = "Clipper Idle"),
 	ClipperOnOff	= 7		UMETA(DisplayName = "Clipper On / Off"),
+	Razor			= 8		UMETA(DisplayName = "Razor"),
 };
 
 
