@@ -127,6 +127,7 @@ void ATBSCustomer::FindDesiredBeardFromPool(int32 Playerlevel){
 					if (Data[i].UniqueID == randID) {
 						DesiredBeard = Data[i].BeardName;
 						PortraitTexture = Data[i].ComparisionScreenshot;
+						break;
 					}
 				}
 			}

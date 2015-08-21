@@ -341,8 +341,10 @@ void ATBSCharacter::LoadNewCustomer () {
 		CurrentBeardRow = ((ATBSPlayerController*)GetController())->FindDataRowToName(CurrentCustomer->DesiredBeard);
 		// Load Data with another thread
 		if (NextCustomer) {
-			FName DesiredCustomerBeard = CurrentCustomer->DesiredBeard;
+			FName DesiredCustomerBeard = NextCustomer->DesiredBeard;
 			UDataTable* BeardDataTable = ((ATBSPlayerController*)GetController())->FindDataTableToName(DesiredCustomerBeard);
+			UE_LOG(LogClass, Warning, TEXT("*** %s ***"), *DesiredCustomerBeard.ToString());
+			UE_LOG(LogClass, Warning, TEXT("*** %s ***"), *BeardDataTable->GetName());
 			if (BeardDataTable) {
 				BeardData_MT.Empty();
 				FMTTask Task;
@@ -413,7 +415,7 @@ void ATBSCharacter::IncreaseEXP (int32 Value) {
 	const FLevelUpData *CurrentData;
 	const FString String = "";
 	if (LevelData) {
-		FName NameCurrentLevel = FName (*(FString::FromInt (CurrentLevel)));
+		FName NameCurrentLevel = FName (*(FString::FromInt(CurrentLevel-1)));
 		CurrentData = LevelData->FindRow<FLevelUpData> (NameCurrentLevel, String);
 		if (CurrentData) {
 			CurrentExperience += Value;
@@ -422,7 +424,6 @@ void ATBSCharacter::IncreaseEXP (int32 Value) {
 				CurrentExperience -= CurrentData->XPtoLvl;
 				LeveledUp = true;
 				CheckBeardUnlocks();
-
 				for (FLevelUpData* Data : LevelData_MT) {
 					if (Data->Level == CurrentLevel) {
 						CurrentExperienceToLvl = Data->XPtoLvl;
@@ -430,6 +431,7 @@ void ATBSCharacter::IncreaseEXP (int32 Value) {
 					}
 				}
 			}
+			
 		}
 	}
 }
@@ -515,7 +517,20 @@ void ATBSCharacter::CalculateBonusCash(){
 // Returns the comparison Result from the shaved beard of the customer and the CSV data
 float ATBSCharacter::CalculateResult () {
 	if (Tool  && Tool->ISMNormalTotal.Num() > 0) {
-		TArray<UActorComponent*> Components;	
+		/*UDataTable* BeardDataTable = ((ATBSPlayerController*)GetController())->FindDataTableToName(CurrentCustomer->DesiredBeard);
+
+		TArray<FBeardComparisonData*> BeardCompData;
+		FBeardComparisonData* CurrentData;
+		const FString Context = FString("");
+		for (int32 i = 0; i < 5199; i++) {
+			FString String = FString::FromInt(i);
+			FName Row = FName(*String);
+			CurrentData = BeardDataTable->FindRow<FBeardComparisonData>(Row, Context, false);
+			if (CurrentData) {
+				BeardCompData.Add(CurrentData);
+			}
+		}
+		*/
 		int32 Total = 0;
 		int32 TotalTarget = 0;
 		FTransform Transform;
@@ -543,6 +558,7 @@ float ATBSCharacter::CalculateResult () {
 					}
 				}
 				if (RowIndex < BeardData_MT.Num() && BeardData_MT[RowIndex]) {
+					UE_LOG(LogClass, Warning, TEXT("*** (%d) and (%d) ***"), State, BeardData_MT[RowIndex]->HairState);
 					if (State == BeardData_MT[RowIndex]->HairState) {
 						Correct++;
 					}
