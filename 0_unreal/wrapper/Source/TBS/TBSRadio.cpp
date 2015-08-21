@@ -90,7 +90,7 @@ void ATBSRadio::AudioFinished1 () {
 	}
 }
 
-void ATBSRadio::SwitchStation(int32 direction, bool supressEnablingSound = false) {
+void ATBSRadio::SwitchStation(int32 direction, bool supressEnablingSound) {
 	CurrentStation += direction;
 	while (CurrentStation < -1) {
 		CurrentStation += RadioStations.Num ()+1;

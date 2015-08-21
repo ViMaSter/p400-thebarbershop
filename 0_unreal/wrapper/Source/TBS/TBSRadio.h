@@ -92,7 +92,7 @@ public:
 
 	// Called when the game starts or when spawned
 	UFUNCTION (BlueprintCallable, Category = Radio)
-	void SwitchStation(int32 direction, bool supressEnablingSound);
+	void SwitchStation(int32 direction, bool supressEnablingSound = false);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Radio")
 	void OnSongChange(FTBSRadioSong NewSong);
