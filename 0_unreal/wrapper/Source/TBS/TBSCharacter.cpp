@@ -520,6 +520,8 @@ float ATBSCharacter::CalculateResult () {
 		int32 TotalTarget = 0;
 		FTransform Transform;
 		int32 Correct = 0;		
+
+		int32 RowIndex = 0;
 		int32 TrimmedIndex = 0;
 		for (int32 j = 0; j < Tool->ISMNormalTotal.Num(); j++) {
 			for (int32 i = 0; i < Tool->ISMNormalTotal[j]->GetInstanceCount(); i++) {
@@ -529,25 +531,58 @@ float ATBSCharacter::CalculateResult () {
 						State = 0;
 					}
 					else if (Transform.GetLocation().Z <= -1000) { // Trimmed
-						if (Tool->ISMNormalTotal[j]->GetInstanceTransform(TrimmedIndex, Transform)) {
+						if (Tool->ISMTrimmedTotal[j]->GetInstanceTransform(TrimmedIndex, Transform)) {
 							if (Transform.GetLocation().Z >= 1000) { // Shaved
 								State = 0;
 							}
-							else if (Transform.GetLocation().Z <= -1000) { // Trimmed
+							else { // Trimmed
 								State = 1;
 							}
 						}
 						TrimmedIndex++;
 					}
 				}
-				if (i < BeardData_MT.Num() && BeardData_MT[i]) {
-					if (State == BeardData_MT[i]->HairState) {
+				if (RowIndex < BeardData_MT.Num() && BeardData_MT[RowIndex]) {
+					if (State == BeardData_MT[RowIndex]->HairState) {
 						Correct++;
 					}
 					TotalTarget++;
 				}
 				Total++;
+				RowIndex++;
 			}
+			TrimmedIndex = 0;
+		}
+
+		for (int32 j = 0; j < Tool->ISMNormalFillerTotal.Num(); j++) {
+			for (int32 i = 0; i < Tool->ISMNormalFillerTotal[j]->GetInstanceCount(); i++) {
+				int32 State = 2;
+				if (Tool->ISMNormalFillerTotal[j]->GetInstanceTransform(i, Transform)) {
+					if (Transform.GetLocation().Z >= 1000) { // Shaved
+						State = 0;
+					}
+					else if (Transform.GetLocation().Z <= -1000) { // Trimmed
+						if (Tool->ISMTrimmedFillerTotal[j]->GetInstanceTransform(TrimmedIndex, Transform)) {
+							if (Transform.GetLocation().Z >= 1000) { // Shaved
+								State = 0;
+							}
+							else { // Trimmed
+								State = 1;
+							}
+						}
+						TrimmedIndex++;
+					}
+				}
+				if (RowIndex < BeardData_MT.Num() && BeardData_MT[RowIndex]) {
+					if (State == BeardData_MT[RowIndex]->HairState) {
+						Correct++;
+					}
+					TotalTarget++;
+				}
+				Total++;
+				RowIndex++;
+			}
+			TrimmedIndex = 0;
 		}
 
 		if (TotalTarget != Total) {
