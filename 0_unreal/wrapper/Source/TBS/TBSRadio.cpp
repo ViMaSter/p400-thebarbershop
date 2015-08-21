@@ -55,9 +55,6 @@ ATBSRadio::ATBSRadio () {
 void ATBSRadio::BeginPlay () {
 	Super::BeginPlay ();
 
-	Music0->OnAudioFinished.AddDynamic(this, &ATBSRadio::AudioFinished0);
-	Music1->OnAudioFinished.AddDynamic(this, &ATBSRadio::AudioFinished1);
-
 	if (PlayMusic) {
 		SwitchStation(1);
 	}
@@ -74,10 +71,11 @@ void ATBSRadio::AudioFinished0() {
 
 	if (ChannelToFadeIn == Music0) {
 		CurrentSong = RadioStations[CurrentStation].NextTrack();
+		Music0->Sound = CurrentSong->ActualClip;
 		OnSongChange(*CurrentSong);
+		Music0->Play(0.0f);
 	}
-	Music0->Sound = CurrentSong->ActualClip;
-	Music0->Play(0.0f);
+
 }
 
 void ATBSRadio::AudioFinished1 () {
@@ -86,13 +84,13 @@ void ATBSRadio::AudioFinished1 () {
 
 	if (ChannelToFadeIn == Music1) {
 		CurrentSong = RadioStations[CurrentStation].NextTrack();
+		Music1->Sound = CurrentSong->ActualClip;
 		OnSongChange(*CurrentSong);
+		Music1->Play(0.0f);
 	}
-	Music1->Sound = CurrentSong->ActualClip;
-	Music1->Play(0.0f);
 }
 
-void ATBSRadio::SwitchStation(int32 direction) {
+void ATBSRadio::SwitchStation(int32 direction, bool supressEnablingSound = false) {
 	CurrentStation += direction;
 	while (CurrentStation < -1) {
 		CurrentStation += RadioStations.Num ()+1;
@@ -103,9 +101,12 @@ void ATBSRadio::SwitchStation(int32 direction) {
 	CurrentStation -= 1;
 
 	if (CurrentStation == -1) { // Turned radio off
+		ChannelToFadeIn = nullptr;
+
 		UAudioComponent* CurrentComponent = NewIs1 ? Music0 : Music1;
 		RadioTurnOffNoise->Play();
-		CurrentComponent->FadeOut(1.0f, 0.0f);
+		Music0->FadeOut(1.0f, 0.0f);
+		Music1->FadeOut(1.0f, 0.0f);
 
 		OnSongChange(FTBSRadioSong("", "Turned off"));
 	}
@@ -122,7 +123,9 @@ void ATBSRadio::SwitchStation(int32 direction) {
 			ChannelSwitchNoise->Play();
 		}
 		else {
-			RadioTurnOnNoise->Play();
+			if (!supressEnablingSound) {
+				RadioTurnOnNoise->Play();
+			}
 		}
 		
 		ChannelToFadeIn->Stop();
