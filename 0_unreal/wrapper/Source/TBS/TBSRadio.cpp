@@ -55,6 +55,9 @@ ATBSRadio::ATBSRadio () {
 void ATBSRadio::BeginPlay () {
 	Super::BeginPlay ();
 
+	Music0->OnAudioFinished.AddDynamic(this, &ATBSRadio::AudioFinished0);
+	Music1->OnAudioFinished.AddDynamic(this, &ATBSRadio::AudioFinished1);
+
 	if (PlayMusic) {
 		SwitchStation(1);
 	}
