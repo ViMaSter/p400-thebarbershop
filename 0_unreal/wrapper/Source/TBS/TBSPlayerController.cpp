@@ -161,7 +161,14 @@ void ATBSPlayerController::OnSetRotationPressed() {
 
 void ATBSPlayerController::OnSetRotationReleased() {
 	if (ShaveActive)
+	{
 		return;
+	}
+
+	if (!(PlayerCharacter == nullptr))
+	{
+		return;
+	}
 
 	ToolRotationTarget = PlayerCharacter->Tool->GetActorRotation();
 
