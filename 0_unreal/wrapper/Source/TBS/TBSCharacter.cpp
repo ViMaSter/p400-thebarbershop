@@ -193,21 +193,21 @@ void ATBSCharacter::StartGame() {
 		ItemClipper.EquipmentID = 0;
 		ItemClipper.Type = ETBSEquipmentType::Clipper;
 
-		FTBSItem ItemRazor_L;
-		ItemRazor_L.EquipmentID = 3;
-		ItemRazor_L.Type = ETBSEquipmentType::RazorLarge;
+		// FTBSItem ItemRazor_L;
+		// ItemRazor_L.EquipmentID = 3;
+		// ItemRazor_L.Type = ETBSEquipmentType::RazorLarge;
 
-		FTBSItem ItemRazor_S;
-		ItemRazor_S.EquipmentID = 4;
-		ItemRazor_S.Type = ETBSEquipmentType::RazorSmall;
+		// FTBSItem ItemRazor_S;
+		// ItemRazor_S.EquipmentID = 4;
+		// ItemRazor_S.Type = ETBSEquipmentType::RazorSmall;
 
 		FTBSItem ItemTowel;
 		ItemTowel.EquipmentID = 9;
 		ItemTowel.Type = ETBSEquipmentType::Towel;
 
 		EquipedItems.Add(ItemClipper);
-		EquipedItems.Add(ItemRazor_L);
-		EquipedItems.Add(ItemRazor_S);
+		// EquipedItems.Add(ItemRazor_L);
+		// EquipedItems.Add(ItemRazor_S);
 		EquipedItems.Add(ItemTowel);
 
 		// Check If Items Are Already In Saved Files
@@ -217,8 +217,8 @@ void ATBSCharacter::StartGame() {
 			if (SaveGame) {
 				if (SaveGame->ObtainedEquipment.Num() == 0) {
 					((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Add(ItemClipper.EquipmentID);
-					((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Add(ItemRazor_L.EquipmentID);
-					((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Add(ItemRazor_S.EquipmentID);
+					//((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Add(ItemRazor_L.EquipmentID);
+					//((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Add(ItemRazor_S.EquipmentID);
 					((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Add(ItemTowel.EquipmentID);
 				}
 			}
@@ -264,7 +264,7 @@ void ATBSCharacter::StartGame() {
 		((ATBSPlayerController*)GetController())->ResetCamera();
 	}
 
-	Tool->SwitchRazorTypeTo(ETBSRazor::TBSRazorBig);
+	Tool->SwitchRazorTypeTo(ETBSRazor::TBSClipper);
 
 	SetActorLocation(FVector(0, 0, 340));
 
@@ -496,7 +496,30 @@ void ATBSCharacter::IncreaseCash(float ComparisionResult) {
 }
 
 void ATBSCharacter::SwitchTool (bool IsNextTool) {
-	if (Tool) {
+
+	if (Tool) {												// 0 = clipper, 1 = small, 2 = big
+		if (!ObtainedRazorBig && !ObtainedRazorSmall) {
+			return;
+		}
+		if (ObtainedRazorBig && !ObtainedRazorSmall) {
+			if (Tool->ToolType == ETBSRazor::TBSClipper) {
+				Tool->SwitchRazorTypeTo(ETBSRazor::TBSRazorBig);
+			}
+			else {
+				Tool->SwitchRazorTypeTo(ETBSRazor::TBSClipper);
+			}
+			return;
+		}
+		if (!ObtainedRazorBig && ObtainedRazorSmall) {
+			if (Tool->ToolType == ETBSRazor::TBSClipper) {
+				Tool->SwitchRazorTypeTo(ETBSRazor::TBSRazorSmall);
+			}
+			else {
+				Tool->SwitchRazorTypeTo(ETBSRazor::TBSClipper);
+			}
+			return;
+		}
+
 		int32 CurrentTool = Tool->ToolType;
 		CurrentTool += IsNextTool ? 1 : -1;
 		CurrentTool = (3 + CurrentTool) % 3;
@@ -667,6 +690,12 @@ bool ATBSCharacter::BuyEquipment(int32 ID) {
 			CurrentCash -= CurrentData->Cost;
 			((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedEquipment.Add(ID);
 			EquipItem(ID);
+			if (!ObtainedRazorBig && CurrentData->Type == ETBSEquipmentType::RazorLarge) {
+				ObtainedRazorBig = true;
+			}
+			if (!ObtainedRazorSmall && CurrentData->Type == ETBSEquipmentType::RazorSmall) {
+				ObtainedRazorSmall = true;
+			}
 			return true;
 		}
 	}

@@ -265,6 +265,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Cash")	int32 GetCashPenalty();
 	UFUNCTION(BlueprintCallable, exec, Category = "Cash")	void ApplyCashPenalty(int32 Value);
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Toolbar") bool ObtainedRazorSmall = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Toolbar") bool ObtainedRazorBig = false;
 };
 
 
