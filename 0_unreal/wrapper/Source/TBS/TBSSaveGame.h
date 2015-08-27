@@ -13,6 +13,9 @@ class TBS_API UTBSSaveGame : public USaveGame
 		
 	UTBSSaveGame(const FObjectInitializer& ObjectInitializer);
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Toolbar") bool ObtainedRazorSmall = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Toolbar") bool ObtainedRazorBig = false;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Core") FString SaveSlotName;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Core") int32 UserIndex;
 

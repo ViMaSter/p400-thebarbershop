@@ -92,6 +92,9 @@ bool ATBSGameState::LoadGame(int32 UserIndex) {
 		PlayerPawn->CurrentLevel = 0;
 		PlayerPawn->CurrentExperience = 0;
 
+		PlayerPawn->ObtainedRazorSmall = CurrentSaveGame->ObtainedRazorSmall;
+		PlayerPawn->ObtainedRazorBig = CurrentSaveGame->ObtainedRazorBig;
+
 		// Apply values from savefile
 		PlayerPawn->CurrentCash += CurrentSaveGame->MoneyAvailable;
 		PlayerPawn->CurrentLevel = CurrentSaveGame->CurrentLevel;

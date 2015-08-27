@@ -224,8 +224,6 @@ void ATBSCharacter::StartGame() {
 			}
 		}
 	}
-
-
 	GameIsRunning = true;
 	GameStarted = true;
 	CurrentCustomer->CreateNewCustomer(CurrentLevel);
@@ -692,9 +690,11 @@ bool ATBSCharacter::BuyEquipment(int32 ID) {
 			EquipItem(ID);
 			if (!ObtainedRazorBig && CurrentData->Type == ETBSEquipmentType::RazorLarge) {
 				ObtainedRazorBig = true;
+				((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedRazorBig = ObtainedRazorBig;
 			}
 			if (!ObtainedRazorSmall && CurrentData->Type == ETBSEquipmentType::RazorSmall) {
 				ObtainedRazorSmall = true;
+				((ATBSGameState*)(GetWorld()->GameState))->CurrentSaveGame->ObtainedRazorSmall = ObtainedRazorSmall;
 			}
 			return true;
 		}
