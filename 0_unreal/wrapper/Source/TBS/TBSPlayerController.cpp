@@ -165,7 +165,7 @@ void ATBSPlayerController::OnSetRotationReleased() {
 		return;
 	}
 
-	if (!(PlayerCharacter == nullptr))
+	if (PlayerCharacter == nullptr)
 	{
 		return;
 	}
