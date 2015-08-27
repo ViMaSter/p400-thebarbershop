@@ -248,7 +248,7 @@ void ATBSPlayerController::UpdateRazor(float DeltaTime) {
 			GetHitResultUnderCursor(ECC_Camera, true, Hitresult);
 
 			if (Hitresult.GetActor()) {
-				if (Hitresult.GetActor()->GetClass()->IsChildOf(ATBSCustomer::StaticClass())) {
+				if (Hitresult.GetActor() == PlayerCharacter->CurrentCustomer) {
 					// Save hitresult info
 					LastValidMouseCursorImpactPoint = Hitresult.ImpactPoint;
 					LastValidMouseCursorImpactNormal = Hitresult.ImpactNormal;
